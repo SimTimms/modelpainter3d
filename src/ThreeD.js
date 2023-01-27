@@ -177,7 +177,7 @@ export default function ThreeD({}) {
         setSuit={setSuit}
       />
 
-      <div style={{ position: 'fixed', left: 0, top: 60 }}>
+      <div style={{ position: 'fixed', left: 0, top: 60, zIndex: 1000 }}>
         <div
           style={{
             display: 'flex',
