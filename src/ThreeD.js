@@ -38,6 +38,7 @@ export default function ThreeD({}) {
   });
   const [activeBone, setActiveBone] = React.useState(bones[0]);
   const [skin, setSkin] = React.useState('#fff');
+  const [wetness, setWetness] = React.useState(1);
   const [spread, setSpread] = React.useState(0);
   const [showHair, setShowHair] = React.useState(false);
   const [showSuit, setShowSuit] = React.useState(false);
@@ -176,56 +177,74 @@ export default function ThreeD({}) {
         setSuit={setSuit}
       />
 
-      <div
-        style={{
-          display: 'flex',
-          width: '50%',
-          margin: 'auto',
-          maxWidth: 400,
-          position: 'relative',
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
-      >
-        Tits
-        <Slider
-          min={0.8}
-          max={2}
-          value={tits}
-          step={0.01}
-          onChange={(value) => setTits(value)}
-          style={{ margin: 10, width: 200, boxSizing: 'border-box' }}
-        />
+      <div style={{ position: 'fixed', left: 0, top: 60 }}>
+        <div
+          style={{
+            display: 'flex',
+            maxWidth: 300,
+            position: 'relative',
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
+        >
+          Tits
+          <Slider
+            min={0.8}
+            max={2}
+            value={tits}
+            step={0.01}
+            onChange={(value) => setTits(value)}
+            style={{ margin: 10, width: 100, boxSizing: 'border-box' }}
+          />
+        </div>
+        <div
+          style={{
+            display: 'flex',
+            margin: 'auto',
+            position: 'relative',
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            maxWidth: 300,
+          }}
+        >
+          Ass
+          <Slider
+            min={1}
+            max={1.3}
+            value={ass}
+            step={0.01}
+            onChange={(value) => setAss(value)}
+            style={{ margin: 10, width: 100, boxSizing: 'border-box' }}
+          />
+        </div>
+        <div
+          style={{
+            display: 'flex',
+            maxWidth: 300,
+            position: 'relative',
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
+        >
+          Wetness
+          <Slider
+            min={0}
+            max={1}
+            value={wetness}
+            step={0.01}
+            onChange={(value) => setWetness(value)}
+            style={{ margin: 10, width: 100, boxSizing: 'border-box' }}
+          />
+        </div>
       </div>
-      <div
-        style={{
-          display: 'flex',
-          width: '50%',
-          maxWidth: 400,
-          margin: 'auto',
-          position: 'relative',
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
-      >
-        Ass
-        <Slider
-          min={1}
-          max={1.3}
-          value={ass}
-          step={0.01}
-          onChange={(value) => setAss(value)}
-          style={{ margin: 10, width: 200, boxSizing: 'border-box' }}
-        />
-      </div>
-
       <Canvas
         ref={canvas}
         style={{
           width: '100vw',
-          height: '100vh',
+          height: 'calc(100vh - 60px)',
         }}
         gl={{ preserveDrawingBuffer: true }}
         camera={{ fov: 50, position: [0, 1, 3], near: 0.001, zoom: 2 }}
@@ -269,6 +288,7 @@ export default function ThreeD({}) {
               ass={ass}
               suit={suit}
               spread={spread}
+              wetness={wetness}
             />
             <Dild boneConfig={boneConfig} />
           </group>
