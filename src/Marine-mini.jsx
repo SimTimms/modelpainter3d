@@ -8,7 +8,7 @@ import { useGLTF } from '@react-three/drei';
 import { Euler } from 'three';
 export function Model(props) {
   const { nodes, materials } = useGLTF('/marine-mini.gltf');
-  const { boneConfig, kneelPos, skin, hair, tits, suit, ass } = props;
+  const { boneConfig, kneelPos, skin, hair, tits, suit, ass, spread } = props;
   const [posMap, setPosMap] = React.useState({});
 
   useEffect(() => {
@@ -229,11 +229,7 @@ export function Model(props) {
           skeleton={nodes.Untitled_1.skeleton}
           frustumCulled={false}
         >
-          <meshStandardMaterial
-            attach="material"
-            color={skin}
-            map={materials.eye.map}
-          />
+          <meshStandardMaterial attach="material" map={materials.eye.map} />
         </skinnedMesh>
         <skinnedMesh
           geometry={nodes.Untitled_2.geometry}

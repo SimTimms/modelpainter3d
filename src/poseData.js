@@ -1,0 +1,211 @@
+export const fingerSelf = {
+  h_R_Pinky1: [0, -0.3, 0],
+  h_R_Pinky2: [0, 0, 0],
+  h_R_Pinky3: [0.2, 0, 2.8],
+  h_R_Pinky4: [0.2, 0, 0],
+  h_R_Ring1: [0, -0.1, 0],
+  h_R_Ring2: [0, 0, 0],
+  h_R_Ring3: [0.2, 0, 2.8],
+  h_R_Ring4: [0.2, 0, 0],
+  h_R_Middle1: [0, 0, 0],
+  h_R_Middle2: [0.8, 0, 0],
+  h_R_Middle3: [0, 0.9, 0.8],
+  h_R_Middle4: [0, 0, 0],
+  h_R_Index1: [0.8, 0, 0],
+  h_R_Index2: [0, 0, 0],
+  h_R_Index3: [0.2, 0.9, 0.8],
+  h_R_Index4: [0, 0, 0],
+  h_R_Thumb1: [0, 0, 0],
+  h_R_Thumb2: [0, 0, 0],
+  h_R_Thumb3: [0, 0, 0],
+};
+
+export const handFingeringOne = {
+  b_R_Hand: [0, -0.3, 0.5],
+  b_R_Shoulder: [0, 0, -0.1],
+};
+export const handFingeringTwo = {
+  b_R_Hand: [0.2, -0.3, 0.6],
+  b_R_Shoulder: [0, 0.2, -0.1],
+};
+
+export const handFingeringThree = {
+  b_R_Hand: [0.7, -0.3, 0.5],
+  b_R_Shoulder: [-2, 0.4, -0.15],
+};
+
+export const handFingeringFour = {
+  b_R_Hand: [0.7, -0.3, 0.6],
+  b_R_Shoulder: [-2.2, 0.4, -0.15],
+};
+
+export const titBounceOne = {
+  pb_R_SMS01_Breast_01: [0.8, -2, 0.4],
+  pb_L_SMS01_Breast_01: [0.8, -1, 0.4],
+};
+export const titBounceTwo = {
+  pb_R_SMS01_Breast_01: [0.6, -2, 0.4],
+  pb_L_SMS01_Breast_01: [0.7, -1, 0.4],
+};
+
+export const titBounceThree = {
+  pb_R_SMS01_Breast_01: [-0.2, -2, 0.4],
+  pb_L_SMS01_Breast_01: [-0.1, -1, 0.4],
+};
+
+export const titBounceFour = {
+  pb_R_SMS01_Breast_01: [-0.4, -2, 0.4],
+  pb_L_SMS01_Breast_01: [-0.3, -1, 0.4],
+};
+
+export const startPos = {
+  b_C_Spine1: [0, 0, 0],
+  b_C_Spine2: [0, 0, 0],
+  b_R_Shoulder: [0, 0, 0],
+  b_R_Arm1: [0, 0, 0],
+  b_R_Arm2: [0, 0, 0],
+  b_R_Hand: [0, 0, 0],
+  b_L_Shoulder: [0, 0, 0],
+  b_L_Arm1: [0, 0, 0],
+  b_L_Arm2: [0, 0, 0],
+  b_L_Hand: [0, 0, 0],
+  b_R_Leg1: [0, 0, 0],
+  b_R_Leg2: [0, 0, 0],
+  b_L_Leg2: [0, 0, 0],
+  b_L_Leg1: [0, 0, 0],
+  b_L_Foot: [0, 0, 0],
+  b_R_Foot: [0, 0, 0],
+  b_C_Chest: [0, 0, 0],
+  b_C_Neck: [0, 0, 0],
+  b_C_Head: [0, 0, 0],
+  pb_L_SMS01_BHair_1: [0, 0, 1.6],
+  pb_R_SMS01_Breast_01: [0.8, -2, 0.4],
+  pb_L_SMS01_Breast_01: [0.8, -1, 0.4],
+};
+
+export const kneelPos = {
+  b_C_Spine1: [1, 0, 0],
+  b_C_Spine2: [0, 0, 0],
+  b_R_Shoulder: [-1.4, 0, 0],
+  b_R_Arm1: [0, 0, 1],
+  b_R_Arm2: [1, 0.4, 0],
+  b_R_Hand: [0, 0, -1],
+  b_L_Shoulder: [-1.4, 0, 0],
+  b_L_Arm1: [0, 0, -1],
+  b_L_Arm2: [1, -0.4, 0],
+  b_L_Hand: [0, 0, 1],
+  b_R_Leg1: [-0.6, 0, -1],
+  b_R_Leg2: [2.1, 0, -0.2],
+  b_L_Leg1: [0, 0, 1],
+  b_L_Leg2: [1.6, 0, 0],
+  b_L_Foot: [1, 0, 0],
+  b_R_Foot: [1, 0, 0],
+  b_C_Chest: [0.4, 0, 0],
+  b_C_Neck: [0, 0, 0],
+  b_C_Head: [0, 0, 0],
+  pb_L_SMS01_BHair_1: [-1.8, 1, 2.2],
+  pb_R_SMS01_Breast_01: [0, -2, 0.2],
+  pb_L_SMS01_Breast_01: [0, -1, 0.2],
+};
+
+export const stressPos = {
+  b_C_Spine1: [1.4, 0, 0],
+  b_C_Spine2: [0.3, 0, 0],
+  b_R_Shoulder: [-1.4, 0, 0],
+  b_R_Arm1: [-1.8, 0, 1],
+  b_R_Arm2: [1, 0.4, 0],
+  b_R_Hand: [0, 0, 0],
+  b_L_Shoulder: [-1.4, 0, 0],
+  b_L_Arm1: [-1.8, 0, -1],
+  b_L_Arm2: [1, -0.4, 0],
+  b_L_Hand: [0, 0, 0],
+  b_R_Leg1: [-0.2, -0.4, -1.5],
+  b_R_Leg2: [0.4, 0, -0.2],
+  b_L_Leg1: [0, 0, 1.5],
+  b_L_Leg2: [0.4, 0, 0],
+  b_L_Foot: [1, 0, 0],
+  b_R_Foot: [1, 0, 0],
+  b_C_Chest: [0.4, 0, 0],
+  b_C_Neck: [-0.2, 1, 0],
+  b_C_Head: [0, 0, 0],
+  pb_L_SMS01_BHair_1: [-1.8, 1, 2.2],
+  pb_R_SMS01_Breast_01: [0, -2.3, 0],
+  pb_L_SMS01_Breast_01: [0, -0.7, 0],
+};
+
+export const standPos = {
+  b_C_Spine1: [0, 0, 0],
+  b_C_Spine2: [0, 0, 0],
+  b_R_Shoulder: [0, 0, 0],
+  b_R_Arm1: [0, 0, 0],
+  b_R_Arm2: [0, 0, 0],
+  b_R_Hand: [0, 0, 0],
+  b_L_Shoulder: [0, 0, 0],
+  b_L_Arm1: [0, 0, 0],
+  b_L_Arm2: [0, 0, 0],
+  b_L_Hand: [0, 0, 0],
+  b_R_Leg1: [0, 0, 0],
+  b_R_Leg2: [0, 0, 0],
+  b_L_Leg2: [0, 0, 0],
+  b_L_Leg1: [0, 0, 0],
+  b_L_Foot: [0, 0, 0],
+  b_R_Foot: [0, 0, 0],
+  b_C_Chest: [0, 0, 0],
+  b_C_Neck: [0, 0, 0],
+  b_C_Head: [0, 0, 0],
+  pb_L_SMS01_BHair_1: [0, 0, 1.6],
+  pb_R_SMS01_Breast_01: [0.8, -2, 0.4],
+  pb_L_SMS01_Breast_01: [0.8, -1, 0.4],
+  ...fingerSelf,
+};
+
+export const standPos2 = {
+  b_C_Spine1: [0, 0, 0],
+  b_C_Spine2: [0, 0, 0],
+  b_R_Shoulder: [0, 0, 0],
+  b_R_Arm1: [0, 0, 1.3],
+  b_R_Arm2: [1.1, 1.3, 0],
+  b_R_Hand: [0, 0.2, 1],
+  b_L_Hand: [0, 0.2, 1],
+  b_L_Shoulder: [0, 0, 0],
+  b_L_Arm1: [0, 0, -1.4],
+  b_L_Arm2: [0, 0, 0],
+  b_R_Leg1: [0, 0, 0],
+  b_R_Leg2: [0, 0, 0],
+  b_L_Leg2: [0, 0, 0],
+  b_L_Leg1: [0, 0, 0],
+  b_L_Foot: [0, 0, 0],
+  b_R_Foot: [0, 0, 0],
+  b_C_Chest: [0, 0, 0],
+  b_C_Neck: [0, 0, 0],
+  b_C_Head: [0, 0, 0],
+  pb_L_SMS01_BHair_1: [0, 0, 1.6],
+  pb_R_SMS01_Breast_01: [0.8, -2, 0.4],
+  pb_L_SMS01_Breast_01: [0.8, -1, 0.4],
+  ...fingerSelf,
+};
+export const standPos3 = {
+  b_C_Spine1: [1, 0, 0],
+  b_C_Spine2: [0, 0, 0],
+  b_R_Shoulder: [-1.4, 0, 0],
+  b_R_Arm1: [1.5, -1, 1.2],
+  b_R_Arm2: [1, 2.6, 1],
+  b_R_Hand: [0, 0, -1],
+  b_L_Shoulder: [-1.4, 0, 0],
+  b_L_Arm1: [0, 0, -1],
+  b_L_Arm2: [1, -0.4, 0],
+  b_L_Hand: [0, 0, 1],
+  b_R_Leg1: [-0.6, 0, -0.3],
+  b_R_Leg2: [2.1, 0, -0.2],
+  b_L_Leg2: [1.6, 0, 0],
+  b_L_Leg1: [0, 0, 0.3],
+  b_L_Foot: [1, 0, 0],
+  b_R_Foot: [1, 0, 0],
+  b_C_Chest: [0.4, 0, 0],
+  b_C_Neck: [-1.6, 0, 0],
+  b_C_Head: [0, 0, 0],
+  pb_L_SMS01_BHair_1: [-1.2, 0.8, 3.2],
+  pb_R_SMS01_Breast_01: [0.4, -2, 0.4],
+  pb_L_SMS01_Breast_01: [0, -1, 0.4],
+  ...fingerSelf,
+};
