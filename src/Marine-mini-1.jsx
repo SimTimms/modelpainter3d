@@ -8,7 +8,9 @@ import { useGLTF } from '@react-three/drei';
 function getBones() {}
 
 export function Model(props) {
-  const { nodes, materials } = useGLTF('/marine-mini.gltf');
+  const { nodes, materials } = useGLTF(
+    'https://model-painter.s3.eu-west-2.amazonaws.com/marine-mini.gltf'
+  );
   const { armRot } = props;
   const bones = [];
   const objArr = Object.keys(nodes);
@@ -16,7 +18,6 @@ export function Model(props) {
   for (let i = 0; i < objArr.length; i++) {
     const isBone = nodes[objArr[i]].isBone;
     if (isBone) {
-      console.log(objArr[i]);
       bones.push({ name: objArr[i], rot: [0, 0, 0] });
     }
   }
@@ -55,4 +56,6 @@ export function Model(props) {
   );
 }
 
-useGLTF.preload('/marine-mini.gltf');
+useGLTF.preload(
+  'https://model-painter.s3.eu-west-2.amazonaws.com/marine-mini.gltf'
+);

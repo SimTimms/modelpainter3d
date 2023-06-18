@@ -18,6 +18,10 @@ import {
   fingerSelf,
   handFingeringThree,
   titBounceThree,
+  sidePos,
+  titBounceFive,
+  handFingeringFive,
+  backPos,
 } from '../poseData';
 
 export const PoseMenu = ({
@@ -70,8 +74,29 @@ export const PoseMenu = ({
           })
         }
       />
+      <PoseButton
+        pose={pose2}
+        onClickEvent={() =>
+          setToFrom({
+            ...sidePos,
+            ...fingerSelf,
+            ...handFingeringFive,
+            ...titBounceFive,
+          })
+        }
+      />
+      <PoseButton
+        pose={pose2}
+        onClickEvent={() =>
+          setToFrom({
+            ...backPos,
+            ...fingerSelf,
+            ...handFingeringFive,
+            ...titBounceFive,
+          })
+        }
+      />
       <PoseButton pose={pose4} onClickEvent={() => setToFrom(kneelPos)} />
-
       <PoseButton pose={pose5} onClickEvent={() => setToFrom(stressPos)} />
       <ColorPicker
         skin={skin}

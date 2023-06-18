@@ -1,7 +1,4 @@
 import { useRef, useState, useLayoutEffect } from 'react';
-import { useGLTF } from '@react-three/drei';
-import { useLoader } from '@react-three/fiber';
-import { TextureLoader } from 'three/src/loaders/TextureLoader';
 
 export function Mesh({ nodes, node, material, skeleton, geometry }) {
   const [allowControls, setAllowControls] = useState(true);
@@ -81,5 +78,3 @@ export function Mesh({ nodes, node, material, skeleton, geometry }) {
     </mesh>
   );
 }
-
-useGLTF.preload('/marine-mini.gltf');

@@ -1,25 +1,20 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Suspense } from 'react';
 import { Canvas, useThree } from '@react-three/fiber';
 import { Model } from './Marine-mini';
-import { Dild } from './Dild';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
-import { Euler } from 'three';
-
-import { TwitterPicker } from 'react-color';
-import { PoseMenu } from './components/PoseMenu';
-import { standPos } from './poseData';
-import { animation } from './animation';
-
+import { Spacehulk } from './modelParts/Spacehulk.jsx';
+import { paints } from './paints.js';
+import { SliderGroup } from './SliderGroup';
+import { TyranidModel } from './TyranidModel.jsx';
 const CameraController = () => {
   const { camera, gl } = useThree();
 
   useEffect(() => {
     const controls = new OrbitControls(camera, gl.domElement);
-    controls.minDistance = 0.1;
-    controls.maxDistance = 100;
+    controls.minDistance = 1;
+    controls.maxDistance = 200;
     controls.zoomSpeed = 0.5;
     return () => {
       controls.dispose();
@@ -29,269 +24,312 @@ const CameraController = () => {
 };
 
 export default function ThreeD({}) {
-  const canvas = useRef(null);
-  const bones = ['pb_R_YA201_Breast_01', 'pb_R_YA201_Breast_01', 'b_R_Leg1'];
-  const [boneConfig, setBoneConfig] = React.useState({
-    pb_R_YA201_Breast_01: { rotation: [0.15, 0, 0], scale: 1 },
-    pb_L_YA201_Breast_01: { rotation: [0.15, 0, 0], scale: 1 },
-    b_R_Leg1: { rotation: [0.15, 0, 0], scale: 1 },
-  });
-  const [activeBone, setActiveBone] = React.useState(bones[0]);
-  const [skin, setSkin] = React.useState('#fff');
-  const [wetness, setWetness] = React.useState(1);
-  const [spread, setSpread] = React.useState(0);
-  const [showHair, setShowHair] = React.useState(false);
-  const [showSuit, setShowSuit] = React.useState(false);
-  const [hair, setHair] = React.useState('#fff');
-  const [suit, setSuit] = React.useState('#fff');
-  const [tits, setTits] = React.useState(1);
-  const [ass, setAss] = React.useState(1);
-
-  const [toFrom, setToFrom] = React.useState({
-    ...standPos,
-  });
-  const [posMap, setPosMap] = React.useState({
-    ...standPos,
-  });
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const keys = Object.keys(standPos).map((key) => key);
-
-      const newPos = { ...posMap };
-      let diffs = false;
-      for (let i = 0; i < keys.length; i++) {
-        const rotFrom = newPos[keys[i]];
-        const rotTo = toFrom[keys[i]];
-        const isEuler = rotFrom.isEuler;
-
-        let diffX = 0;
-        let diffY = 0;
-        let diffZ = 0;
-
-        let rotFromPar = [];
-
-        if (isEuler) {
-          rotFromPar = [rotFrom.x, rotFrom.y, rotFrom.z];
-          diffX = rotFromPar[0] - rotTo[0];
-          diffY = rotFromPar[1] - rotTo[1];
-          diffZ = rotFromPar[2] - rotTo[2];
-
-          if (diffX.toFixed(2) > 0) {
-            newPos[keys[i]]._x -= 0.01;
-            diffs = true;
-          }
-          if (diffX.toFixed(2) < 0) {
-            newPos[keys[i]]._x += 0.01;
-            diffs = true;
-          }
-          if (diffY.toFixed(2) > 0) {
-            newPos[keys[i]]._y -= 0.01;
-            diffs = true;
-          }
-          if (diffY.toFixed(2) < 0) {
-            newPos[keys[i]]._y += 0.01;
-            diffs = true;
-          }
-          if (diffZ.toFixed(2) > 0) {
-            newPos[keys[i]]._z -= 0.01;
-            diffs = true;
-          }
-          if (diffZ.toFixed(2) < 0) {
-            newPos[keys[i]]._z += 0.01;
-            diffs = true;
-          }
-
-          const newEuler = new Euler(
-            newPos[keys[i]]._x,
-            newPos[keys[i]]._y,
-            newPos[keys[i]]._z
-          );
-          newPos[keys[i]] = newEuler;
-        } else {
-          rotFromPar = [rotFrom[0], rotFrom[1], rotFrom[2]];
-          diffX = rotFromPar[0] - rotTo[0];
-          diffY = rotFromPar[1] - rotTo[1];
-          diffZ = rotFromPar[2] - rotTo[2];
-
-          if (diffX.toFixed(2) > 0) {
-            newPos[keys[i]][0] -= 0.01;
-            diffs = true;
-          }
-          if (diffX.toFixed(2) < 0) {
-            newPos[keys[i]][0] += 0.01;
-            diffs = true;
-          }
-          if (diffY.toFixed(2) > 0) {
-            newPos[keys[i]][1] -= 0.01;
-            diffs = true;
-          }
-          if (diffY.toFixed(2) < 0) {
-            newPos[keys[i]][1] += 0.01;
-            diffs = true;
-          }
-          if (diffZ.toFixed(2) > 0) {
-            newPos[keys[i]][2] -= 0.01;
-            diffs = true;
-          }
-          if (diffZ.toFixed(2) < 0) {
-            newPos[keys[i]][2] += 0.01;
-            diffs = true;
-          }
-
-          const newEuler = new Euler(
-            newPos[keys[i]][0],
-            newPos[keys[i]][1],
-            newPos[keys[i]][2]
-          );
-          newPos[keys[i]] = newEuler;
-        }
-
-        setPosMap(newPos);
-      }
-
-      animation(diffs, toFrom, setToFrom);
-    }, 10);
-    return () => clearInterval(interval);
-  }, [toFrom]);
-
+  const [currentPaint, setCurrentPaint] = React.useState(paints[0]);
+  const [neck, setNeck] = React.useState(0);
+  const [torsoBone, setTorsoBone] = React.useState(0);
+  const [torsoTopBone, setTorsoTopBone] = React.useState(0);
+  const [arm, setArm] = React.useState(0);
+  const [armR, setArmR] = React.useState('boltgun');
+  const [attachment, setAttachment] = React.useState('');
+  const [ironCross, setIronCross] = React.useState('');
+  const [armRRot, setArmRRot] = React.useState(0);
+  const [lighting, setLighting] = React.useState(1);
+  const [head, setHead] = React.useState('helmet');
+  const paintRef = useRef({});
   return (
     <div
       style={{
         display: 'flex',
         height: '100%',
-        width: '100%',
         margin: 'auto',
-        position: 'rewlative',
+        position: 'relative',
         flexDirection: 'column',
       }}
     >
-      <PoseMenu
-        setToFrom={setToFrom}
-        standPos={standPos}
-        skin={skin}
-        setSkin={setSkin}
-        hair={hair}
-        setHair={setHair}
-        suit={suit}
-        setSuit={setSuit}
-      />
-
-      <div style={{ position: 'fixed', left: 0, top: 60, zIndex: 1000 }}>
+      <div
+        style={{
+          background: 'rgba(17, 50, 33, 1)',
+          width: '100%',
+          position: 'fixed',
+          zIndex: 2,
+          bottom: 0,
+          padding: 10,
+          boxSizing: 'border-box',
+          borderTop: '2px solid #333',
+          borderLeft: '2px solid #333',
+          borderBottom: '2px solid #111',
+          borderRight: '2px solid #111',
+          boxShadow: 'inset 0 0 10px #000',
+        }}
+      >
         <div
           style={{
-            display: 'flex',
-            maxWidth: 300,
-            position: 'relative',
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
+            background:
+              'repeating-linear-gradient(to bottom,rgba(0,0,0,0) 0px,rgba(0,0,0,0.2) 4px,rgba(0,0,0,0) 2px,rgba(0,0,0,0) 2px) ',
+            position: 'absolute',
+            width: '100%',
+            height: '100%',
+            top: 0,
+            left: 0,
+            zIndex: 1000,
+            pointerEvents: 'none',
           }}
-        >
-          Tits
-          <Slider
-            min={0.8}
-            max={2}
-            value={tits}
-            step={0.01}
-            onChange={(value) => setTits(value)}
-            style={{ margin: 10, width: 100, boxSizing: 'border-box' }}
-          />
-        </div>
-        <div
-          style={{
-            display: 'flex',
-            margin: 'auto',
-            position: 'relative',
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            maxWidth: 300,
-          }}
-        >
-          Ass
-          <Slider
-            min={1}
-            max={1.3}
-            value={ass}
-            step={0.01}
-            onChange={(value) => setAss(value)}
-            style={{ margin: 10, width: 100, boxSizing: 'border-box' }}
-          />
-        </div>
-        <div
-          style={{
-            display: 'flex',
-            maxWidth: 300,
-            position: 'relative',
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}
-        >
-          Wetness
-          <Slider
-            min={0}
-            max={1}
-            value={wetness}
-            step={0.01}
-            onChange={(value) => setWetness(value)}
-            style={{ margin: 10, width: 100, boxSizing: 'border-box' }}
-          />
+        ></div>
+        <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+          {paints.map((paint, index) => (
+            <div
+              key={`${index}-${paint.color}`}
+              style={{
+                background: paint.color,
+                width: 20,
+                height: 20,
+              }}
+              onClick={() => setCurrentPaint(paint)}
+            ></div>
+          ))}
         </div>
       </div>
+      <div
+        style={{
+          background: 'rgba(17, 50, 33, 0.4)',
+          width: 200,
+          position: 'fixed',
+          padding: 10,
+          zIndex: 100,
+          borderTop: '2px solid #333',
+          borderLeft: '2px solid #333',
+          borderBottom: '2px solid #222',
+          borderRight: '2px solid #222',
+          boxShadow: 'inset 0 0 10px #000',
+        }}
+      >
+        <div
+          style={{
+            background:
+              'repeating-linear-gradient(to bottom,rgba(0,0,0,0) 0px,rgba(0,0,0,0.4) 4px,rgba(0,0,0,0) 2px,rgba(0,0,0,0) 2px) ',
+            position: 'absolute',
+            width: '100%',
+            height: '100%',
+            top: 0,
+            left: 0,
+            zIndex: 1000,
+            pointerEvents: 'none',
+          }}
+        ></div>
+        <SliderGroup
+          title="Lighting"
+          min={0.1}
+          max={2}
+          value={lighting}
+          change={setLighting}
+        />
+        <SliderGroup
+          title="Torso"
+          min={-1}
+          max={1}
+          value={torsoTopBone}
+          change={setTorsoTopBone}
+        />
+        <SliderGroup
+          title="Legs"
+          min={-0.5}
+          max={0.5}
+          value={torsoBone}
+          change={setTorsoBone}
+        />
+        <SliderGroup
+          title="Head"
+          min={-0.5}
+          max={0.5}
+          value={neck}
+          change={setNeck}
+        />
+        <SliderGroup
+          title="Left Arm"
+          min={-0.5}
+          max={0.5}
+          value={arm}
+          change={setArm}
+        />
+        <SliderGroup
+          title="Right Arm"
+          min={-0.5}
+          max={0.5}
+          value={armRRot}
+          change={setArmRRot}
+        />
+      </div>
+      <div
+        style={{
+          background: 'rgba(17, 50, 33, 0.4)',
+          width: 200,
+          position: 'fixed',
+          padding: 10,
+          left: 220,
+          zIndex: 100,
+          borderTop: '2px solid #333',
+          borderLeft: '2px solid #333',
+          borderBottom: '2px solid #222',
+          borderRight: '2px solid #222',
+          boxShadow: 'inset 0 0 10px #000',
+        }}
+      >
+        <div
+          style={{
+            background:
+              'repeating-linear-gradient(to bottom,rgba(0,0,0,0) 0px,rgba(0,0,0,0.4) 4px,rgba(0,0,0,0) 2px,rgba(0,0,0,0) 2px) ',
+            position: 'absolute',
+            width: '100%',
+            height: '100%',
+            top: 0,
+            left: 0,
+            zIndex: 1000,
+            pointerEvents: 'none',
+          }}
+        ></div>
+        <button
+          style={{
+            background: 'none',
+            color: '#6fe861',
+            opacity: armR === 'sword' ? 1 : 0.5,
+            border: 'none',
+          }}
+          onClick={() => {
+            setArmR('sword');
+          }}
+        >
+          {'Sword'}
+        </button>
+        <button
+          style={{
+            background: 'none',
+            color: '#6fe861',
+            opacity: armR === 'boltgun' ? 1 : 0.5,
+            border: 'none',
+          }}
+          onClick={() => setArmR('boltgun')}
+        >
+          {'Boltgun'}
+        </button>
+        <button
+          style={{
+            background: 'none',
+            color: '#6fe861',
+            opacity: armR === 'auto' ? 1 : 0.5,
+            border: 'none',
+          }}
+          onClick={() => setArmR('auto')}
+        >
+          {'Auto'}
+        </button>
+        <button
+          style={{
+            background: 'none',
+            color: '#6fe861',
+            opacity: armR === 'flamer' ? 1 : 0.5,
+            border: 'none',
+          }}
+          onClick={() => setArmR('flamer')}
+        >
+          {'Flamer'}
+        </button>
+        <button
+          style={{
+            background: 'none',
+            color: '#6fe861',
+            opacity: attachment === 'cloak' ? 1 : 0.5,
+            border: 'none',
+          }}
+          onClick={() => setAttachment(attachment === 'cloak' ? '' : 'cloak')}
+        >
+          {'Cloak'}
+        </button>
+        <button
+          style={{
+            background: 'none',
+            color: '#6fe861',
+            opacity: ironCross === 'ironCross' ? 1 : 0.5,
+            border: 'none',
+          }}
+          onClick={() =>
+            setIronCross(ironCross === 'ironCross' ? '' : 'ironCross')
+          }
+        >
+          {'Iron Cross'}
+        </button>
+        <button
+          style={{
+            background: 'none',
+            color: '#6fe861',
+            opacity: head === 'helmet' ? 1 : 0.5,
+            border: 'none',
+          }}
+          onClick={() => setHead('helmet')}
+        >
+          Helmet
+        </button>{' '}
+        <button
+          style={{
+            background: 'none',
+            color: '#6fe861',
+            opacity: head === 'face' ? 1 : 0.5,
+            border: 'none',
+          }}
+          onClick={() => setHead('face')}
+        >
+          Face
+        </button>
+      </div>
+      <div
+        style={{
+          /*background:
+            'repeating-linear-gradient(to bottom,rgba(0,0,0,0) 0px,rgba(0,0,0,0.4) 4px,rgba(0,0,0,0) 2px,rgba(0,0,0,0) 2px)',*/
+          position: 'fixed',
+          right: 0,
+          width: '100%',
+          height: '100%',
+          zIndex: 1000,
+          pointerEvents: 'none',
+        }}
+      ></div>
       <Canvas
-        ref={canvas}
         style={{
           width: '100vw',
-          height: 'calc(100vh - 60px)',
+          height: 'calc(100vh - 80px)',
+          background: '#222',
         }}
         gl={{ preserveDrawingBuffer: true }}
-        camera={{ fov: 50, position: [0, 1, 3], near: 0.001, zoom: 2 }}
+        camera={{ fov: 50, position: [0, 0, 40], near: 0.1, zoom: 1 }}
       >
         <CameraController />
-        <group position={[0, 20, 5.5]}>
-          <ambientLight intensity={0.2} />
-        </group>
-        <group position={[10, 30, 0]}>
-          <spotLight
-            castShadow={true}
-            intensity={0.8}
-            shadow-mapSize-width={512}
-            shadow-mapSize-height={512}
-            shadow-camera-near={0.5}
-            shadow-camera-far={500}
-            shadow-focus={1}
-          />
-        </group>
-        <group position={[10, 0, 0]}>
-          <spotLight
-            castShadow={true}
-            intensity={0.8}
-            shadow-mapSize-width={512}
-            shadow-mapSize-height={512}
-            shadow-camera-near={0.5}
-            shadow-camera-far={500}
-            shadow-focus={1}
-            color="white"
-          />
+        <group position={[0, 20, 20]}>
+          <directionalLight intensity={lighting * 0.1} />
         </group>
 
         <Suspense fallback={null}>
-          <group>
-            <Model
-              boneConfig={boneConfig}
-              kneelPos={posMap}
-              skin={skin}
-              hair={hair}
-              tits={tits}
-              ass={ass}
-              suit={suit}
-              spread={spread}
-              wetness={wetness}
-            />
-            <Dild boneConfig={boneConfig} />
+          <group
+            position={[0, -52, 0]}
+            scale={1.4}
+            rotation={[0, -0.4 * Math.PI, 0]}
+          >
+            <Spacehulk currentPaint={currentPaint} lighting={lighting} />
           </group>
+          <group position={[0, 0, -60]}>
+            <TyranidModel currentPaint={currentPaint} paintRef={paintRef} />
+          </group>
+          <Model
+            neck={neck}
+            torsoBone={torsoBone}
+            torsoTopBone={torsoTopBone}
+            currentPaint={currentPaint}
+            armRRot={armRRot}
+            arm={arm}
+            armR={armR}
+            attachment={attachment}
+            head={head}
+            ironCross={ironCross}
+            paintRef={paintRef}
+          />
         </Suspense>
       </Canvas>
     </div>
