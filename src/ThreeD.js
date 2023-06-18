@@ -314,9 +314,9 @@ export default function ThreeD({}) {
           >
             <Spacehulk currentPaint={currentPaint} lighting={lighting} />
           </group>
-          <group position={[0, 0, -60]}>
+          {/*    <group position={[0, 0, -60]}>
             <TyranidModel currentPaint={currentPaint} paintRef={paintRef} />
-          </group>
+      </group>*/}
           <Model
             neck={neck}
             torsoBone={torsoBone}
