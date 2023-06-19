@@ -29,6 +29,7 @@ export function Model(props) {
     head,
     ironCross,
     paintRef,
+    show,
   } = props;
 
   return (
@@ -38,55 +39,103 @@ export function Model(props) {
         neck={props.neck}
         cloak={
           attachment === 'cloak' ? (
-            <CloakTermie currentPaint={currentPaint} paintRef={paintRef} />
+            <CloakTermie
+              currentPaint={currentPaint}
+              paintRef={paintRef}
+              show={show ? 1 : 0}
+            />
           ) : null
         }
         ironCross={
           ironCross === 'ironCross' ? (
-            <IronCross currentPaint={currentPaint} paintRef={paintRef} />
+            <IronCross
+              currentPaint={currentPaint}
+              paintRef={paintRef}
+              show={show ? 1 : 0}
+            />
           ) : null
         }
         helmet={
           head === 'helmet' ? (
-            <HelmetTermie currentPaint={currentPaint} paintRef={paintRef} />
+            <HelmetTermie
+              currentPaint={currentPaint}
+              paintRef={paintRef}
+              show={show ? 1 : 0}
+            />
           ) : (
-            <FaceTermie currentPaint={currentPaint} paintRef={paintRef} />
+            <FaceTermie
+              currentPaint={currentPaint}
+              paintRef={paintRef}
+              show={show ? 1 : 0}
+            />
           )
         }
-        torso={<TorsoTermie currentPaint={currentPaint} paintRef={paintRef} />}
+        torso={
+          <TorsoTermie
+            currentPaint={currentPaint}
+            paintRef={paintRef}
+            show={show ? 1 : 0}
+          />
+        }
         shoulderR={
           <ShoulderTermieRight
             currentPaint={currentPaint}
             paintRef={paintRef}
+            show={show ? 1 : 0}
           />
         }
-        shoulderL={<ShoulderTermieLeft currentPaint={currentPaint} />}
+        shoulderL={
+          <ShoulderTermieLeft currentPaint={currentPaint} show={show ? 1 : 0} />
+        }
         armR={
           armR === 'sword' ? (
             <ArmTermieRightTwo
               currentPaint={currentPaint}
               paintRef={paintRef}
+              show={show ? 1 : 0}
             />
           ) : armR === 'auto' ? (
             <ArmTermieRightAuto
               currentPaint={currentPaint}
               paintRef={paintRef}
+              show={show ? 1 : 0}
             />
           ) : armR === 'flamer' ? (
             <ArmTermieRightFlamer
               currentPaint={currentPaint}
               paintRef={paintRef}
+              show={show ? 1 : 0}
             />
           ) : (
-            <ArmTermieRight currentPaint={currentPaint} paintRef={paintRef} />
+            <ArmTermieRight
+              currentPaint={currentPaint}
+              paintRef={paintRef}
+              show={show ? 1 : 0}
+            />
           )
         }
-        armL={<ArmTermieLeft currentPaint={currentPaint} paintRef={paintRef} />}
+        armL={
+          <ArmTermieLeft
+            currentPaint={currentPaint}
+            paintRef={paintRef}
+            show={show ? 1 : 0}
+          />
+        }
         arm={arm}
         armRRot={armRRot}
-        legs={<LegsTermie currentPaint={currentPaint} paintRef={paintRef} />}
+        legs={
+          <LegsTermie
+            currentPaint={currentPaint}
+            paintRef={paintRef}
+            show={show ? 1 : 0}
+          />
+        }
         base={
-          <BaseTermieLeft currentPaint={currentPaint} paintRef={paintRef} />
+          <BaseTermieLeft
+            currentPaint={currentPaint}
+            paintRef={paintRef}
+            show={show ? 1 : 0}
+          />
         }
         currentPaint={props.currentPaint}
         torsoTopBone={props.torsoTopBone}

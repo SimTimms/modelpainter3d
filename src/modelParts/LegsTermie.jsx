@@ -20,7 +20,7 @@ export function LegsTermie(props) {
   }, [nodes]);
 
   return (
-    <group {...props} dispose={null}>
+    <group {...props}>
       {newNodeArr.map((node, index) => {
         if (!nodes[node].geometry) return null;
         return (
@@ -32,6 +32,7 @@ export function LegsTermie(props) {
             currentPaint={props.currentPaint}
             paintRef={props.paintRef}
             name={node}
+            show={props.show}
           />
         );
       })}

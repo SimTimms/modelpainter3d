@@ -20,18 +20,19 @@ export function ArmTermieRightTwo(props) {
   }, [nodes]);
 
   return (
-    <group {...props} dispose={null}>
+    <group {...props}>
       {newNodeArr.map((node, index) => {
         if (!nodes[node].geometry) return null;
         return (
           <Mesh
-            key={index}
+            key={`${index}-armRTwo`}
             nodeGeometry={nodes[node].geometry}
             position={nodes[node].position}
             material={nodes[node].material}
             currentPaint={props.currentPaint}
             paintRef={props.paintRef}
             name={node}
+            show={props.show}
             lights={
               node === 'Arm_with_Captain_sword013' && {
                 pos: [

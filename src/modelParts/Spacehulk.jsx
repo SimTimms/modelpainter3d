@@ -18,7 +18,7 @@ export function Spacehulk(props) {
   }, [nodes]);
 
   return (
-    <group {...props} dispose={null}>
+    <group {...props}>
       <Light position={[0, 30, -40]} c="white" d={props.lighting * 50} i={1} />
       <Light
         position={[-40, 30, -40]}
@@ -53,13 +53,14 @@ export function Spacehulk(props) {
         if (!nodes[node].geometry) return null;
         return (
           <Mesh
-            key={index}
+            key={`${index}-SPH`}
             nodeGeometry={nodes[node].geometry}
             position={nodes[node].position}
             material={nodes[node].material}
             currentPaint={props.currentPaint}
             paintRef={props.paintRef}
             name={node}
+            show={props.show}
           />
         );
       })}

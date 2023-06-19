@@ -11,8 +11,8 @@ export function ModelImport(props) {
     'https://model-painter.s3.eu-west-2.amazonaws.com/skeleton.gltf'
   );
   return (
-    <group>
-      <group {...props} dispose={null} position={props.position}>
+    <group key="object">
+      <group {...props} position={props.position}>
         <group position={[1, -42.5, 0]} rotation={[0, 1.4 * Math.PI, 0]}>
           {props.base}
         </group>

@@ -16,6 +16,9 @@ export function Mesh({ nodes, node, material, skeleton, geometry }) {
       context.fillStyle = 'white';
       context.fill();
     }
+    return () => {
+      window.removeEventListener('mousemove', () => {});
+    };
   }, []);
 
   function handleBrushPointerMove({ uv }) {
@@ -59,7 +62,6 @@ export function Mesh({ nodes, node, material, skeleton, geometry }) {
   ) : (
     <mesh
       geometry={nodes[node].geometry}
-      // ref={(mesh) => setMeshToSampleRef(mesh)}
       scale={0.01}
       rotation={nodes[node].rotation}
       position={nodes[node].position}

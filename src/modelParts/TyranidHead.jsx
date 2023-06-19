@@ -9,34 +9,36 @@ import { Mesh } from './Mesh.jsx';
 
 export function TyranidHead(props) {
   const { nodes, materials } = useGLTF(
-    'https://model-painter.s3.eu-west-2.amazonaws.com/tyranid_head.gltf'
+    props.show
+      ? 'https://model-painter.s3.eu-west-2.amazonaws.com/tyranid_head.gltf'
+      : 'https://model-painter.s3.eu-west-2.amazonaws.com/hidden.gltf'
   );
+
   const [newNodeArr, setNewNodeArr] = useState([]);
+
   useEffect(() => {
     const nodeArr = Object.keys(nodes);
     setNewNodeArr(nodeArr);
   }, [nodes]);
 
   return (
-    <group {...props} dispose={null}>
+    <group {...props}>
       {newNodeArr.map((node, index) => {
+        if (!nodes[node]) return null;
         if (!nodes[node].geometry) return null;
         return (
           <Mesh
-            key={index}
+            key={`${index}-TYH`}
             nodeGeometry={nodes[node].geometry}
             position={nodes[node].position}
             material={nodes[node].material}
             currentPaint={props.currentPaint}
             paintRef={props.paintRef}
             name={node}
+            show={props.show}
           />
         );
       })}
     </group>
   );
 }
-
-useGLTF.preload(
-  'https://model-painter.s3.eu-west-2.amazonaws.com/tyranid_head.gltf'
-);

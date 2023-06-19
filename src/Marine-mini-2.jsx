@@ -22,7 +22,7 @@ export function Model(props) {
     }
   }
   return (
-    <group {...props} dispose={null} scale={0.004} position={[0, -0.3, 0]}>
+    <group {...props} scale={0.004} position={[0, -0.3, 0]}>
       <group rotation={[Math.PI / 2, 0, 0]}>
         <primitive object={nodes.b_C_Base}>
           <primitive object={nodes.b_C_Pelvis}>

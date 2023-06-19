@@ -12,12 +12,13 @@ export function HelmetNightlord(props) {
   );
 
   return (
-    <group {...props} dispose={null}>
+    <group {...props}>
       <mesh
         geometry={nodes.NightLordPrim.geometry}
         material={nodes.NightLordPrim.material}
         position={[0.01, 4.71, -0.21]}
         scale={1}
+        show={props.show}
       />
     </group>
   );

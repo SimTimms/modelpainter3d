@@ -5,8 +5,6 @@ Command: npx gltfjsx@6.1.3 public/marine-mini.gltf
 import React, { useEffect } from 'react';
 import { useGLTF } from '@react-three/drei';
 
-function getBones() {}
-
 export function Model(props) {
   const { nodes, materials } = useGLTF(
     'https://model-painter.s3.eu-west-2.amazonaws.com/marine-mini.gltf'
@@ -23,7 +21,7 @@ export function Model(props) {
   }
 
   return (
-    <group {...props} dispose={null} scale={0.2}>
+    <group {...props} scale={0.2}>
       <mesh
         geometry={nodes.Cylinder.geometry}
         material={nodes.Cylinder.material}

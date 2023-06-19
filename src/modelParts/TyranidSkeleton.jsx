@@ -12,9 +12,10 @@ export function TyranidSkeleton(props) {
   );
   return (
     <group>
-      <group {...props} dispose={null} position={props.position}>
+      <group {...props} position={props.position}>
         <group position={[0, -9.8, -4.0]}>{props.torso}</group>
         <group position={[0, 10, 7.0]}>{props.head}</group>
+        <group position={[0, 10, 7.0]}>{props.arm}</group>
       </group>
     </group>
   );

@@ -7,15 +7,35 @@ import React from 'react';
 import { TyranidSkeleton } from './modelParts/TyranidSkeleton.jsx';
 import { TyranidBody } from './modelParts/TyranidBody.jsx';
 import { TyranidHead } from './modelParts/TyranidHead.jsx';
+import { TyranidArm } from './modelParts/TyranidArm.jsx';
 
 export function TyranidModel(props) {
-  const { currentPaint, paintRef } = props;
+  const { currentPaint, paintRef, show } = props;
 
   return (
     <group>
       <TyranidSkeleton
-        torso={<TyranidBody currentPaint={currentPaint} paintRef={paintRef} />}
-        head={<TyranidHead currentPaint={currentPaint} paintRef={paintRef} />}
+        torso={
+          <TyranidBody
+            currentPaint={currentPaint}
+            paintRef={paintRef}
+            show={show}
+          />
+        }
+        head={
+          <TyranidHead
+            currentPaint={currentPaint}
+            paintRef={paintRef}
+            show={show}
+          />
+        }
+        arm={
+          <TyranidArm
+            currentPaint={currentPaint}
+            paintRef={paintRef}
+            show={show}
+          />
+        }
         currentPaint={props.currentPaint}
         paintRef={paintRef}
       />

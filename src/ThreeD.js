@@ -35,6 +35,20 @@ export default function ThreeD({}) {
   const [armRRot, setArmRRot] = React.useState(0);
   const [lighting, setLighting] = React.useState(1);
   const [head, setHead] = React.useState('helmet');
+  const [currentModel, setCurrentModel] = React.useState('tyranid');
+  const [loadedModels, setLoadedModels] = React.useState({
+    termie: false,
+    tyranid: false,
+  });
+
+  useEffect(() => {
+    const newModel = { ...loadedModels };
+    newModel[currentModel] = true;
+    setLoadedModels(newModel);
+  }, [currentModel]);
+
+  console.log(loadedModels, currentModel);
+
   const paintRef = useRef({});
   return (
     <div
@@ -191,6 +205,32 @@ export default function ThreeD({}) {
           style={{
             background: 'none',
             color: '#6fe861',
+            opacity: currentModel === 'tyranid' ? 1 : 0.5,
+            border: 'none',
+          }}
+          onClick={() => {
+            setCurrentModel('tyranid');
+          }}
+        >
+          {'Tyranid'}
+        </button>
+        <button
+          style={{
+            background: 'none',
+            color: '#6fe861',
+            opacity: currentModel === 'termie' ? 1 : 0.5,
+            border: 'none',
+          }}
+          onClick={() => {
+            setCurrentModel('termie');
+          }}
+        >
+          {'Terminator'}
+        </button>
+        <button
+          style={{
+            background: 'none',
+            color: '#6fe861',
             opacity: armR === 'sword' ? 1 : 0.5,
             border: 'none',
           }}
@@ -298,38 +338,50 @@ export default function ThreeD({}) {
           height: 'calc(100vh - 80px)',
           background: '#222',
         }}
-        gl={{ preserveDrawingBuffer: true }}
         camera={{ fov: 50, position: [0, 0, 40], near: 0.1, zoom: 1 }}
       >
         <CameraController />
         <group position={[0, 20, 20]}>
           <directionalLight intensity={lighting * 0.1} />
         </group>
-
         <Suspense fallback={null}>
           <group
             position={[0, -52, 0]}
             scale={1.4}
             rotation={[0, -0.4 * Math.PI, 0]}
           >
-            <Spacehulk currentPaint={currentPaint} lighting={lighting} />
+            <Spacehulk
+              currentPaint={currentPaint}
+              lighting={lighting}
+              show={true}
+            />
           </group>
-          {/*    <group position={[0, 0, -60]}>
-            <TyranidModel currentPaint={currentPaint} paintRef={paintRef} />
-      </group>*/}
-          <Model
-            neck={neck}
-            torsoBone={torsoBone}
-            torsoTopBone={torsoTopBone}
-            currentPaint={currentPaint}
-            armRRot={armRRot}
-            arm={arm}
-            armR={armR}
-            attachment={attachment}
-            head={head}
-            ironCross={ironCross}
-            paintRef={paintRef}
-          />
+
+          {loadedModels.termie && (
+            <Model
+              neck={neck}
+              torsoBone={torsoBone}
+              torsoTopBone={torsoTopBone}
+              currentPaint={currentPaint}
+              armRRot={armRRot}
+              arm={arm}
+              armR={armR}
+              attachment={attachment}
+              head={head}
+              ironCross={ironCross}
+              paintRef={paintRef}
+              show={currentModel === 'termie'}
+            />
+          )}
+          {loadedModels.tyranid && (
+            <group position={[0, 0, -60]}>
+              <TyranidModel
+                currentPaint={currentPaint}
+                paintRef={paintRef}
+                show={currentModel === 'tyranid'}
+              />
+            </group>
+          )}
         </Suspense>
       </Canvas>
     </div>

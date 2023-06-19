@@ -1,4 +1,10 @@
+import React, { useState, useRef, useEffect } from 'react';
+
 export function Light(props) {
+  const [visible, setVisible] = useState(true);
+  const objectRef = useRef();
+
+  if (!visible) return null;
   return (
     <group position={props.position}>
       {props.v && (

@@ -10,12 +10,12 @@ import { paints } from '../paints.js';
 export function Mesh(props) {
   const [colours, setColours] = useState(paints[0]);
   const canPaint = useRef(true);
-
   useEffect(() => {
     if (props.paintRef && props.paintRef.current[props.name]) {
       setColours(props.paintRef.current[props.name]);
     }
   }, [props.paintRef]);
+  console.log(props.show);
   return (
     <>
       {props.lights && (
@@ -23,17 +23,19 @@ export function Mesh(props) {
           {props.lights.pos.map((item, index) => {
             return (
               <Light
-                key={`${index}-${Math.random()}`}
+                key={`${index}-light}`}
                 position={item}
                 v={false}
                 d={props.lights.dist}
                 c={colours.color}
+                i={props.show ? 10 : 0}
               />
             );
           })}
         </>
       )}
       <mesh
+        visible={props.show ? true : false}
         geometry={props.nodeGeometry}
         position={props.position}
         onPointerUp={(event) => {
