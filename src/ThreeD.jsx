@@ -13,7 +13,7 @@ const CameraController = (light) => {
   useEffect(() => {
     const controls = new OrbitControls(camera, gl.domElement);
     controls.minDistance = 40;
-    controls.maxDistance = 200;
+    controls.maxDistance = 300;
     controls.zoomSpeed = 1;
     controls.addEventListener('change', render);
     if (light && light.light && camera && light.light.current) {
