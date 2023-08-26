@@ -8,9 +8,7 @@ import { useGLTF } from '@react-three/drei';
 import { Mesh } from './Mesh.jsx';
 
 export function TorsoTermie(props) {
-  const { nodes, materials } = useGLTF(
-    'https://model-painter.s3.eu-west-2.amazonaws.com/torso_termie.gltf'
-  );
+  const { nodes, materials } = useGLTF('termie_torso.glb');
   const [colours, setColours] = useState([]);
   const [newNodeArr, setNewNodeArr] = useState([]);
   useEffect(() => {
@@ -32,6 +30,7 @@ export function TorsoTermie(props) {
             name={node}
             show={props.show}
             lights={
+              props.lights &&
               node === 'Terminator_Torso003' && {
                 pos: [
                   [-5.4, 18.5, 5],
@@ -46,7 +45,3 @@ export function TorsoTermie(props) {
     </group>
   );
 }
-
-useGLTF.preload(
-  'https://model-painter.s3.eu-west-2.amazonaws.com/torso_termie.gltf'
-);

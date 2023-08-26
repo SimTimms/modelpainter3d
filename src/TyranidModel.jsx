@@ -8,6 +8,9 @@ import { TyranidSkeleton } from './modelParts/TyranidSkeleton.jsx';
 import { TyranidBody } from './modelParts/TyranidBody.jsx';
 import { TyranidHead } from './modelParts/TyranidHead.jsx';
 import { TyranidArm } from './modelParts/TyranidArm.jsx';
+import { TyranidArm2 } from './modelParts/TyranidArm2.jsx';
+import { TyranidLeg } from './modelParts/TyranidLeg.jsx';
+import { TyranidTail } from './modelParts/TyranidTail.jsx';
 
 export function TyranidModel(props) {
   const { currentPaint, paintRef, show } = props;
@@ -31,6 +34,27 @@ export function TyranidModel(props) {
         }
         arm={
           <TyranidArm
+            currentPaint={currentPaint}
+            paintRef={paintRef}
+            show={show}
+          />
+        }
+        arm2={
+          <TyranidArm2
+            currentPaint={currentPaint}
+            paintRef={paintRef}
+            show={show}
+          />
+        }
+        leg={
+          <TyranidLeg
+            currentPaint={currentPaint}
+            paintRef={paintRef}
+            show={show}
+          />
+        }
+        tail={
+          <TyranidTail
             currentPaint={currentPaint}
             paintRef={paintRef}
             show={show}

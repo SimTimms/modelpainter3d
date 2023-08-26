@@ -8,9 +8,7 @@ import { useGLTF } from '@react-three/drei';
 import { Mesh } from './Mesh.jsx';
 
 export function LegsTermie(props) {
-  const { nodes, materials } = useGLTF(
-    'https://model-painter.s3.eu-west-2.amazonaws.com/legs_termie.gltf'
-  );
+  const { nodes, materials } = useGLTF('termie_leg.glb');
   const [colours, setColours] = useState([]);
   const [newNodeArr, setNewNodeArr] = useState([]);
 

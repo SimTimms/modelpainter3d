@@ -4,36 +4,26 @@ Command: npx gltfjsx@6.1.3 public/shoulder_termie_left.gltf
 */
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Light } from './Light.jsx';
 import { paints } from '../paints.js';
 
 export function Mesh(props) {
-  const [colours, setColours] = useState(paints[0]);
+  const { baseColor } = props;
+  const [colours, setColours] = useState(null);
+  const [base, setBase] = useState(null);
   const canPaint = useRef(true);
   useEffect(() => {
     if (props.paintRef && props.paintRef.current[props.name]) {
       setColours(props.paintRef.current[props.name]);
     }
   }, [props.paintRef]);
-  console.log(props.show);
+
+  useEffect(() => {
+    setBase(baseColor);
+  }, [baseColor]);
+
+  if (!base) return null;
   return (
     <>
-      {props.lights && (
-        <>
-          {props.lights.pos.map((item, index) => {
-            return (
-              <Light
-                key={`${index}-light}`}
-                position={item}
-                v={false}
-                d={props.lights.dist}
-                c={colours.color}
-                i={props.show ? 10 : 0}
-              />
-            );
-          })}
-        </>
-      )}
       <mesh
         visible={props.show ? true : false}
         geometry={props.nodeGeometry}
@@ -49,18 +39,17 @@ export function Mesh(props) {
             }
           }
         }}
+        castShadow={true}
+        receiveShadow={true}
         onPointerDown={() => (canPaint.current = true)}
         onPointerMove={() => (canPaint.current = false)}
         material={props.material}
       >
         <meshStandardMaterial
           attach="material"
-          color={colours.color}
-          map={props.material ? props.material.map : null}
-          castShadow={true}
-          receiveShadow={true}
-          metalness={colours.metal ? 1.1 : 0}
-          roughness={colours.metal ? 0.6 : 1}
+          color={!colours ? base.color : colours.color}
+          metalness={colours && colours.metal ? 1.1 : 0}
+          roughness={colours && colours.metal ? 0.6 : 1}
         />
       </mesh>
     </>

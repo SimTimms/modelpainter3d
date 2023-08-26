@@ -5,20 +5,10 @@ Command: npx gltfjsx@6.1.3 public/skeleton.gltf
 
 import React from 'react';
 import { ModelImport } from './modelParts/Skeleton.jsx';
-import { HelmetTermie } from './modelParts/HelmetTermie.jsx';
-import { FaceTermie } from './modelParts/FaceTermie.jsx';
-import { TorsoTermie } from './modelParts/TorsoTermie.jsx';
-import { ShoulderTermieRight } from './modelParts/ShoulderTermieRight.jsx';
-import { ShoulderTermieLeft } from './modelParts/ShoulderTermieLeft.jsx';
-import { ArmTermieRight } from './modelParts/ArmTermieRight.jsx';
-import { ArmTermieRightTwo } from './modelParts/ArmTermieRightTwo.jsx';
-import { ArmTermieRightAuto } from './modelParts/ArmTermieRightAuto.jsx';
 import { ArmTermieLeft } from './modelParts/ArmTermieLeft.jsx';
-import { ArmTermieRightFlamer } from './modelParts/ArmTermieRightFlamer.jsx';
 import { LegsTermie } from './modelParts/LegsTermie.jsx';
 import { BaseTermieLeft } from './modelParts/BaseTermieLeft.jsx';
-import { CloakTermie } from './modelParts/CloakTermie.jsx';
-import { IronCross } from './modelParts/IronCross.jsx';
+import { ModelObject } from './modelParts/ModelObject.jsx';
 export function Model(props) {
   const {
     currentPaint,
@@ -30,6 +20,9 @@ export function Model(props) {
     ironCross,
     paintRef,
     show,
+    lights,
+    squadIndex,
+    baseColor,
   } = props;
 
   return (
@@ -39,107 +32,154 @@ export function Model(props) {
         neck={props.neck}
         cloak={
           attachment === 'cloak' ? (
-            <CloakTermie
+            <ModelObject
               currentPaint={currentPaint}
               paintRef={paintRef}
               show={show ? 1 : 0}
+              squadIndex={squadIndex}
+              url="https://model-painter.s3.eu-west-2.amazonaws.com/terminator_cloak.gltf"
+              baseColor={baseColor}
             />
           ) : null
         }
         ironCross={
           ironCross === 'ironCross' ? (
-            <IronCross
+            <ModelObject
               currentPaint={currentPaint}
               paintRef={paintRef}
               show={show ? 1 : 0}
+              squadIndex={squadIndex}
+              url="https://model-painter.s3.eu-west-2.amazonaws.com/iron-cross.gltf"
+              baseColor={baseColor}
             />
           ) : null
         }
         helmet={
           head === 'helmet' ? (
-            <HelmetTermie
+            <ModelObject
               currentPaint={currentPaint}
               paintRef={paintRef}
               show={show ? 1 : 0}
+              squadIndex={squadIndex}
+              url="termie_helmet.glb"
+              baseColor={baseColor}
             />
           ) : (
-            <FaceTermie
+            <ModelObject
               currentPaint={currentPaint}
               paintRef={paintRef}
               show={show ? 1 : 0}
+              squadIndex={squadIndex}
+              url="https://model-painter.s3.eu-west-2.amazonaws.com/face_termie.gltf"
+              baseColor={baseColor}
             />
           )
         }
         torso={
-          <TorsoTermie
+          <ModelObject
             currentPaint={currentPaint}
             paintRef={paintRef}
             show={show ? 1 : 0}
+            squadIndex={squadIndex}
+            url="termie_torso.glb"
+            baseColor={baseColor}
           />
         }
         shoulderR={
-          <ShoulderTermieRight
+          <ModelObject
             currentPaint={currentPaint}
             paintRef={paintRef}
             show={show ? 1 : 0}
+            squadIndex={squadIndex}
+            url="https://model-painter.s3.eu-west-2.amazonaws.com/shoulder_termie_right.gltf"
+            baseColor={baseColor}
           />
         }
         shoulderL={
-          <ShoulderTermieLeft currentPaint={currentPaint} show={show ? 1 : 0} />
+          <ModelObject
+            currentPaint={currentPaint}
+            paintRef={paintRef}
+            show={show ? 1 : 0}
+            squadIndex={squadIndex}
+            url="https://model-painter.s3.eu-west-2.amazonaws.com/shoulder_termie_left.gltf"
+            baseColor={baseColor}
+          />
         }
         armR={
           armR === 'sword' ? (
-            <ArmTermieRightTwo
+            <ModelObject
               currentPaint={currentPaint}
               paintRef={paintRef}
               show={show ? 1 : 0}
+              squadIndex={squadIndex}
+              url="https://model-painter.s3.eu-west-2.amazonaws.com/arm_termie_right_two.gltf"
+              baseColor={baseColor}
             />
           ) : armR === 'auto' ? (
-            <ArmTermieRightAuto
+            <ModelObject
               currentPaint={currentPaint}
               paintRef={paintRef}
               show={show ? 1 : 0}
+              squadIndex={squadIndex}
+              url="https://model-painter.s3.eu-west-2.amazonaws.com/arm_termie_right_auto.gltf"
+              baseColor={baseColor}
             />
           ) : armR === 'flamer' ? (
-            <ArmTermieRightFlamer
+            <ModelObject
               currentPaint={currentPaint}
               paintRef={paintRef}
               show={show ? 1 : 0}
+              squadIndex={squadIndex}
+              url="https://model-painter.s3.eu-west-2.amazonaws.com/arm_termie_right_flamer.gltf"
+              baseColor={baseColor}
             />
           ) : (
-            <ArmTermieRight
+            <ModelObject
               currentPaint={currentPaint}
               paintRef={paintRef}
               show={show ? 1 : 0}
+              squadIndex={squadIndex}
+              url="https://model-painter.s3.eu-west-2.amazonaws.com/arm_termie_right.gltf"
+              baseColor={baseColor}
             />
           )
         }
         armL={
-          <ArmTermieLeft
+          <ModelObject
             currentPaint={currentPaint}
             paintRef={paintRef}
             show={show ? 1 : 0}
+            squadIndex={squadIndex}
+            url="https://model-painter.s3.eu-west-2.amazonaws.com/arm_termie_left.gltf"
+            baseColor={baseColor}
           />
         }
         arm={arm}
         armRRot={armRRot}
         legs={
-          <LegsTermie
+          <ModelObject
             currentPaint={currentPaint}
             paintRef={paintRef}
             show={show ? 1 : 0}
+            squadIndex={squadIndex}
+            url="termie_leg.glb"
+            baseColor={baseColor}
           />
         }
         base={
-          <BaseTermieLeft
+          <ModelObject
             currentPaint={currentPaint}
             paintRef={paintRef}
             show={show ? 1 : 0}
+            squadIndex={squadIndex}
+            url="https://model-painter.s3.eu-west-2.amazonaws.com/base_termie_left.gltf"
+            baseColor={baseColor}
           />
         }
         currentPaint={props.currentPaint}
         torsoTopBone={props.torsoTopBone}
         paintRef={paintRef}
+        baseColor={baseColor}
       />
     </group>
   );
