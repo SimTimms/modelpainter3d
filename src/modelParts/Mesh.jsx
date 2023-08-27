@@ -7,15 +7,34 @@ import React, { useState, useRef, useEffect } from 'react';
 import { paints } from '../paints.js';
 
 export function Mesh(props) {
-  const { baseColor } = props;
+  const {
+    paintRef,
+    currentPaint,
+    name,
+    show,
+    baseColor,
+    nodeGeometry,
+    position,
+    material,
+    unitNumber,
+    clone,
+  } = props;
+
   const [colours, setColours] = useState(null);
   const [base, setBase] = useState(null);
   const canPaint = useRef(true);
+
   useEffect(() => {
-    if (props.paintRef && props.paintRef.current[props.name]) {
-      setColours(props.paintRef.current[props.name]);
+    if (paintRef && paintRef.current[name]) {
+      setColours(paintRef.current[name].paint);
     }
-  }, [props.paintRef]);
+  }, [paintRef]);
+
+  useEffect(() => {
+    if (paintRef && paintRef.current[name]) {
+      if (clone) setColours(paintRef.current[name].paint);
+    }
+  }, [clone]);
 
   useEffect(() => {
     setBase(baseColor);
@@ -25,17 +44,18 @@ export function Mesh(props) {
   return (
     <>
       <mesh
-        visible={props.show ? true : false}
-        geometry={props.nodeGeometry}
-        position={props.position}
+        visible={show ? true : false}
+        geometry={nodeGeometry}
+        position={position}
         onPointerUp={(event) => {
           if (canPaint.current) {
             event.stopPropagation();
-            setColours(props.currentPaint ? props.currentPaint : '#ff0000');
-            if (props.paintRef) {
-              props.paintRef.current[props.name] = props.currentPaint
-                ? props.currentPaint
-                : '#ff0000';
+            setColours(currentPaint ? currentPaint : '#ff0000');
+            if (paintRef) {
+              paintRef.current[name] = {
+                paint: currentPaint ? currentPaint : '#ff0000',
+                unitNumber: unitNumber,
+              };
             }
           }
         }}
@@ -43,7 +63,7 @@ export function Mesh(props) {
         receiveShadow={true}
         onPointerDown={() => (canPaint.current = true)}
         onPointerMove={() => (canPaint.current = false)}
-        material={props.material}
+        material={material}
       >
         <meshStandardMaterial
           attach="material"

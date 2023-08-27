@@ -5,9 +5,6 @@ Command: npx gltfjsx@6.1.3 public/skeleton.gltf
 
 import React from 'react';
 import { ModelImport } from './modelParts/Skeleton.jsx';
-import { ArmTermieLeft } from './modelParts/ArmTermieLeft.jsx';
-import { LegsTermie } from './modelParts/LegsTermie.jsx';
-import { BaseTermieLeft } from './modelParts/BaseTermieLeft.jsx';
 import { ModelObject } from './modelParts/ModelObject.jsx';
 export function Model(props) {
   const {
@@ -20,9 +17,9 @@ export function Model(props) {
     ironCross,
     paintRef,
     show,
-    lights,
     squadIndex,
     baseColor,
+    clone,
   } = props;
 
   return (
@@ -39,6 +36,7 @@ export function Model(props) {
               squadIndex={squadIndex}
               url="https://model-painter.s3.eu-west-2.amazonaws.com/terminator_cloak.gltf"
               baseColor={baseColor}
+              clone={clone}
             />
           ) : null
         }
@@ -51,20 +49,12 @@ export function Model(props) {
               squadIndex={squadIndex}
               url="https://model-painter.s3.eu-west-2.amazonaws.com/iron-cross.gltf"
               baseColor={baseColor}
+              clone={clone}
             />
           ) : null
         }
         helmet={
-          head === 'helmet' ? (
-            <ModelObject
-              currentPaint={currentPaint}
-              paintRef={paintRef}
-              show={show ? 1 : 0}
-              squadIndex={squadIndex}
-              url="termie_helmet.glb"
-              baseColor={baseColor}
-            />
-          ) : (
+          head === 'face' ? (
             <ModelObject
               currentPaint={currentPaint}
               paintRef={paintRef}
@@ -72,6 +62,17 @@ export function Model(props) {
               squadIndex={squadIndex}
               url="https://model-painter.s3.eu-west-2.amazonaws.com/face_termie.gltf"
               baseColor={baseColor}
+              clone={clone}
+            />
+          ) : (
+            <ModelObject
+              currentPaint={currentPaint}
+              paintRef={paintRef}
+              show={show ? 1 : 0}
+              squadIndex={squadIndex}
+              url="termie_helmet.glb"
+              baseColor={baseColor}
+              clone={clone}
             />
           )
         }
@@ -83,6 +84,7 @@ export function Model(props) {
             squadIndex={squadIndex}
             url="termie_torso.glb"
             baseColor={baseColor}
+            clone={clone}
           />
         }
         shoulderR={
@@ -93,6 +95,7 @@ export function Model(props) {
             squadIndex={squadIndex}
             url="https://model-painter.s3.eu-west-2.amazonaws.com/shoulder_termie_right.gltf"
             baseColor={baseColor}
+            clone={clone}
           />
         }
         shoulderL={
@@ -103,6 +106,7 @@ export function Model(props) {
             squadIndex={squadIndex}
             url="https://model-painter.s3.eu-west-2.amazonaws.com/shoulder_termie_left.gltf"
             baseColor={baseColor}
+            clone={clone}
           />
         }
         armR={
@@ -114,6 +118,7 @@ export function Model(props) {
               squadIndex={squadIndex}
               url="https://model-painter.s3.eu-west-2.amazonaws.com/arm_termie_right_two.gltf"
               baseColor={baseColor}
+              clone={clone}
             />
           ) : armR === 'auto' ? (
             <ModelObject
@@ -123,6 +128,7 @@ export function Model(props) {
               squadIndex={squadIndex}
               url="https://model-painter.s3.eu-west-2.amazonaws.com/arm_termie_right_auto.gltf"
               baseColor={baseColor}
+              clone={clone}
             />
           ) : armR === 'flamer' ? (
             <ModelObject
@@ -132,6 +138,7 @@ export function Model(props) {
               squadIndex={squadIndex}
               url="https://model-painter.s3.eu-west-2.amazonaws.com/arm_termie_right_flamer.gltf"
               baseColor={baseColor}
+              clone={clone}
             />
           ) : (
             <ModelObject
@@ -141,6 +148,7 @@ export function Model(props) {
               squadIndex={squadIndex}
               url="https://model-painter.s3.eu-west-2.amazonaws.com/arm_termie_right.gltf"
               baseColor={baseColor}
+              clone={clone}
             />
           )
         }
@@ -152,6 +160,7 @@ export function Model(props) {
             squadIndex={squadIndex}
             url="https://model-painter.s3.eu-west-2.amazonaws.com/arm_termie_left.gltf"
             baseColor={baseColor}
+            clone={clone}
           />
         }
         arm={arm}
@@ -164,6 +173,7 @@ export function Model(props) {
             squadIndex={squadIndex}
             url="termie_leg.glb"
             baseColor={baseColor}
+            clone={clone}
           />
         }
         base={
@@ -174,6 +184,7 @@ export function Model(props) {
             squadIndex={squadIndex}
             url="https://model-painter.s3.eu-west-2.amazonaws.com/base_termie_left.gltf"
             baseColor={baseColor}
+            clone={clone}
           />
         }
         currentPaint={props.currentPaint}

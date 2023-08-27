@@ -1,4 +1,4 @@
-import React, { useFrame, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Suspense } from 'react';
 import { Canvas, useThree } from '@react-three/fiber';
 import { Model } from './Marine-mini';
@@ -50,6 +50,7 @@ export default function ThreeD({}) {
   const [torsoTopBone, setTorsoTopBone] = React.useState(0);
   const [baseColor, setBaseColor] = React.useState(paints[3]);
   const [spray, setSpray] = React.useState(false);
+  const [clone, setClone] = React.useState(false);
   const [modelAttachments, setModelAttachments] = React.useState({
     armR: { 0: 'boltgun', 1: 'flamer', 2: 'auto', 3: 'boltgun', 4: 'boltgun' },
     head: { 0: 'face', 1: 'helmet', 2: 'helmet', 3: 'helmet', 4: 'helmet' },
@@ -153,6 +154,7 @@ export default function ThreeD({}) {
             show={true}
             squadIndex={i}
             baseColor={baseColor}
+            clone={clone}
           />
         </group>
       );
@@ -317,6 +319,15 @@ export default function ThreeD({}) {
           title="Spray"
           isActive={spray}
         />
+        {squadSize > 1 && (
+          <SelectionButton
+            onClickEvent={() => {
+              setClone(!clone);
+            }}
+            title="Clone"
+            isActive={clone}
+          />
+        )}
       </div>
       <div
         style={{
@@ -335,7 +346,7 @@ export default function ThreeD({}) {
           height: 'calc(100vh - 80px)',
           background: `radial-gradient(50% 50% at 50% 50%, #222 0%, #000 100%)`,
         }}
-        camera={{ fov: 50, position: [0, 100, 140], near: 0.1, zoom: 1 }}
+        camera={{ fov: 50, position: [0, 150, 140], near: 0.1, zoom: 1 }}
       >
         <CameraController light={light} />
         <group position={[0, 100, 0]}>

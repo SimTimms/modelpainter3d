@@ -7,7 +7,8 @@ import { useGLTF } from '@react-three/drei';
 import { Mesh } from './Mesh.jsx';
 
 export function ModelObject(props) {
-  const { squadIndex, url, paintRef, show, currentPaint, baseColor } = props;
+  const { squadIndex, url, paintRef, show, currentPaint, baseColor, clone } =
+    props;
   const { nodes } = useGLTF(url);
   const [newNodeArr, setNewNodeArr] = useState([]);
 
@@ -15,12 +16,11 @@ export function ModelObject(props) {
     const nodeArr = Object.keys(nodes);
     setNewNodeArr(nodeArr);
   }, [nodes]);
-
+  console.log('paintRef', paintRef);
   return (
     <group {...props}>
       {newNodeArr.map((node, index) => {
         if (!nodes[node] || !nodes[node].geometry) return null;
-        console.log('geo', nodes[node].geometry);
         return (
           <Mesh
             key={`${index}-${squadIndex}-${url}`}
@@ -29,9 +29,11 @@ export function ModelObject(props) {
             material={nodes[node].material}
             currentPaint={currentPaint}
             paintRef={paintRef}
-            name={`${node}-${squadIndex}`}
+            name={`${node}`}
+            unitNumber={squadIndex}
             show={show}
             baseColor={baseColor}
+            clone={clone}
           />
         );
       })}
