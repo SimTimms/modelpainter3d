@@ -68,6 +68,13 @@ export default function ThreeD({}) {
       3: '',
       4: '',
     },
+    shield: {
+      0: 'shield',
+      1: '',
+      2: '',
+      3: '',
+      4: '',
+    },
   });
   const [arm, setArm] = React.useState(0);
   const [unitIndex, setUnitIndex] = React.useState(0);
@@ -89,6 +96,7 @@ export default function ThreeD({}) {
       { name: 'head', value: ['helmet', 'face'], title: 'Helmet' },
       { name: 'attachment', value: ['cloak', ''], title: 'Cloak' },
       { name: 'ironCross', value: ['ironCross', ''], title: 'Cross' },
+      { name: 'shield', value: ['shield', ''], title: 'Plates' },
     ];
     const buttonArr = [];
 
@@ -150,6 +158,7 @@ export default function ThreeD({}) {
             attachment={modelAttachments.attachment[`${i}`]}
             head={modelAttachments.head[`${i}`]}
             ironCross={modelAttachments.ironCross[`${i}`]}
+            shield={modelAttachments.shield[`${i}`]}
             paintRef={paintRef}
             show={true}
             squadIndex={i}

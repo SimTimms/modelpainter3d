@@ -46,6 +46,7 @@ export function ModelImport(props) {
                 position={[1, 0, -2.3]}
               >
                 {props.shoulderL}
+                {props.shieldL}
               </group>
               <group position={[0, -3.2, -2]} rotation={[0, -0.5 * Math.PI, 0]}>
                 {props.armL}
@@ -61,6 +62,7 @@ export function ModelImport(props) {
                 position={[0, 0, 0]}
               >
                 {props.shoulderR}
+                {props.shieldR}
               </group>
               <group
                 position={[3, -3.2, -1]}

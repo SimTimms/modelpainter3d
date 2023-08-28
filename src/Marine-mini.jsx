@@ -20,7 +20,22 @@ export function Model(props) {
     squadIndex,
     baseColor,
     clone,
+    shield,
   } = props;
+
+  function modelFactory(url) {
+    return (
+      <ModelObject
+        currentPaint={currentPaint}
+        paintRef={paintRef}
+        show={show ? 1 : 0}
+        squadIndex={squadIndex}
+        url={url}
+        baseColor={baseColor}
+        clone={clone}
+      />
+    );
+  }
 
   return (
     <group>
@@ -28,87 +43,35 @@ export function Model(props) {
         torsoBone={props.torsoBone}
         neck={props.neck}
         cloak={
-          attachment === 'cloak' ? (
-            <ModelObject
-              currentPaint={currentPaint}
-              paintRef={paintRef}
-              show={show ? 1 : 0}
-              squadIndex={squadIndex}
-              url="https://model-painter.s3.eu-west-2.amazonaws.com/terminator_cloak.gltf"
-              baseColor={baseColor}
-              clone={clone}
-            />
-          ) : null
+          attachment === 'cloak'
+            ? modelFactory(
+                'https://model-painter.s3.eu-west-2.amazonaws.com/terminator_cloak.gltf'
+              )
+            : null
         }
         ironCross={
-          ironCross === 'ironCross' ? (
-            <ModelObject
-              currentPaint={currentPaint}
-              paintRef={paintRef}
-              show={show ? 1 : 0}
-              squadIndex={squadIndex}
-              url="https://model-painter.s3.eu-west-2.amazonaws.com/iron-cross.gltf"
-              baseColor={baseColor}
-              clone={clone}
-            />
-          ) : null
+          ironCross === 'ironCross'
+            ? modelFactory(
+                'https://model-painter.s3.eu-west-2.amazonaws.com/iron-cross.gltf'
+              )
+            : null
         }
         helmet={
-          head === 'face' ? (
-            <ModelObject
-              currentPaint={currentPaint}
-              paintRef={paintRef}
-              show={show ? 1 : 0}
-              squadIndex={squadIndex}
-              url="https://model-painter.s3.eu-west-2.amazonaws.com/face_termie.gltf"
-              baseColor={baseColor}
-              clone={clone}
-            />
-          ) : (
-            <ModelObject
-              currentPaint={currentPaint}
-              paintRef={paintRef}
-              show={show ? 1 : 0}
-              squadIndex={squadIndex}
-              url="termie_helmet.glb"
-              baseColor={baseColor}
-              clone={clone}
-            />
-          )
+          head === 'face'
+            ? modelFactory(
+                'https://model-painter.s3.eu-west-2.amazonaws.com/face_termie.gltf'
+              )
+            : modelFactory('termie_helmet.glb')
         }
-        torso={
-          <ModelObject
-            currentPaint={currentPaint}
-            paintRef={paintRef}
-            show={show ? 1 : 0}
-            squadIndex={squadIndex}
-            url="termie_torso.glb"
-            baseColor={baseColor}
-            clone={clone}
-          />
-        }
-        shoulderR={
-          <ModelObject
-            currentPaint={currentPaint}
-            paintRef={paintRef}
-            show={show ? 1 : 0}
-            squadIndex={squadIndex}
-            url="https://model-painter.s3.eu-west-2.amazonaws.com/shoulder_termie_right.gltf"
-            baseColor={baseColor}
-            clone={clone}
-          />
-        }
-        shoulderL={
-          <ModelObject
-            currentPaint={currentPaint}
-            paintRef={paintRef}
-            show={show ? 1 : 0}
-            squadIndex={squadIndex}
-            url="https://model-painter.s3.eu-west-2.amazonaws.com/shoulder_termie_left.gltf"
-            baseColor={baseColor}
-            clone={clone}
-          />
-        }
+        torso={modelFactory('termie_torso.glb')}
+        shoulderR={modelFactory(
+          'https://model-painter.s3.eu-west-2.amazonaws.com/shoulder_termie_right.gltf'
+        )}
+        shoulderL={modelFactory(
+          'https://model-painter.s3.eu-west-2.amazonaws.com/shoulder_termie_left.gltf'
+        )}
+        shieldL={shield === 'shield' && modelFactory('termie_shield_left.glb')}
+        shieldR={shield === 'shield' && modelFactory('termie_shield_right.glb')}
         armR={
           armR === 'sword' ? (
             <ModelObject
