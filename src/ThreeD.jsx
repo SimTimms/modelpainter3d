@@ -43,7 +43,7 @@ const CameraController = (light) => {
 type LoadedModelType = {
   [key: string]: boolean,
 };
-export default function ThreeD({}) {
+export default function ThreeD({ isVisible }) {
   const [currentPaint, setCurrentPaint] = React.useState(paints[0]);
   const [neck, setNeck] = React.useState(0);
   const [torsoBone, setTorsoBone] = React.useState(0);
@@ -181,7 +181,7 @@ export default function ThreeD({}) {
   return (
     <div
       style={{
-        display: 'flex',
+        display: isVisible ? 'flex' : 'none',
         height: '100%',
         margin: 'auto',
         position: 'relative',

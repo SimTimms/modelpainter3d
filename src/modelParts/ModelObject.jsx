@@ -16,7 +16,6 @@ export function ModelObject(props) {
     const nodeArr = Object.keys(nodes);
     setNewNodeArr(nodeArr);
   }, [nodes]);
-  console.log('paintRef', paintRef);
   return (
     <group {...props}>
       {newNodeArr.map((node, index) => {

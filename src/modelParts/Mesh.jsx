@@ -31,6 +31,7 @@ export function Mesh(props) {
   }, [paintRef]);
 
   useEffect(() => {
+    
     if (paintRef && paintRef.current[name]) {
       if (clone) setColours(paintRef.current[name].paint);
     }
