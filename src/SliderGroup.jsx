@@ -15,7 +15,9 @@ export function SliderGroup({ title, min, max, value, change, i, squadIndex }) {
         marginTop: 4,
       }}
     >
-      <span style={{ fontSize: '0.6rem', color: '#777' }}>{title}</span>
+      <span style={{ fontSize: '0.6rem', color: '#777', whiteSpace: 'nowrap' }}>
+        {title}
+      </span>
       <Slider
         min={min}
         max={max}

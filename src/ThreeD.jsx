@@ -1,48 +1,17 @@
 import React, { useEffect, useRef } from 'react';
 import { Suspense } from 'react';
-import { Canvas, useThree } from '@react-three/fiber';
+import { Canvas } from '@react-three/fiber';
 import { Model } from './Marine-mini';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { Necron } from './Necron-mini';
 import 'rc-slider/assets/index.css';
-import { paints } from './paints.js';
+import { paints } from './paints';
 import { SliderGroup } from './SliderGroup';
 import SelectionButton from './SelectionButton';
-const CameraController = (light) => {
-  const { camera, gl } = useThree();
+import { defaultState, defaultNecronState } from './defaultState';
+import { CameraController } from './CameraController';
+import { buildAttachmentButtons } from './buildAttachmentButtons';
+import { attachmentOptions, attachmentOptionsNecron } from './defaultState';
 
-  useEffect(() => {
-    const controls = new OrbitControls(camera, gl.domElement);
-    controls.minDistance = 40;
-    controls.maxDistance = 300;
-    controls.zoomSpeed = 1;
-    controls.addEventListener('change', render);
-    if (light && light.light && camera && light.light.current) {
-      light.light.current.position.copy({
-        x: camera.position.x,
-        y: camera.position.y + 20,
-        z: camera.position.z,
-      });
-    }
-    function render() {
-      if (light && light.light && camera && light.light.current) {
-        light.light.current.position.copy({
-          x: camera.position.x,
-          y: camera.position.y + 20,
-          z: camera.position.z,
-        });
-      }
-    }
-
-    return () => {
-      controls.dispose();
-    };
-  }, [camera, gl]);
-  return null;
-};
-
-type LoadedModelType = {
-  [key: string]: boolean,
-};
 export default function ThreeD({ isVisible }) {
   const [currentPaint, setCurrentPaint] = React.useState(paints[0]);
   const [neck, setNeck] = React.useState(0);
@@ -51,133 +20,69 @@ export default function ThreeD({ isVisible }) {
   const [baseColor, setBaseColor] = React.useState(paints[3]);
   const [spray, setSpray] = React.useState(false);
   const [clone, setClone] = React.useState(false);
-  const [modelAttachments, setModelAttachments] = React.useState({
-    armR: { 0: 'boltgun', 1: 'flamer', 2: 'auto', 3: 'boltgun', 4: 'boltgun' },
-    head: { 0: 'face', 1: 'helmet', 2: 'helmet', 3: 'helmet', 4: 'helmet' },
-    attachment: {
-      0: 'cloak',
-      1: '',
-      2: '',
-      3: '',
-      4: '',
-    },
-    ironCross: {
-      0: 'ironCross',
-      1: '',
-      2: '',
-      3: '',
-      4: '',
-    },
-    shield: {
-      0: 'shield',
-      1: '',
-      2: '',
-      3: '',
-      4: '',
-    },
-  });
+  const [modelAttachments, setModelAttachments] = React.useState(defaultState);
   const [arm, setArm] = React.useState(0);
   const [unitIndex, setUnitIndex] = React.useState(0);
   const [armRRot, setArmRRot] = React.useState(0);
   const [squadSize, setSquadSize] = React.useState(1);
   const [lighting, setLighting] = React.useState(0.5);
   const [currentModel, setCurrentModel] = React.useState('termie');
-  const [loadedModels, setLoadedModels] = React.useState({
-    termie: false,
-    tyranid: false,
-  });
+  const [attachmentMenu, setAttachmentMenu] = React.useState(attachmentOptions);
 
-  function buildAttachmentButtons() {
-    const attachmentArr = [
-      { name: 'armR', value: 'sword', title: 'Sword' },
-      { name: 'armR', value: 'boltgun', title: 'Boltgun' },
-      { name: 'armR', value: 'auto', title: 'Assualt Cannon' },
-      { name: 'armR', value: 'flamer', title: 'Flamer' },
-      { name: 'head', value: ['helmet', 'face'], title: 'Helmet' },
-      { name: 'attachment', value: ['cloak', ''], title: 'Cloak' },
-      { name: 'ironCross', value: ['ironCross', ''], title: 'Cross' },
-      { name: 'shield', value: ['shield', ''], title: 'Plates' },
-    ];
-    const buttonArr = [];
-
-    for (let i = 0; i < attachmentArr.length; i++) {
-      const thisAttach = attachmentArr[i];
-      const isArray = Array.isArray(thisAttach.value);
-      buttonArr.push(
-        <SelectionButton
-          onClickEvent={() => {
-            const modelAttachmentsCopy = { ...modelAttachments };
-            if (isArray) {
-              modelAttachmentsCopy[thisAttach.name][`${unitIndex}`] =
-                modelAttachmentsCopy[thisAttach.name][`${unitIndex}`] ===
-                thisAttach.value[0]
-                  ? thisAttach.value[1]
-                  : thisAttach.value[0];
-            } else {
-              modelAttachmentsCopy[thisAttach.name][`${unitIndex}`] =
-                thisAttach.value;
-            }
-            setModelAttachments(modelAttachmentsCopy);
-          }}
-          title={thisAttach.title}
-          isActive={
-            isArray
-              ? thisAttach.value[0] ===
-                modelAttachments[thisAttach.name][`${unitIndex}`]
-                ? true
-                : false
-              : modelAttachments[thisAttach.name][`${unitIndex}`] ===
-                thisAttach.value
-          }
-        />
-      );
-    }
-    return buttonArr;
-  }
-  function buildSquad(baseColor) {
+  function buildSquad(currentModel) {
     const squadArr = [];
-
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < squadSize; i++) {
       const positionX =
         i === 0 ? 0 : i === 1 ? 40 : i === 2 ? -40 : i === 3 ? -80 : 80;
-      const positionZ = i === 0 ? 0 : i > 0 && i < 3 ? 40 : -40;
+      const positionZ = i === 0 ? 0 : i > 0 && i < 3 ? 80 : -40;
       squadArr.push(
         <group
           position={[positionX, 0, positionZ]}
           key={`model_${i}`}
-          visible={i >= squadSize ? false : true}
+          visible={true}
         >
-          <Model
-            neck={neck}
-            torsoBone={torsoBone}
-            torsoTopBone={torsoTopBone}
-            currentPaint={currentPaint}
-            armRRot={armRRot}
-            arm={arm}
-            armR={modelAttachments.armR[`${i}`]}
-            attachment={modelAttachments.attachment[`${i}`]}
-            head={modelAttachments.head[`${i}`]}
-            ironCross={modelAttachments.ironCross[`${i}`]}
-            shield={modelAttachments.shield[`${i}`]}
-            paintRef={paintRef}
-            show={true}
-            squadIndex={i}
-            baseColor={baseColor}
-            clone={clone}
-          />
+          {currentModel === 'necron' ? (
+            <Necron
+              neck={neck}
+              torsoBone={torsoBone}
+              torsoTopBone={torsoTopBone}
+              paintRef={paintRef}
+              currentPaint={currentPaint}
+              armRRot={armRRot}
+              armR={modelAttachments.armR[`${i}`]}
+              show={true}
+              squadIndex={i}
+              baseColor={baseColor}
+              clone={clone}
+            />
+          ) : (
+            <Model
+              neck={neck}
+              torsoBone={torsoBone}
+              torsoTopBone={torsoTopBone}
+              currentPaint={currentPaint}
+              armRRot={armRRot}
+              arm={arm}
+              armR={modelAttachments.armR[`${i}`]}
+              attachment={modelAttachments.attachment[`${i}`]}
+              head={modelAttachments.head[`${i}`]}
+              ironCross={modelAttachments.ironCross[`${i}`]}
+              shield={modelAttachments.shield[`${i}`]}
+              paintRef={paintRef}
+              show={true}
+              squadIndex={i}
+              baseColor={baseColor}
+              clone={clone}
+            />
+          )}
         </group>
       );
     }
     return squadArr;
   }
   const light = useRef();
-  useEffect(() => {
-    const newModel: LoadedModelType = { ...loadedModels };
-    newModel[currentModel] = true;
-    setLoadedModels(newModel);
-  }, [currentModel]);
-
   const paintRef = useRef({});
+
   return (
     <div
       style={{
@@ -190,33 +95,13 @@ export default function ThreeD({ isVisible }) {
     >
       <div
         style={{
-          background: 'rgba(17, 50, 33, 1)',
           width: '100%',
           position: 'fixed',
           zIndex: 2,
           bottom: 0,
-          padding: 10,
           boxSizing: 'border-box',
-          borderTop: '2px solid #333',
-          borderLeft: '2px solid #333',
-          borderBottom: '2px solid #111',
-          borderRight: '2px solid #111',
-          boxShadow: 'inset 0 0 10px #000',
         }}
       >
-        <div
-          style={{
-            background:
-              'repeating-linear-gradient(to bottom,rgba(0,0,0,0) 0px,rgba(0,0,0,0.2) 4px,rgba(0,0,0,0) 2px,rgba(0,0,0,0) 2px) ',
-            position: 'absolute',
-            width: '100%',
-            height: '100%',
-            top: 0,
-            left: 0,
-            zIndex: 1000,
-            pointerEvents: 'none',
-          }}
-        ></div>
         <div style={{ display: 'flex', flexWrap: 'wrap' }}>
           {paints.map((paint, index) => (
             <div
@@ -247,7 +132,7 @@ export default function ThreeD({ isVisible }) {
         }}
       >
         <SliderGroup
-          title="Squad"
+          title="Squad Size"
           min={1}
           max={5}
           value={squadSize}
@@ -270,46 +155,50 @@ export default function ThreeD({ isVisible }) {
           change={setLighting}
           i={0.1}
         />
-        <SliderGroup
-          title="Torso"
-          min={-1}
-          max={1}
-          value={torsoTopBone}
-          change={setTorsoTopBone}
-          i={0.01}
-        />
-        <SliderGroup
-          title="Legs"
-          min={-0.5}
-          max={0.5}
-          value={torsoBone}
-          change={setTorsoBone}
-          i={0.01}
-        />
-        <SliderGroup
-          title="Head"
-          min={-0.5}
-          max={0.5}
-          value={neck}
-          change={setNeck}
-          i={0.01}
-        />
-        <SliderGroup
-          title="Left Arm"
-          min={-0.5}
-          max={0.5}
-          value={arm}
-          change={setArm}
-          i={0.01}
-        />
-        <SliderGroup
-          title="Right Arm"
-          min={-0.5}
-          max={0.5}
-          value={armRRot}
-          change={setArmRRot}
-          i={0.01}
-        />
+        {currentModel === 'termie' && (
+          <>
+            <SliderGroup
+              title="Torso"
+              min={-1}
+              max={1}
+              value={torsoTopBone}
+              change={setTorsoTopBone}
+              i={0.01}
+            />
+            <SliderGroup
+              title="Legs"
+              min={-0.5}
+              max={0.5}
+              value={torsoBone}
+              change={setTorsoBone}
+              i={0.01}
+            />
+            <SliderGroup
+              title="Head"
+              min={-0.5}
+              max={0.5}
+              value={neck}
+              change={setNeck}
+              i={0.01}
+            />
+            <SliderGroup
+              title="Left Arm"
+              min={-0.5}
+              max={0.5}
+              value={arm}
+              change={setArm}
+              i={0.01}
+            />
+            <SliderGroup
+              title="Right Arm"
+              min={-0.5}
+              max={0.5}
+              value={armRRot}
+              change={setArmRRot}
+              i={0.01}
+            />
+          </>
+        )}
       </div>
       <div
         style={{
@@ -320,7 +209,30 @@ export default function ThreeD({ isVisible }) {
           zIndex: 100,
         }}
       >
-        {buildAttachmentButtons()}
+        <SelectionButton
+          onClickEvent={() => {
+            setModelAttachments(defaultState);
+            setAttachmentMenu(attachmentOptions);
+            setCurrentModel('termie');
+          }}
+          title="Terminator"
+          isActive={currentModel === 'termie'}
+        />
+        <SelectionButton
+          onClickEvent={() => {
+            setModelAttachments(defaultNecronState);
+            setAttachmentMenu(attachmentOptionsNecron);
+            setCurrentModel('necron');
+          }}
+          title="Necron"
+          isActive={currentModel === 'necron'}
+        />
+        {buildAttachmentButtons(
+          modelAttachments,
+          setModelAttachments,
+          unitIndex,
+          attachmentMenu
+        )}
         <SelectionButton
           onClickEvent={() => {
             setSpray(!spray);
@@ -372,20 +284,25 @@ export default function ThreeD({ isVisible }) {
             />
           </group>
           <group position={[0, 40, 40]}>
-            <spotLight
-              intensity={lighting * 1}
-              castShadow
-              penumbra={1}
-              shadow-mapSize-height={4090}
-              shadow-mapSize-width={4090}
-            />
+            <spotLight intensity={lighting * 1} penumbra={1} />
           </group>
         </group>
 
         <Suspense fallback={null}>
-          {loadedModels.termie && (
-            <group position={[0, 20, 0]}>{buildSquad(baseColor)}</group>
-          )}
+          <group
+            visible={currentModel === 'necron' ? true : false}
+            scale={currentModel === 'necron' ? 1 : 0}
+            position={[0, 20, 0]}
+          >
+            {buildSquad('necron')}
+          </group>
+          <group
+            visible={currentModel === 'termie' ? true : false}
+            scale={currentModel === 'termie' ? 1 : 0}
+            position={[0, 20, 0]}
+          >
+            {buildSquad('termie')}
+          </group>
         </Suspense>
       </Canvas>
     </div>

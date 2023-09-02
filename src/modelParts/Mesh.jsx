@@ -4,7 +4,6 @@ Command: npx gltfjsx@6.1.3 public/shoulder_termie_left.gltf
 */
 
 import React, { useState, useRef, useEffect } from 'react';
-import { paints } from '../paints.js';
 
 export function Mesh(props) {
   const {
@@ -31,7 +30,6 @@ export function Mesh(props) {
   }, [paintRef]);
 
   useEffect(() => {
-    
     if (paintRef && paintRef.current[name]) {
       if (clone) setColours(paintRef.current[name].paint);
     }
@@ -40,7 +38,6 @@ export function Mesh(props) {
   useEffect(() => {
     setBase(baseColor);
   }, [baseColor]);
-
   if (!base) return null;
   return (
     <>
@@ -62,15 +59,17 @@ export function Mesh(props) {
         }}
         castShadow={true}
         receiveShadow={true}
-        onPointerDown={() => (canPaint.current = true)}
+        onPointerDown={() => {
+          canPaint.current = true;
+        }}
         onPointerMove={() => (canPaint.current = false)}
         material={material}
       >
         <meshStandardMaterial
           attach="material"
           color={!colours ? base.color : colours.color}
-          metalness={colours && colours.metal ? 1.1 : 0}
-          roughness={colours && colours.metal ? 0.6 : 1}
+          metalness={colours && colours.metal ? 0.6 : 0}
+          roughness={colours && colours.metal ? 0.5 : 1}
         />
       </mesh>
     </>

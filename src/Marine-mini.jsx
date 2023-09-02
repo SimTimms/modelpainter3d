@@ -6,6 +6,7 @@ Command: npx gltfjsx@6.1.3 public/skeleton.gltf
 import React from 'react';
 import { ModelImport } from './modelParts/Skeleton.jsx';
 import { ModelObject } from './modelParts/ModelObject.jsx';
+
 export function Model(props) {
   const {
     currentPaint,
