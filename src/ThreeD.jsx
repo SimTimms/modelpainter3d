@@ -271,7 +271,7 @@ export default function ThreeD({ isVisible }) {
       >
         <CameraController light={light} />
         <group position={[0, 100, 0]}>
-          <ambientLight intensity={0.005} />
+          <ambientLight intensity={0.006} />
         </group>
         <group ref={light}>
           <group position={[0, 40, -40]}>
