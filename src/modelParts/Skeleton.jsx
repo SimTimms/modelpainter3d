@@ -27,10 +27,9 @@ export function ModelImport(props) {
   return (
     <group>
       <group {...props} position={props.position}>
-        <group position={[1, -42.5, 0]} rotation={[0, 1.4 * Math.PI, 0]}>
+        <group position={[1, -37, 0]} rotation={[0, 1.4 * Math.PI, 0]}>
           {props.base}
         </group>
-
         <primitive
           object={newNodeArr.armature}
           rotation={[0, props.torsoTopBone * Math.PI, 0]}
@@ -45,7 +44,6 @@ export function ModelImport(props) {
                 rotation={[0 * Math.PI, 0 * Math.PI, -0.48]}
                 position={[1, 0, -2.3]}
               >
-                {props.shoulderL}
                 {props.shieldL}
               </group>
               <group position={[0, -3.2, -2]} rotation={[0, -0.5 * Math.PI, 0]}>
@@ -71,6 +69,7 @@ export function ModelImport(props) {
                 {props.armR}
               </group>
             </primitive>
+
             <primitive
               object={newNodeArr.bone008}
               rotation={[0, props.neck, 0]}
@@ -78,9 +77,11 @@ export function ModelImport(props) {
             >
               {props.helmet}
             </primitive>
+
             <group rotation={[0, 1 * Math.PI, 0]} position={[0, -9, -9.0]}>
               {props.cloak}
             </group>
+
             <group rotation={[0, 0, 0]} position={[0, 7, -6.0]}>
               {props.ironCross}
             </group>

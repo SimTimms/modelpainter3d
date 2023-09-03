@@ -29,6 +29,7 @@ export function buildAttachmentButtons(
           setModelAttachments(modelAttachmentsCopy);
         }}
         title={thisAttach.title}
+        img={Array.isArray(thisAttach.img) ? thisAttach.img[0] : thisAttach.img}
         isActive={
           isArray
             ? thisAttach.value[0] ===

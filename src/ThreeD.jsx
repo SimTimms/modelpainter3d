@@ -3,14 +3,28 @@ import { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Model } from './Marine-mini';
 import { Necron } from './Necron-mini';
+import { Sister } from './SisterMini';
 import 'rc-slider/assets/index.css';
 import { paints } from './paints';
 import { SliderGroup } from './SliderGroup';
 import SelectionButton from './SelectionButton';
-import { defaultState, defaultNecronState } from './defaultState';
+import {
+  defaultState,
+  defaultNecronState,
+  defaultSisterState,
+} from './defaultState';
 import { CameraController } from './CameraController';
 import { buildAttachmentButtons } from './buildAttachmentButtons';
-import { attachmentOptions, attachmentOptionsNecron } from './defaultState';
+import {
+  attachmentOptions,
+  attachmentOptionsNecron,
+  attachmentOptionsSister,
+} from './defaultState';
+import termie from './assets/termie.jpg';
+import sister from './assets/sister.jpg';
+import necron from './assets/necron.jpg';
+import sprayImg from './assets/spray.jpg';
+import cloneImg from './assets/clone.jpg';
 
 export default function ThreeD({ isVisible }) {
   const [currentPaint, setCurrentPaint] = React.useState(paints[0]);
@@ -43,6 +57,20 @@ export default function ThreeD({ isVisible }) {
         >
           {currentModel === 'necron' ? (
             <Necron
+              neck={neck}
+              torsoBone={torsoBone}
+              torsoTopBone={torsoTopBone}
+              paintRef={paintRef}
+              currentPaint={currentPaint}
+              armRRot={armRRot}
+              armR={modelAttachments.armR[`${i}`]}
+              show={true}
+              squadIndex={i}
+              baseColor={baseColor}
+              clone={clone}
+            />
+          ) : currentModel === 'sister' ? (
+            <Sister
               neck={neck}
               torsoBone={torsoBone}
               torsoTopBone={torsoTopBone}
@@ -124,7 +152,46 @@ export default function ThreeD({ isVisible }) {
       </div>
       <div
         style={{
-          background: 'rgba(17, 50, 33, 0.4)',
+          width: 50,
+          position: 'fixed',
+          padding: 10,
+          zIndex: 100,
+          right: 0,
+        }}
+      >
+        <SelectionButton
+          onClickEvent={() => {
+            setModelAttachments(defaultState);
+            setAttachmentMenu(attachmentOptions);
+            setCurrentModel('termie');
+          }}
+          title="Terminator"
+          img={termie}
+          isActive={currentModel === 'termie'}
+        />
+        <SelectionButton
+          onClickEvent={() => {
+            setModelAttachments(defaultSisterState);
+            setAttachmentMenu(attachmentOptionsSister);
+            setCurrentModel('sister');
+          }}
+          title="Sister"
+          img={sister}
+          isActive={currentModel === 'sister'}
+        />
+        <SelectionButton
+          onClickEvent={() => {
+            setModelAttachments(defaultNecronState);
+            setAttachmentMenu(attachmentOptionsNecron);
+            setCurrentModel('necron');
+          }}
+          title="Necron"
+          img={necron}
+          isActive={currentModel === 'necron'}
+        />
+      </div>
+      <div
+        style={{
           width: 50,
           position: 'fixed',
           padding: 10,
@@ -202,31 +269,17 @@ export default function ThreeD({ isVisible }) {
       </div>
       <div
         style={{
-          width: 500,
+          width: `calc(100vw - 200px)`,
           position: 'fixed',
           padding: 10,
-          left: 220,
+          left: 100,
           zIndex: 100,
+          display: 'flex',
+          flexWrap: 'wrap',
+          alignItems: 'center',
+          justifyContent: 'center',
         }}
       >
-        <SelectionButton
-          onClickEvent={() => {
-            setModelAttachments(defaultState);
-            setAttachmentMenu(attachmentOptions);
-            setCurrentModel('termie');
-          }}
-          title="Terminator"
-          isActive={currentModel === 'termie'}
-        />
-        <SelectionButton
-          onClickEvent={() => {
-            setModelAttachments(defaultNecronState);
-            setAttachmentMenu(attachmentOptionsNecron);
-            setCurrentModel('necron');
-          }}
-          title="Necron"
-          isActive={currentModel === 'necron'}
-        />
         {buildAttachmentButtons(
           modelAttachments,
           setModelAttachments,
@@ -238,6 +291,7 @@ export default function ThreeD({ isVisible }) {
             setSpray(!spray);
           }}
           title="Spray"
+          img={sprayImg}
           isActive={spray}
         />
         {squadSize > 1 && (
@@ -246,6 +300,7 @@ export default function ThreeD({ isVisible }) {
               setClone(!clone);
             }}
             title="Clone"
+            img={cloneImg}
             isActive={clone}
           />
         )}
@@ -302,6 +357,13 @@ export default function ThreeD({ isVisible }) {
             position={[0, 20, 0]}
           >
             {buildSquad('termie')}
+          </group>
+          <group
+            visible={currentModel === 'sister' ? true : false}
+            scale={currentModel === 'sister' ? 1 : 0}
+            position={[0, 20, 0]}
+          >
+            {buildSquad('sister')}
           </group>
         </Suspense>
       </Canvas>

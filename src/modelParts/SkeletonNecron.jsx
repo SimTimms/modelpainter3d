@@ -27,7 +27,7 @@ export function ModelImport(props) {
   return (
     <group>
       <group {...props} position={props.position}>
-        <group position={[1, -42.5, 0]} rotation={[0, 1.4 * Math.PI, 0]}>
+        <group position={[1, -37, 0]} rotation={[0, 1.4 * Math.PI, 0]}>
           {props.base}
         </group>
 

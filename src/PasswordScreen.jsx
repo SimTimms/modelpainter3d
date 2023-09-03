@@ -1,8 +1,15 @@
 import React, { useState, useEffect } from 'react';
 
 import patreon from './assets/patreon.png';
+import termie from './assets/termie.png';
+import sister from './assets/sister.png';
+import necron from './assets/necron.png';
 
-export default function PasswordScreen({ setHasLoaded }) {
+export default function PasswordScreen({
+  setHasLoaded,
+  hasLoaded,
+  setLoadedModel,
+}) {
   const [inputValue, setInputValue] = useState('');
 
   useEffect(() => {
@@ -60,6 +67,35 @@ export default function PasswordScreen({ setHasLoaded }) {
           onChange={(e) => setInputValue(e.target.value)}
           type="password"
         />
+        {hasLoaded && (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              width: '100vw',
+              flexWrap: 'nowrap',
+              background: 'rgba(0,0,0,0.5)',
+              marginTop: 30,
+            }}
+          >
+            <img
+              src={termie}
+              style={{ display: 'flex', width: '30%', maxWidth: 300 }}
+              onClick={() => setLoadedModel('termie')}
+            />
+            <img
+              src={necron}
+              style={{ display: 'flex', width: '30%', maxWidth: 300 }}
+              onClick={() => setLoadedModel('necron')}
+            />
+            <img
+              src={sister}
+              style={{ display: 'flex', width: '30%', maxWidth: 300 }}
+              onClick={() => setLoadedModel('sister')}
+            />
+          </div>
+        )}
         <div
           style={{
             display: 'flex',

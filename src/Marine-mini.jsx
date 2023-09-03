@@ -146,7 +146,7 @@ export function Model(props) {
             paintRef={paintRef}
             show={show ? 1 : 0}
             squadIndex={squadIndex}
-            url="https://model-painter.s3.eu-west-2.amazonaws.com/base_termie_left.gltf"
+            url="base_medium.glb"
             baseColor={baseColor}
             clone={clone}
           />
