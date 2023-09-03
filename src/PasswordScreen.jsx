@@ -26,7 +26,7 @@ export default function PasswordScreen({
         width: '100vw',
         position: 'fixed',
         flexDirection: 'column',
-        background: `radial-gradient(50% 50% at 50% 50%, #00ffff 0%, #000 100%)`,
+        background: `radial-gradient(50% 50% at 50% 50%, #01ffff 0%, #000 100%)`,
       }}
     >
       <div
