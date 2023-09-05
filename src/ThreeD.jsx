@@ -390,7 +390,7 @@ export default function ThreeD({ isVisible }) {
             />
           </group>
           <group position={[0, -40, 80]}>
-            <spotLight intensity={lighting * 1.0001} penumbra={1} />
+            <spotLight intensity={lighting * 1.001} penumbra={1} />
           </group>
         </group>
 
