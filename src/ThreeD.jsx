@@ -4,6 +4,7 @@ import { Canvas } from '@react-three/fiber';
 import { Model } from './Marine-mini';
 import { Necron } from './Necron-mini';
 import { Sister } from './SisterMini';
+import { Gaunt } from './GauntMini';
 import 'rc-slider/assets/index.css';
 import { paints } from './paints';
 import { SliderGroup } from './SliderGroup';
@@ -12,6 +13,7 @@ import {
   defaultState,
   defaultNecronState,
   defaultSisterState,
+  defaultTyranidState,
 } from './defaultState';
 import { CameraController } from './CameraController';
 import { buildAttachmentButtons } from './buildAttachmentButtons';
@@ -19,10 +21,12 @@ import {
   attachmentOptions,
   attachmentOptionsNecron,
   attachmentOptionsSister,
+  attachmentOptionsTyranid,
 } from './defaultState';
 import termie from './assets/termie.jpg';
 import sister from './assets/sister.jpg';
 import necron from './assets/necron.jpg';
+import gauntImg from './assets/gaunt.jpg';
 import sprayImg from './assets/spray.jpg';
 import cloneImg from './assets/clone.jpg';
 
@@ -38,6 +42,7 @@ export default function ThreeD({ isVisible }) {
   const [arm, setArm] = React.useState(0);
   const [unitIndex, setUnitIndex] = React.useState(0);
   const [armRRot, setArmRRot] = React.useState(0);
+  const [background, setBackground] = React.useState('black');
   const [squadSize, setSquadSize] = React.useState(1);
   const [lighting, setLighting] = React.useState(0.5);
   const [currentModel, setCurrentModel] = React.useState('termie');
@@ -71,6 +76,20 @@ export default function ThreeD({ isVisible }) {
             />
           ) : currentModel === 'sister' ? (
             <Sister
+              neck={neck}
+              torsoBone={torsoBone}
+              torsoTopBone={torsoTopBone}
+              paintRef={paintRef}
+              currentPaint={currentPaint}
+              armRRot={armRRot}
+              armR={modelAttachments.armR[`${i}`]}
+              show={true}
+              squadIndex={i}
+              baseColor={baseColor}
+              clone={clone}
+            />
+          ) : currentModel === 'gaunt' ? (
+            <Gaunt
               neck={neck}
               torsoBone={torsoBone}
               torsoTopBone={torsoTopBone}
@@ -159,6 +178,16 @@ export default function ThreeD({ isVisible }) {
           right: 0,
         }}
       >
+        <SelectionButton
+          onClickEvent={() => {
+            setModelAttachments(defaultTyranidState);
+            setAttachmentMenu(attachmentOptionsTyranid);
+            setCurrentModel('gaunt');
+          }}
+          title="Gaunt"
+          img={gauntImg}
+          isActive={currentModel === 'gaunt'}
+        />
         <SelectionButton
           onClickEvent={() => {
             setModelAttachments(defaultState);
@@ -294,6 +323,7 @@ export default function ThreeD({ isVisible }) {
           img={sprayImg}
           isActive={spray}
         />
+
         {squadSize > 1 && (
           <SelectionButton
             onClickEvent={() => {
@@ -304,6 +334,24 @@ export default function ThreeD({ isVisible }) {
             isActive={clone}
           />
         )}
+        <button
+          style={{
+            background: background === 'black' ? 'white' : 'black',
+            color: background === 'black' ? 'black' : 'white',
+            border: 'none',
+            width: 50,
+            height: 50,
+            margin: 3,
+            marginTop: 0,
+            cursor: 'pointer',
+            borderRadius: 5,
+          }}
+          onClick={() => {
+            setBackground(background === 'black' ? 'white' : 'black');
+          }}
+        >
+          BG
+        </button>
       </div>
       <div
         style={{
@@ -320,11 +368,14 @@ export default function ThreeD({ isVisible }) {
         style={{
           width: '100vw',
           height: 'calc(100vh - 80px)',
-          background: `radial-gradient(50% 50% at 50% 50%, #222 0%, #000 100%)`,
+          background:
+            background === 'black'
+              ? `radial-gradient(50% 50% at 50% 50%, #222 0%, #000 100%)`
+              : `radial-gradient(50% 50% at 50% 50%, #fff 0%, #aaa 100%)`,
         }}
         camera={{ fov: 50, position: [0, 150, 140], near: 0.1, zoom: 1 }}
       >
-        <CameraController light={light} />
+        <CameraController light={light} rotate={true} />
         <group position={[0, 100, 0]}>
           <ambientLight intensity={0.006} />
         </group>
@@ -334,11 +385,11 @@ export default function ThreeD({ isVisible }) {
               intensity={lighting * 1}
               castShadow
               penumbra={1}
-              shadow-mapSize-height={4090}
-              shadow-mapSize-width={4090}
+              shadow-mapSize-height={1024}
+              shadow-mapSize-width={1024}
             />
           </group>
-          <group position={[0, 40, 40]}>
+          <group position={[0, -40, 80]}>
             <spotLight intensity={lighting * 1} penumbra={1} />
           </group>
         </group>
@@ -357,6 +408,13 @@ export default function ThreeD({ isVisible }) {
             position={[0, 20, 0]}
           >
             {buildSquad('termie')}
+          </group>
+          <group
+            visible={currentModel === 'gaunt' ? true : false}
+            scale={currentModel === 'gaunt' ? 1 : 0}
+            position={[0, 20, 0]}
+          >
+            {buildSquad('gaunt')}
           </group>
           <group
             visible={currentModel === 'sister' ? true : false}

@@ -88,6 +88,32 @@ export const defaultSisterState = {
   },
 };
 
+export const defaultTyranidState = {
+  armR: { 0: '', 1: '', 2: '', 3: '', 4: '' },
+  head: { 0: '', 1: '', 2: '', 3: '', 4: '' },
+  attachment: {
+    0: '',
+    1: '',
+    2: '',
+    3: '',
+    4: '',
+  },
+  ironCross: {
+    0: '',
+    1: '',
+    2: '',
+    3: '',
+    4: '',
+  },
+  shield: {
+    0: '',
+    1: '',
+    2: '',
+    3: '',
+    4: '',
+  },
+};
+
 export const attachmentOptions = [
   { name: 'armR', value: 'sword', title: 'Sword', img: sword },
   { name: 'armR', value: 'boltgun', title: 'Boltgun', img: stormBolter },
@@ -115,3 +141,4 @@ export const attachmentOptionsNecron = [
 ];
 
 export const attachmentOptionsSister = [];
+export const attachmentOptionsTyranid = [];
