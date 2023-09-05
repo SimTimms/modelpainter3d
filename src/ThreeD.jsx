@@ -336,8 +336,18 @@ export default function ThreeD({ isVisible }) {
         )}
         <button
           style={{
-            background: background === 'black' ? 'white' : 'black',
-            color: background === 'black' ? 'black' : 'white',
+            background:
+              background === 'black'
+                ? 'gray'
+                : background === 'grey'
+                ? 'white'
+                : 'black',
+            color:
+              background === 'black'
+                ? 'black'
+                : background === 'grey'
+                ? 'black'
+                : 'white',
             border: 'none',
             width: 50,
             height: 50,
@@ -347,7 +357,13 @@ export default function ThreeD({ isVisible }) {
             borderRadius: 5,
           }}
           onClick={() => {
-            setBackground(background === 'black' ? 'white' : 'black');
+            setBackground(
+              background === 'black'
+                ? 'white'
+                : background === 'white'
+                ? 'grey'
+                : 'black'
+            );
           }}
         >
           BG
@@ -371,6 +387,8 @@ export default function ThreeD({ isVisible }) {
           background:
             background === 'black'
               ? `radial-gradient(50% 50% at 50% 50%, #222 0%, #000 100%)`
+              : background === 'grey'
+              ? `radial-gradient(50% 50% at 50% 50%, #aaa 0%, #666 100%)`
               : `radial-gradient(50% 50% at 50% 50%, #fff 0%, #aaa 100%)`,
         }}
         camera={{ fov: 50, position: [0, 150, 140], near: 0.1, zoom: 1 }}
