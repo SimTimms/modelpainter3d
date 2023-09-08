@@ -29,7 +29,6 @@ import necron from './assets/necron.jpg';
 import gauntImg from './assets/gaunt.jpg';
 import sprayImg from './assets/spray.jpg';
 import cloneImg from './assets/clone.jpg';
-
 export default function ThreeD({ isVisible }) {
   const [currentPaint, setCurrentPaint] = React.useState(paints[0]);
   const [neck, setNeck] = React.useState(0);

@@ -12,7 +12,7 @@ import reaper from './assets/flayer.jpg';
 
 export const defaultState = {
   armR: { 0: 'boltgun', 1: 'flamer', 2: 'auto', 3: 'boltgun', 4: 'boltgun' },
-  head: { 0: 'face', 1: 'helmet', 2: 'helmet', 3: 'helmet', 4: 'helmet' },
+  head: { 0: 'helmet', 1: 'helmet', 2: 'helmet', 3: 'helmet', 4: 'helmet' },
   attachment: {
     0: 'cloak',
     1: '',
