@@ -27,8 +27,8 @@ import {
 } from './defaultState';
 import termie from './assets/termie.jpg';
 import sister from './assets/sister.jpg';
-import necron from './assets/necron.jpg';
 import primaris from './assets/primaris.jpg';
+import necron from './assets/necron.jpg';
 import gauntImg from './assets/gaunt.jpg';
 import sprayImg from './assets/spray.jpg';
 import cloneImg from './assets/clone.jpg';
@@ -53,7 +53,7 @@ export default function ThreeD({ isVisible }) {
     attachmentOptionsTyranid
   );
 
-  function buildSquad(currentModel) {
+  function buildSquad() {
     const squadArr = [];
     for (let i = 0; i < squadSize; i++) {
       const positionX =
@@ -102,8 +102,8 @@ export default function ThreeD({ isVisible }) {
               baseColor={baseColor}
               clone={clone}
             />
-          ) : currentModel === 'primaris' ? (
-            <Primaris
+          ) : currentModel === 'gaunt' ? (
+            <Gaunt
               neck={neck}
               torsoBone={torsoBone}
               torsoTopBone={torsoTopBone}
@@ -116,8 +116,8 @@ export default function ThreeD({ isVisible }) {
               baseColor={baseColor}
               clone={clone}
             />
-          ) : currentModel === 'gaunt' ? (
-            <Gaunt
+          ) : currentModel === 'primaris' ? (
+            <Primaris
               neck={neck}
               torsoBone={torsoBone}
               torsoTopBone={torsoTopBone}

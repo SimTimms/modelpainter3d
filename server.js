@@ -5,6 +5,7 @@ const app = express();
 const port = process.env.PORT || 3000; // Heroku will need the PORT environment variable
 
 app.use(express.static('build'));
+
 app.get('*', (req, res) => {
   res.sendFile(path.resolve(__dirname, 'build', 'index.html'));
 });
