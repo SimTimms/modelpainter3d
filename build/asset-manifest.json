@@ -1,0 +1,31 @@
+{
+  "files": {
+    "main.css": "/static/css/main.773a8e35.css",
+    "main.js": "/static/js/main.56e1f150.js",
+    "static/media/rectangle.png": "/static/media/rectangle.8f06f143c926061af53d.png",
+    "static/media/gaunt.jpg": "/static/media/gaunt.4f7ef9b02089489b9b54.jpg",
+    "static/media/primaris.jpg": "/static/media/primaris.4794404d49e6309fc7ff.jpg",
+    "static/media/termie.jpg": "/static/media/termie.1b7780c40be145707fd6.jpg",
+    "static/media/necron.jpg": "/static/media/necron.448d03bfaf11d186fd3f.jpg",
+    "static/media/stormBolter.jpg": "/static/media/stormBolter.7cc49b5c787bddecd46b.jpg",
+    "static/media/ironhalo.jpg": "/static/media/ironhalo.55ee79db5c0fa205b441.jpg",
+    "static/media/helmet.jpg": "/static/media/helmet.012bffc6dd76726708e9.jpg",
+    "static/media/sister.jpg": "/static/media/sister.fabd0b4ac68ecda8d44b.jpg",
+    "static/media/reaper.jpg": "/static/media/reaper.a995fdda9af21ea9ee45.jpg",
+    "static/media/flayer.jpg": "/static/media/flayer.aa3b13501785eddd51fa.jpg",
+    "static/media/flamer.jpg": "/static/media/flamer.c9ff9b1918786f0b3b23.jpg",
+    "static/media/assault.jpg": "/static/media/assault.0d4274531c3a1a2af463.jpg",
+    "static/media/cloak.jpg": "/static/media/cloak.a8ae083d03ef48cd49bf.jpg",
+    "static/media/sword.jpg": "/static/media/sword.6da4b2b5214a1564732c.jpg",
+    "static/media/head.jpg": "/static/media/head.42a9f78c580457cd0e32.jpg",
+    "static/media/shield.jpg": "/static/media/shield.884e9693768b0315ebb1.jpg",
+    "static/media/patreon.png": "/static/media/patreon.f08f3bc03d487781d69c.png",
+    "index.html": "/index.html",
+    "main.773a8e35.css.map": "/static/css/main.773a8e35.css.map",
+    "main.56e1f150.js.map": "/static/js/main.56e1f150.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.773a8e35.css",
+    "static/js/main.56e1f150.js"
+  ]
+}
