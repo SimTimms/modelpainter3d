@@ -10,12 +10,8 @@ import { ModelObject } from './modelParts/ModelObject.jsx';
 export function Primaris(props) {
   const {
     currentPaint,
-    armR,
     arm,
     armRRot,
-    attachment,
-    head,
-    ironCross,
     paintRef,
     show,
     squadIndex,
