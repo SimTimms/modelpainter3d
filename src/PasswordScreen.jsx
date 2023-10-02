@@ -4,7 +4,7 @@ import patreon from './assets/patreon.png';
 import { Suspense } from 'react';
 import rectangle from './assets/rectangle.png';
 import { Canvas } from '@react-three/fiber';
-import { Model } from './Marine-mini';
+import { Primaris } from './PrimarisMini';
 import { defaultState } from './defaultState';
 import { OrbitControls } from '@react-three/drei';
 import { Html } from '@react-three/drei';
@@ -37,25 +37,23 @@ export default function PasswordScreen({ setHasLoaded }) {
     const squadArr = [];
     for (let i = 0; i < 1; i++) {
       squadArr.push(
-        <group position={[0, 0, 0]} key={`model_${i}`}>
-          <Model
-            neck={0}
-            torsoBone={0}
-            torsoTopBone={0}
-            armRRot={0}
-            arm={0}
-            armR={modelAttachments.armR[`${i}`]}
-            attachment={modelAttachments.attachment[`${i}`]}
-            head={modelAttachments.head[`${i}`]}
-            ironCross={modelAttachments.ironCross[`${i}`]}
-            shield={modelAttachments.shield[`${i}`]}
-            currentPaint={currentPaint}
-            show={true}
-            squadIndex={i}
-            baseColor={{ color: 'gray' }}
-            clone={false}
-          />
-        </group>
+        <Primaris
+          neck={0}
+          torsoBone={0}
+          torsoTopBone={0}
+          armRRot={0}
+          arm={0}
+          armR={modelAttachments.armR[`${i}`]}
+          attachment={modelAttachments.attachment[`${i}`]}
+          head={modelAttachments.head[`${i}`]}
+          ironCross={modelAttachments.ironCross[`${i}`]}
+          shield={modelAttachments.shield[`${i}`]}
+          currentPaint={currentPaint}
+          show={true}
+          squadIndex={i}
+          baseColor={{ color: 'gray' }}
+          clone={false}
+        />
       );
     }
     return squadArr;
@@ -183,29 +181,31 @@ export default function PasswordScreen({ setHasLoaded }) {
             camera={{ fov: 50, position: [0, 40, 140], near: 0.1, zoom: 1 }}
           >
             <group>
-              <ambientLight intensity={0.16} />
+              <ambientLight intensity={0.25} />
             </group>
             <group>
-              <group position={[0, 180, 40]}>
+              <group position={[20, 60, 80]}>
                 <spotLight
-                  intensity={1 * 2}
+                  intensity={0.8}
                   castShadow
-                  penumbra={1}
-                  shadow-mapSize-height={1024}
-                  shadow-mapSize-width={1024}
+                  penumbra={2}
+                  shadow-mapSize-height={2048}
+                  shadow-mapSize-width={2048}
                 />
               </group>
-              <group position={[0, -20, -80]}>
-                <spotLight intensity={1 * 1} penumbra={1} />
-              </group>
-              <group position={[0, -20, 80]}>
-                <spotLight intensity={1 * 0.5} penumbra={1} />
+              <group position={[20, -60, -180]}>
+                <spotLight
+                  intensity={0.4}
+                  penumbra={2}
+                  shadow-mapSize-height={2048}
+                  shadow-mapSize-width={2048}
+                />
               </group>
             </group>
-            <OrbitControls autoRotate={true} autoRotateSpeed={0.4} />
+            <OrbitControls autoRotate={false} autoRotateSpeed={0.4} />
             <Suspense fallback={null}>
               <group visible={true} scale={0.6} position={[0, 20, 0]}>
-                {buildSquad('termie')}
+                {buildSquad('primaris')}
                 <group position={[-20, -10, 2]}>
                   <Html center={true}>
                     <div

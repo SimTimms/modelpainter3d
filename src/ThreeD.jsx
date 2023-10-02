@@ -4,7 +4,9 @@ import { Canvas } from '@react-three/fiber';
 import { Model } from './Marine-mini';
 import { Necron } from './Necron-mini';
 import { Sister } from './SisterMini';
+import { Astra } from './AstraMini';
 import { Gaunt } from './GauntMini';
+import { Primaris } from './PrimarisMini';
 import 'rc-slider/assets/index.css';
 import { paints } from './paints';
 import { SliderGroup } from './SliderGroup';
@@ -26,6 +28,7 @@ import {
 import termie from './assets/termie.jpg';
 import sister from './assets/sister.jpg';
 import necron from './assets/necron.jpg';
+import primaris from './assets/primaris.jpg';
 import gauntImg from './assets/gaunt.jpg';
 import sprayImg from './assets/spray.jpg';
 import cloneImg from './assets/clone.jpg';
@@ -37,15 +40,18 @@ export default function ThreeD({ isVisible }) {
   const [baseColor, setBaseColor] = React.useState(paints[3]);
   const [spray, setSpray] = React.useState(false);
   const [clone, setClone] = React.useState(false);
-  const [modelAttachments, setModelAttachments] = React.useState(defaultState);
+  const [modelAttachments, setModelAttachments] =
+    React.useState(defaultTyranidState);
   const [arm, setArm] = React.useState(0);
   const [unitIndex, setUnitIndex] = React.useState(0);
   const [armRRot, setArmRRot] = React.useState(0);
   const [background, setBackground] = React.useState('black');
   const [squadSize, setSquadSize] = React.useState(1);
   const [lighting, setLighting] = React.useState(0.5);
-  const [currentModel, setCurrentModel] = React.useState('termie');
-  const [attachmentMenu, setAttachmentMenu] = React.useState(attachmentOptions);
+  const [currentModel, setCurrentModel] = React.useState('primaris');
+  const [attachmentMenu, setAttachmentMenu] = React.useState(
+    attachmentOptionsTyranid
+  );
 
   function buildSquad(currentModel) {
     const squadArr = [];
@@ -75,6 +81,29 @@ export default function ThreeD({ isVisible }) {
             />
           ) : currentModel === 'sister' ? (
             <Sister
+              neck={neck}
+              torsoBone={torsoBone}
+              torsoTopBone={torsoTopBone}
+              paintRef={paintRef}
+              currentPaint={currentPaint}
+              armRRot={armRRot}
+              armR={modelAttachments.armR[`${i}`]}
+              show={true}
+              squadIndex={i}
+              baseColor={baseColor}
+              clone={clone}
+            />
+          ) : currentModel === 'astra' ? (
+            <Astra
+              paintRef={paintRef}
+              currentPaint={currentPaint}
+              show={true}
+              squadIndex={i}
+              baseColor={baseColor}
+              clone={clone}
+            />
+          ) : currentModel === 'primaris' ? (
+            <Primaris
               neck={neck}
               torsoBone={torsoBone}
               torsoTopBone={torsoTopBone}
@@ -177,6 +206,16 @@ export default function ThreeD({ isVisible }) {
           right: 0,
         }}
       >
+        <SelectionButton
+          onClickEvent={() => {
+            setModelAttachments(defaultTyranidState);
+            setAttachmentMenu(attachmentOptionsTyranid);
+            setCurrentModel('primaris');
+          }}
+          title="Primaris"
+          img={primaris}
+          isActive={currentModel === 'primaris'}
+        />
         <SelectionButton
           onClickEvent={() => {
             setModelAttachments(defaultTyranidState);
@@ -420,6 +459,13 @@ export default function ThreeD({ isVisible }) {
             {buildSquad('necron')}
           </group>
           <group
+            visible={currentModel === 'astra' ? true : false}
+            scale={currentModel === 'astra' ? 1 : 0}
+            position={[0, 20, 0]}
+          >
+            {buildSquad('astra')}
+          </group>
+          <group
             visible={currentModel === 'termie' ? true : false}
             scale={currentModel === 'termie' ? 1 : 0}
             position={[0, 20, 0]}
@@ -432,6 +478,13 @@ export default function ThreeD({ isVisible }) {
             position={[0, 20, 0]}
           >
             {buildSquad('gaunt')}
+          </group>
+          <group
+            visible={currentModel === 'primaris' ? true : false}
+            scale={currentModel === 'primaris' ? 1 : 0}
+            position={[0, 20, 0]}
+          >
+            {buildSquad('primaris')}
           </group>
           <group
             visible={currentModel === 'sister' ? true : false}
