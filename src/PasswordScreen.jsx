@@ -206,42 +206,7 @@ export default function PasswordScreen({ setHasLoaded }) {
             <Suspense fallback={null}>
               <group visible={true} scale={0.6} position={[0, 20, 0]}>
                 {buildSquad('primaris')}
-                <group position={[-20, -10, 2]}>
-                  <Html center={true}>
-                    <div
-                      style={{
-                        color: 'rgba(0,0,0,1)',
-                        boxShadow: ' 0px 0px 5px rgba(0,0,0,0.1)',
-                        fontFamily: 'Roboto,sans-serif',
-                        borderBottom: '1px solid #fff',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        minWidth: '230px',
-                        right: '100%',
-                        position: 'absolute',
-                        opacity: 0.2,
-                        pointerEvents: 'none',
-                      }}
-                    >
-                      <div
-                        style={{
-                          color: 'rgba(255,255,255,1)',
-                          textAlign: 'left',
-                          padding: 5,
-                          borderRadius: 2,
-                          width: 132,
-                          fontFamily: 'Roboto,sans-serif',
-                          position: 'absolute',
-                          left: '-4px',
-                          bottom: '-30px',
-                        }}
-                      >
-                        Storm Bolter
-                      </div>
-                    </div>
-                  </Html>
-                </group>
+                {/*
                 <group position={[16, -2, 2]}>
                   <Html center={true}>
                     <div
@@ -278,6 +243,7 @@ export default function PasswordScreen({ setHasLoaded }) {
                     </div>
                   </Html>
                 </group>
+                      */}
               </group>
             </Suspense>
           </Canvas>
