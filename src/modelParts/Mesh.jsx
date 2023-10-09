@@ -13,7 +13,6 @@ export function Mesh(props) {
     show,
     baseColor,
     nodeGeometry,
-    position,
     material,
     unitNumber,
     clone,
@@ -40,38 +39,38 @@ export function Mesh(props) {
   }, [baseColor]);
   if (!base) return null;
   return (
-    <>
-      <mesh
-        visible={show ? true : false}
-        geometry={nodeGeometry}
-        position={position}
-        onPointerUp={(event) => {
-          if (canPaint.current) {
-            event.stopPropagation();
-            setColours(currentPaint ? currentPaint : '#ff0000');
-            if (paintRef) {
-              paintRef.current[name] = {
-                paint: currentPaint ? currentPaint : '#ff0000',
-                unitNumber: unitNumber,
-              };
-            }
+    <mesh
+      key="mesh"
+      geometry={nodeGeometry}
+      onPointerUp={(event) => {
+        if (canPaint.current) {
+          event.stopPropagation();
+          console.log(name, canPaint.current);
+
+          setColours(currentPaint ? currentPaint : '#ff0000');
+          if (paintRef) {
+            paintRef.current[name] = {
+              paint: currentPaint ? currentPaint : '#ff0000',
+              unitNumber: unitNumber,
+            };
           }
-        }}
-        castShadow={true}
-        receiveShadow={true}
-        onPointerDown={() => {
-          canPaint.current = true;
-        }}
-        onPointerMove={() => (canPaint.current = false)}
-        material={material}
-      >
-        <meshStandardMaterial
-          attach="material"
-          color={!colours ? base.color : colours.color}
-          metalness={colours && colours.metal ? 0.6 : 0}
-          roughness={colours && colours.metal ? 0.5 : 1}
-        />
-      </mesh>
-    </>
+        }
+      }}
+      position={show && [0, 10, 0]}
+      castShadow={true}
+      receiveShadow={true}
+      onPointerDown={() => {
+        canPaint.current = true;
+      }}
+      onPointerMove={() => (canPaint.current = false)}
+      material={material}
+    >
+      <meshStandardMaterial
+        attach="material"
+        color={!colours ? base.color : colours.color}
+        metalness={colours && colours.metal ? 0.6 : 0}
+        roughness={colours && colours.metal ? 0.5 : 1}
+      />
+    </mesh>
   );
 }

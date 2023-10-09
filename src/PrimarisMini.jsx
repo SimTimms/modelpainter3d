@@ -4,7 +4,7 @@ Command: npx gltfjsx@6.1.3 public/skeleton.gltf
 */
 
 import React from 'react';
-import { ModelImport } from './modelParts/Skeleton.jsx';
+import { ModelImport } from './modelParts/SkeletonPrimaris.jsx';
 import { ModelObject } from './modelParts/ModelObject.jsx';
 
 export function Primaris(props) {
@@ -17,7 +17,6 @@ export function Primaris(props) {
     squadIndex,
     baseColor,
     clone,
-    shield,
   } = props;
 
   function modelFactory(url) {
@@ -35,39 +34,37 @@ export function Primaris(props) {
   }
 
   return (
-    <group>
-      <ModelImport
-        torsoBone={props.torsoBone}
-        neck={props.neck}
-        cloak={null}
-        ironCross={null}
-        helmet={null}
-        torso={modelFactory('primaris_torso.glb')}
-        shoulderR={null}
-        shoulderL={null}
-        shieldL={null}
-        shieldR={null}
-        armR={null}
-        armL={null}
-        arm={arm}
-        armRRot={armRRot}
-        legs={null}
-        base={
-          <ModelObject
-            currentPaint={currentPaint}
-            paintRef={paintRef}
-            show={show ? 1 : 0}
-            squadIndex={squadIndex}
-            url="base_medium.glb"
-            baseColor={baseColor}
-            clone={clone}
-          />
-        }
-        currentPaint={props.currentPaint}
-        torsoTopBone={props.torsoTopBone}
-        paintRef={paintRef}
-        baseColor={baseColor}
-      />
-    </group>
+    <ModelImport
+      torsoBone={props.torsoBone}
+      neck={props.neck}
+      cloak={null}
+      ironCross={null}
+      helmet={null}
+      torso={modelFactory('primaris_torso.glb')}
+      shoulderR={null}
+      shoulderL={null}
+      shieldL={null}
+      shieldR={null}
+      armR={null}
+      armL={null}
+      arm={arm}
+      armRRot={armRRot}
+      legs={null}
+      base={
+        <ModelObject
+          currentPaint={currentPaint}
+          paintRef={paintRef}
+          show={show ? 1 : 0}
+          squadIndex={squadIndex}
+          url="base_medium.glb"
+          baseColor={baseColor}
+          clone={clone}
+        />
+      }
+      currentPaint={props.currentPaint}
+      torsoTopBone={props.torsoTopBone}
+      paintRef={paintRef}
+      baseColor={baseColor}
+    />
   );
 }

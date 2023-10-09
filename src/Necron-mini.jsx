@@ -19,17 +19,19 @@ export function Necron(props) {
     clone,
   } = props;
 
-  function modelFactory(url) {
+  function modelFactory(url, pos) {
     return (
-      <ModelObject
-        currentPaint={currentPaint}
-        paintRef={paintRef}
-        show={show ? 1 : 0}
-        squadIndex={squadIndex}
-        url={url}
-        baseColor={baseColor}
-        clone={clone}
-      />
+      <group position={pos}>
+        <ModelObject
+          currentPaint={currentPaint}
+          paintRef={paintRef}
+          show={show ? 1 : 0}
+          squadIndex={squadIndex}
+          url={url}
+          baseColor={baseColor}
+          clone={clone}
+        />
+      </group>
     );
   }
 
@@ -41,8 +43,8 @@ export function Necron(props) {
         torso={modelFactory('necron_torso.glb')}
         armR={
           armR === 'reaper'
-            ? modelFactory('necron_reaper.glb')
-            : modelFactory('necron_flayer.glb')
+            ? modelFactory('necron_reaper.glb', [1, -1, 14])
+            : modelFactory('necron_flayer.glb', [-0.2, -1, 2])
         }
         armRRot={armRRot}
         base={

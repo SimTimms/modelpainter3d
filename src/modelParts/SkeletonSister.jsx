@@ -16,8 +16,6 @@ export function ModelImport(props) {
     setNewNodeArr({
       armature: nodes.Armature.clone(),
       core: nodes.Core.clone(),
-      upperArmL: nodes.UpperArmL.clone(),
-      upperArmR: nodes.UpperArmR.clone(),
       bone008: nodes.Bone008.clone(),
       spine: nodes.Spine.clone(),
     });
@@ -36,19 +34,6 @@ export function ModelImport(props) {
           rotation={[0, props.torsoTopBone * Math.PI, 0]}
         >
           <primitive object={newNodeArr.core}>
-            <primitive
-              rotation={[props.armRRot + 0, 0, 0]}
-              position={[-11.4, -1, -4]}
-              object={newNodeArr.upperArmR}
-            >
-              <group
-                position={[11.4, -9, 0]}
-                rotation={[0 * Math.PI, 0 * Math.PI, 0 * Math.PI]}
-              >
-                {props.armR}
-              </group>
-            </primitive>
-
             <group position={[0, -9.8, -4.0]}>{props.torso}</group>
           </primitive>
         </primitive>
@@ -56,7 +41,3 @@ export function ModelImport(props) {
     </group>
   );
 }
-
-useGLTF.preload(
-  'https://model-painter.s3.eu-west-2.amazonaws.com/skeleton.gltf'
-);

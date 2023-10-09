@@ -1,12 +1,7 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Model } from './Marine-mini';
-import { Necron } from './Necron-mini';
-import { Sister } from './SisterMini';
-import { Astra } from './AstraMini';
-import { Gaunt } from './GauntMini';
-import { Primaris } from './PrimarisMini';
 import 'rc-slider/assets/index.css';
 import { paints } from './paints';
 import { SliderGroup } from './SliderGroup';
@@ -32,6 +27,8 @@ import necron from './assets/necron.jpg';
 import gauntImg from './assets/gaunt.jpg';
 import sprayImg from './assets/spray.jpg';
 import cloneImg from './assets/clone.jpg';
+import orkImg from './assets/ork.jpg';
+
 export default function ThreeD({ isVisible }) {
   const [currentPaint, setCurrentPaint] = React.useState(paints[0]);
   const [neck, setNeck] = React.useState(0);
@@ -48,113 +45,39 @@ export default function ThreeD({ isVisible }) {
   const [background, setBackground] = React.useState('black');
   const [squadSize, setSquadSize] = React.useState(1);
   const [lighting, setLighting] = React.useState(0.5);
-  const [currentModel, setCurrentModel] = React.useState('primaris');
+  const [currentModel, setCurrentModel] = React.useState('termie');
   const [attachmentMenu, setAttachmentMenu] = React.useState(
     attachmentOptionsTyranid
   );
-
-  function buildSquad() {
-    const squadArr = [];
-    for (let i = 0; i < squadSize; i++) {
-      const positionX =
-        i === 0 ? 0 : i === 1 ? 40 : i === 2 ? -40 : i === 3 ? -80 : 80;
-      const positionZ = i === 0 ? 0 : i > 0 && i < 3 ? 80 : -40;
-      squadArr.push(
-        <group
-          position={[positionX, 0, positionZ]}
-          key={`model_${i}`}
-          visible={true}
-        >
-          {currentModel === 'necron' ? (
-            <Necron
-              neck={neck}
-              torsoBone={torsoBone}
-              torsoTopBone={torsoTopBone}
-              paintRef={paintRef}
-              currentPaint={currentPaint}
-              armRRot={armRRot}
-              armR={modelAttachments.armR[`${i}`]}
-              show={true}
-              squadIndex={i}
-              baseColor={baseColor}
-              clone={clone}
-            />
-          ) : currentModel === 'sister' ? (
-            <Sister
-              neck={neck}
-              torsoBone={torsoBone}
-              torsoTopBone={torsoTopBone}
-              paintRef={paintRef}
-              currentPaint={currentPaint}
-              armRRot={armRRot}
-              armR={modelAttachments.armR[`${i}`]}
-              show={true}
-              squadIndex={i}
-              baseColor={baseColor}
-              clone={clone}
-            />
-          ) : currentModel === 'astra' ? (
-            <Astra
-              paintRef={paintRef}
-              currentPaint={currentPaint}
-              show={true}
-              squadIndex={i}
-              baseColor={baseColor}
-              clone={clone}
-            />
-          ) : currentModel === 'gaunt' ? (
-            <Gaunt
-              neck={neck}
-              torsoBone={torsoBone}
-              torsoTopBone={torsoTopBone}
-              paintRef={paintRef}
-              currentPaint={currentPaint}
-              armRRot={armRRot}
-              armR={modelAttachments.armR[`${i}`]}
-              show={true}
-              squadIndex={i}
-              baseColor={baseColor}
-              clone={clone}
-            />
-          ) : currentModel === 'primaris' ? (
-            <Primaris
-              neck={neck}
-              torsoBone={torsoBone}
-              torsoTopBone={torsoTopBone}
-              paintRef={paintRef}
-              currentPaint={currentPaint}
-              armRRot={armRRot}
-              armR={modelAttachments.armR[`${i}`]}
-              show={true}
-              squadIndex={i}
-              baseColor={baseColor}
-              clone={clone}
-            />
-          ) : (
-            <Model
-              neck={neck}
-              torsoBone={torsoBone}
-              torsoTopBone={torsoTopBone}
-              currentPaint={currentPaint}
-              armRRot={armRRot}
-              arm={arm}
-              armR={modelAttachments.armR[`${i}`]}
-              attachment={modelAttachments.attachment[`${i}`]}
-              head={modelAttachments.head[`${i}`]}
-              ironCross={modelAttachments.ironCross[`${i}`]}
-              shield={modelAttachments.shield[`${i}`]}
-              paintRef={paintRef}
-              show={true}
-              squadIndex={i}
-              baseColor={baseColor}
-              clone={clone}
-            />
-          )}
-        </group>
-      );
-    }
-    return squadArr;
-  }
+  const pose = {
+    termie: [
+      { armRRot: 0, arm: 0.5, neck: 0.1, torsoBone: -0.1, torsoTopBone: 0.2 },
+      { armRRot: 0.2, arm: -0.3, neck: 0.2, torsoBone: 0.1, torsoTopBone: 0.3 },
+      {
+        armRRot: 0.5,
+        arm: 0.3,
+        neck: -0.3,
+        torsoBone: 0.2,
+        torsoTopBone: -0.3,
+      },
+      { armRRot: -0.3, arm: 0.1, neck: 0, torsoBone: 0.1, torsoTopBone: -0.3 },
+      { armRRot: -0.1, arm: 0.5, neck: -0.3, torsoBone: 0, torsoTopBone: 0 },
+    ],
+    necron: [
+      { armRRot: 0, arm: 0, neck: 0, torsoBone: 0, torsoTopBone: 0 },
+      { armRRot: 0.2, arm: 0, neck: 0, torsoBone: 0, torsoTopBone: 0 },
+      { armRRot: 0.15, arm: 0, neck: 0, torsoBone: 0, torsoTopBone: 0 },
+      { armRRot: -0.3, arm: 0, neck: 0, torsoBone: 0, torsoTopBone: 0 },
+      { armRRot: -0.1, arm: 0, neck: 0, torsoBone: 0, torsoTopBone: 0 },
+    ],
+    ork: [
+      { armRRot: 0, arm: 0, neck: 0, torsoBone: 0, torsoTopBone: 0 },
+      { armRRot: 1, arm: 0, neck: 0, torsoBone: 0, torsoTopBone: 0 },
+      { armRRot: 0.7, arm: 0, neck: 0, torsoBone: 0, torsoTopBone: 0 },
+      { armRRot: 1, arm: 0, neck: 0, torsoBone: 0, torsoTopBone: 0 },
+      { armRRot: 1, arm: 0, neck: 0, torsoBone: 0, torsoTopBone: 0 },
+    ],
+  };
   const light = useRef();
   const paintRef = useRef({});
 
@@ -206,6 +129,16 @@ export default function ThreeD({ isVisible }) {
           right: 0,
         }}
       >
+        <SelectionButton
+          onClickEvent={() => {
+            setModelAttachments(defaultTyranidState);
+            setAttachmentMenu(attachmentOptionsTyranid);
+            setCurrentModel('ork');
+          }}
+          title="Ork"
+          img={orkImg}
+          isActive={currentModel === 'ork'}
+        />
         <SelectionButton
           onClickEvent={() => {
             setModelAttachments(defaultTyranidState);
@@ -284,55 +217,11 @@ export default function ThreeD({ isVisible }) {
         <SliderGroup
           title="Lighting"
           min={0.1}
-          max={2}
+          max={1}
           value={lighting}
           change={setLighting}
           i={0.1}
         />
-        {currentModel === 'termie' && (
-          <>
-            <SliderGroup
-              title="Torso"
-              min={-1}
-              max={1}
-              value={torsoTopBone}
-              change={setTorsoTopBone}
-              i={0.01}
-            />
-            <SliderGroup
-              title="Legs"
-              min={-0.5}
-              max={0.5}
-              value={torsoBone}
-              change={setTorsoBone}
-              i={0.01}
-            />
-            <SliderGroup
-              title="Head"
-              min={-0.5}
-              max={0.5}
-              value={neck}
-              change={setNeck}
-              i={0.01}
-            />
-            <SliderGroup
-              title="Left Arm"
-              min={-0.5}
-              max={0.5}
-              value={arm}
-              change={setArm}
-              i={0.01}
-            />
-            <SliderGroup
-              title="Right Arm"
-              min={-0.5}
-              max={0.5}
-              value={armRRot}
-              change={setArmRRot}
-              i={0.01}
-            />
-          </>
-        )}
       </div>
       <div
         style={{
@@ -451,47 +340,24 @@ export default function ThreeD({ isVisible }) {
         </group>
 
         <Suspense fallback={null}>
-          <group
-            visible={currentModel === 'necron' ? true : false}
-            scale={currentModel === 'necron' ? 1 : 0}
-            position={[0, 20, 0]}
-          >
-            {buildSquad('necron')}
-          </group>
-          <group
-            visible={currentModel === 'astra' ? true : false}
-            scale={currentModel === 'astra' ? 1 : 0}
-            position={[0, 20, 0]}
-          >
-            {buildSquad('astra')}
-          </group>
-          <group
-            visible={currentModel === 'termie' ? true : false}
-            scale={currentModel === 'termie' ? 1 : 0}
-            position={[0, 20, 0]}
-          >
-            {buildSquad('termie')}
-          </group>
-          <group
-            visible={currentModel === 'gaunt' ? true : false}
-            scale={currentModel === 'gaunt' ? 1 : 0}
-            position={[0, 20, 0]}
-          >
-            {buildSquad('gaunt')}
-          </group>
-          <group
-            visible={currentModel === 'primaris' ? true : false}
-            scale={currentModel === 'primaris' ? 1 : 0}
-            position={[0, 20, 0]}
-          >
-            {buildSquad('primaris')}
-          </group>
-          <group
-            visible={currentModel === 'sister' ? true : false}
-            scale={currentModel === 'sister' ? 1 : 0}
-            position={[0, 20, 0]}
-          >
-            {buildSquad('sister')}
+          <group position={[0, 20, 0]}>
+            <Model
+              currentModel={currentModel}
+              neck={neck}
+              torsoBone={torsoBone}
+              torsoTopBone={torsoTopBone}
+              currentPaint={currentPaint}
+              armRRot={armRRot}
+              arm={arm}
+              parts={modelAttachments}
+              paintRef={paintRef}
+              show={true}
+              squadIndex={unitIndex}
+              baseColor={baseColor}
+              clone={clone}
+              squadSize={squadSize}
+              pose={pose}
+            />
           </group>
         </Suspense>
       </Canvas>

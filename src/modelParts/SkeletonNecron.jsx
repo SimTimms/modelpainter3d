@@ -56,7 +56,3 @@ export function ModelImport(props) {
     </group>
   );
 }
-
-useGLTF.preload(
-  'https://model-painter.s3.eu-west-2.amazonaws.com/skeleton.gltf'
-);
