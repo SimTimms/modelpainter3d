@@ -28,6 +28,7 @@ import gauntImg from './assets/gaunt.jpg';
 import sprayImg from './assets/spray.jpg';
 import cloneImg from './assets/clone.jpg';
 import orkImg from './assets/ork.jpg';
+import dreadImg from './assets/dread.jpg';
 
 export default function ThreeD({ isVisible }) {
   const [currentPaint, setCurrentPaint] = React.useState(paints[0]);
@@ -45,7 +46,7 @@ export default function ThreeD({ isVisible }) {
   const [background, setBackground] = React.useState('black');
   const [squadSize, setSquadSize] = React.useState(1);
   const [lighting, setLighting] = React.useState(0.5);
-  const [currentModel, setCurrentModel] = React.useState('termie');
+  const [currentModel, setCurrentModel] = React.useState('dread');
   const [attachmentMenu, setAttachmentMenu] = React.useState(
     attachmentOptionsTyranid
   );
@@ -129,6 +130,16 @@ export default function ThreeD({ isVisible }) {
           right: 0,
         }}
       >
+        <SelectionButton
+          onClickEvent={() => {
+            setModelAttachments(defaultTyranidState);
+            setAttachmentMenu(attachmentOptionsTyranid);
+            setCurrentModel('dread');
+          }}
+          title="Dread"
+          img={dreadImg}
+          isActive={currentModel === 'dread'}
+        />
         <SelectionButton
           onClickEvent={() => {
             setModelAttachments(defaultTyranidState);
@@ -330,12 +341,21 @@ export default function ThreeD({ isVisible }) {
               intensity={lighting * 1}
               castShadow
               penumbra={1}
-              shadow-mapSize-height={1024}
-              shadow-mapSize-width={1024}
+              shadow-mapSize-height={2048}
+              shadow-mapSize-width={2048}
             />
           </group>
           <group position={[0, -40, 80]}>
             <spotLight intensity={lighting * 1.001} penumbra={1} />
+          </group>
+          <group position={[40, 130, 40]}>
+            <spotLight
+              intensity={lighting * 0.5}
+              castShadow
+              penumbra={1}
+              shadow-mapSize-height={2048}
+              shadow-mapSize-width={2048}
+            />
           </group>
         </group>
 

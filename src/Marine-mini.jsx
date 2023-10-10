@@ -105,6 +105,12 @@ export function Model(props) {
             torso: 'sister.glb',
             base: 'base_small.glb',
           }
+        : currentModel === 'dread'
+        ? {
+            skeleton:
+              'https://model-painter.s3.eu-west-2.amazonaws.com/skeleton.gltf',
+            torso: 'dread.glb',
+          }
         : {
             skeleton:
               'https://model-painter.s3.eu-west-2.amazonaws.com/skeleton.gltf',

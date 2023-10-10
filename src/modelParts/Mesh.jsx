@@ -69,7 +69,7 @@ export function Mesh(props) {
         attach="material"
         color={!colours ? base.color : colours.color}
         metalness={colours && colours.metal ? 0.6 : 0}
-        roughness={colours && colours.metal ? 0.5 : 1}
+        roughness={colours && colours.metal ? 0.7 : 1}
       />
     </mesh>
   );
