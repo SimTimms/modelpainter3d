@@ -51,6 +51,10 @@ export function ModelImport(props) {
         const positionX =
           i === 0 ? 0 : i === 1 ? 40 : i === 2 ? -40 : i === 3 ? -80 : 80;
         const positionZ = i === 0 ? 0 : i > 0 && i < 3 ? 80 : -40;
+        console.log(Array.isArray(parts[i].torso, parts[i].torso));
+        const torsoArr = Array.isArray(parts[i].torso, parts[i].torso)
+          ? parts[i].torso[i]
+          : parts[i].torso;
         squadArr.push(
           <group position={[positionX, 0, positionZ]} key={`model_${i}_`}>
             <group {...props} position={props.position}>
@@ -128,12 +132,12 @@ export function ModelImport(props) {
                   </group>
                   <group
                     position={
-                      parts[i].torsoPos && parts[i].torsoPos[parts[i].torso]
-                        ? parts[i].torsoPos[parts[i].torso]
+                      parts[i].torsoPos && parts[i].torsoPos[torsoArr]
+                        ? parts[i].torsoPos[torsoArr]
                         : [0, -9.8, -4.0]
                     }
                   >
-                    {parts[i].torso && modelFactory(parts[i].torso)}
+                    {torsoArr && modelFactory(torsoArr)}
                   </group>
                   <Clone
                     rotation={[0, props.pose ? props.pose[i].torsoBone : 0, 0]}

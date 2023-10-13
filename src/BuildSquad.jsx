@@ -93,7 +93,6 @@ export function BuildSquad(props) {
           ironCross={modelAttachments.ironCross[`${i}`]}
           shield={modelAttachments.shield[`${i}`]}
           paintRef={paintRef}
-          show={currentModel === 'termie'}
           squadIndex={i}
           baseColor={baseColor}
           clone={clone}

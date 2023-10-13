@@ -46,7 +46,7 @@ export default function ThreeD({ isVisible }) {
   const [background, setBackground] = React.useState('black');
   const [squadSize, setSquadSize] = React.useState(1);
   const [lighting, setLighting] = React.useState(0.5);
-  const [currentModel, setCurrentModel] = React.useState('dread');
+  const [currentModel, setCurrentModel] = React.useState('primaris');
   const [attachmentMenu, setAttachmentMenu] = React.useState(
     attachmentOptionsTyranid
   );
@@ -130,6 +130,16 @@ export default function ThreeD({ isVisible }) {
           right: 0,
         }}
       >
+        <SelectionButton
+          onClickEvent={() => {
+            setModelAttachments(defaultTyranidState);
+            setAttachmentMenu(attachmentOptionsTyranid);
+            setCurrentModel('eldar');
+          }}
+          title="Eldar"
+          img={dreadImg}
+          isActive={currentModel === 'eldar'}
+        />
         <SelectionButton
           onClickEvent={() => {
             setModelAttachments(defaultTyranidState);
@@ -327,7 +337,7 @@ export default function ThreeD({ isVisible }) {
               ? `radial-gradient(50% 50% at 50% 50%, #222 0%, #000 100%)`
               : background === 'grey'
               ? `radial-gradient(50% 50% at 50% 50%, #aaa 0%, #666 100%)`
-              : `radial-gradient(50% 50% at 50% 50%, #fff 0%, #aaa 100%)`,
+              : `radial-gradient(50% 50% at 50% 50%, #ddd 0%, #fff 100%)`,
         }}
         camera={{ fov: 50, position: [0, 150, 140], near: 0.1, zoom: 1 }}
       >

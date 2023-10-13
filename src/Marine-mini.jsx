@@ -84,6 +84,16 @@ export function Model(props) {
             },
             base: 'base_small.glb',
           }
+        : currentModel === 'eldar'
+        ? {
+            skeleton:
+              'https://model-painter.s3.eu-west-2.amazonaws.com/skeleton.gltf',
+            torso: 'eldar.glb',
+            torsoPos: {
+              'eldar.glb': [-2, -6, 1],
+            },
+            base: 'base_small.glb',
+          }
         : currentModel === 'ork'
         ? {
             skeleton:
