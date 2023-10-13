@@ -100,7 +100,7 @@ export function Model(props) {
               'https://model-painter.s3.eu-west-2.amazonaws.com/skeleton.gltf',
             torso: 'guardsman.glb',
             torsoPos: {
-              'guardsman.glb': [-2, -6, 1],
+              'guardsman.glb': [-2, -8, 1],
             },
             base: 'base_small.glb',
           }
