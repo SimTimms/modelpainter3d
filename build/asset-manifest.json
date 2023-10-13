@@ -1,12 +1,14 @@
 {
   "files": {
     "main.css": "/static/css/main.b01723cf.css",
-    "main.js": "/static/js/main.0e48e7bd.js",
+    "main.js": "/static/js/main.a94a42d1.js",
     "static/media/rectangle.png": "/static/media/rectangle.8f06f143c926061af53d.png",
     "static/media/dread.jpg": "/static/media/dread.870727414eafb0bb70d1.jpg",
     "static/media/ork.jpg": "/static/media/ork.8af81abb95bdd2bb1f95.jpg",
     "static/media/gaunt.jpg": "/static/media/gaunt.4f7ef9b02089489b9b54.jpg",
+    "static/media/guardsman.jpg": "/static/media/guardsman.38663ac498b1d2ca21d1.jpg",
     "static/media/primaris.jpg": "/static/media/primaris.4794404d49e6309fc7ff.jpg",
+    "static/media/eldar.jpg": "/static/media/eldar.cc5801fb8d50ad763fea.jpg",
     "static/media/termie.jpg": "/static/media/termie.1b7780c40be145707fd6.jpg",
     "static/media/necron.jpg": "/static/media/necron.448d03bfaf11d186fd3f.jpg",
     "static/media/stormBolter.jpg": "/static/media/stormBolter.7cc49b5c787bddecd46b.jpg",
@@ -24,10 +26,10 @@
     "static/media/patreon.png": "/static/media/patreon.f08f3bc03d487781d69c.png",
     "index.html": "/index.html",
     "main.b01723cf.css.map": "/static/css/main.b01723cf.css.map",
-    "main.0e48e7bd.js.map": "/static/js/main.0e48e7bd.js.map"
+    "main.a94a42d1.js.map": "/static/js/main.a94a42d1.js.map"
   },
   "entrypoints": [
     "static/css/main.b01723cf.css",
-    "static/js/main.0e48e7bd.js"
+    "static/js/main.a94a42d1.js"
   ]
 }
