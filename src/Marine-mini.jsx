@@ -94,6 +94,16 @@ export function Model(props) {
             },
             base: 'base_small.glb',
           }
+        : currentModel === 'guardsman'
+        ? {
+            skeleton:
+              'https://model-painter.s3.eu-west-2.amazonaws.com/skeleton.gltf',
+            torso: 'guardsman.glb',
+            torsoPos: {
+              'guardsman.glb': [-2, -6, 1],
+            },
+            base: 'base_small.glb',
+          }
         : currentModel === 'ork'
         ? {
             skeleton:

@@ -29,6 +29,7 @@ import sprayImg from './assets/spray.jpg';
 import cloneImg from './assets/clone.jpg';
 import orkImg from './assets/ork.jpg';
 import dreadImg from './assets/dread.jpg';
+import eldar from './assets/eldar.jpg';
 
 export default function ThreeD({ isVisible }) {
   const [currentPaint, setCurrentPaint] = React.useState(paints[0]);
@@ -46,7 +47,7 @@ export default function ThreeD({ isVisible }) {
   const [background, setBackground] = React.useState('black');
   const [squadSize, setSquadSize] = React.useState(1);
   const [lighting, setLighting] = React.useState(0.5);
-  const [currentModel, setCurrentModel] = React.useState('primaris');
+  const [currentModel, setCurrentModel] = React.useState('guardsman');
   const [attachmentMenu, setAttachmentMenu] = React.useState(
     attachmentOptionsTyranid
   );
@@ -137,7 +138,7 @@ export default function ThreeD({ isVisible }) {
             setCurrentModel('eldar');
           }}
           title="Eldar"
-          img={dreadImg}
+          img={eldar}
           isActive={currentModel === 'eldar'}
         />
         <SelectionButton
