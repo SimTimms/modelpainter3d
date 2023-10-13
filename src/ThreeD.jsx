@@ -30,6 +30,7 @@ import cloneImg from './assets/clone.jpg';
 import orkImg from './assets/ork.jpg';
 import dreadImg from './assets/dread.jpg';
 import eldar from './assets/eldar.jpg';
+import guardsman from './assets/guardsman.jpg';
 
 export default function ThreeD({ isVisible }) {
   const [currentPaint, setCurrentPaint] = React.useState(paints[0]);
@@ -131,6 +132,16 @@ export default function ThreeD({ isVisible }) {
           right: 0,
         }}
       >
+        <SelectionButton
+          onClickEvent={() => {
+            setModelAttachments(defaultTyranidState);
+            setAttachmentMenu(attachmentOptionsTyranid);
+            setCurrentModel('guardsman');
+          }}
+          title="Guardsman"
+          img={guardsman}
+          isActive={currentModel === 'guardsman'}
+        />
         <SelectionButton
           onClickEvent={() => {
             setModelAttachments(defaultTyranidState);
