@@ -55,6 +55,7 @@ export default function ThreeD({ isVisible }) {
   const [unitIndex, setUnitIndex] = React.useState(0);
   const [background, setBackground] = React.useState('black');
   const [squadSize, setSquadSize] = React.useState(1);
+
   const [lighting, setLighting] = React.useState(0.5);
   const [currentModel, setCurrentModel] = React.useState('primaris');
   const [attachmentMenu, setAttachmentMenu] = React.useState(
