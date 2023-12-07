@@ -5,11 +5,13 @@ import { Suspense } from 'react';
 import rectangle from './assets/rectangle.png';
 import { Canvas } from '@react-three/fiber';
 import { Primaris } from './PrimarisMini';
-import { defaultState } from './defaultState';
+import { defaultPrimarisState } from './defaultState';
 import { OrbitControls } from '@react-three/drei';
-import { Html } from '@react-three/drei';
+import { Model } from './Marine-mini';
 
+import { Controls } from './Controls';
 export const paints = [
+  { name: `Administratum Grey`, color: '#989c94', company: 'Games Workshop' },
   {
     name: 'auricArmour',
     color: '#f5b13d',
@@ -24,40 +26,51 @@ export const paints = [
   },
   {
     name: 'black',
-    color: '#222',
+    color: '#222222',
     company: 'Games Workshop',
   },
+  { name: 'Wild Rider Red', color: '#e82e1b', company: 'Games Workshop' },
+  { name: 'Fulgrim Pink', color: '#f3abca', company: 'Games Workshop' },
+  { name: `Teclis Blue`, color: '#3877bf', company: 'Games Workshop' },
+  { name: `Sotek Green`, color: '#0b6371', company: 'Games Workshop' },
+  { name: 'Caliban Green', color: '#003d15', company: 'Games Workshop' },
 ];
+
+const pose = {
+  termie: [
+    { armRRot: 0, arm: 0.5, neck: 0.1, torsoBone: -0.1, torsoTopBone: 0.2 },
+    { armRRot: 0.2, arm: -0.3, neck: 0.2, torsoBone: 0.1, torsoTopBone: 0.3 },
+    {
+      armRRot: 0.5,
+      arm: 0.3,
+      neck: -0.3,
+      torsoBone: 0.2,
+      torsoTopBone: -0.3,
+    },
+    { armRRot: -0.3, arm: 0.1, neck: 0, torsoBone: 0.1, torsoTopBone: -0.3 },
+    { armRRot: -0.1, arm: 0.5, neck: -0.3, torsoBone: 0, torsoTopBone: 0 },
+  ],
+  necron: [
+    { armRRot: 0, arm: 0, neck: 0, torsoBone: 0, torsoTopBone: 0 },
+    { armRRot: 0.2, arm: 0, neck: 0, torsoBone: 0, torsoTopBone: 0 },
+    { armRRot: 0.15, arm: 0, neck: 0, torsoBone: 0, torsoTopBone: 0 },
+    { armRRot: -0.3, arm: 0, neck: 0, torsoBone: 0, torsoTopBone: 0 },
+    { armRRot: -0.1, arm: 0, neck: 0, torsoBone: 0, torsoTopBone: 0 },
+  ],
+  ork: [
+    { armRRot: 0, arm: 0, neck: 0, torsoBone: 0, torsoTopBone: 0 },
+    { armRRot: 1, arm: 0, neck: 0, torsoBone: 0, torsoTopBone: 0 },
+    { armRRot: 0.7, arm: 0, neck: 0, torsoBone: 0, torsoTopBone: 0 },
+    { armRRot: 1, arm: 0, neck: 0, torsoBone: 0, torsoTopBone: 0 },
+    { armRRot: 1, arm: 0, neck: 0, torsoBone: 0, torsoTopBone: 0 },
+  ],
+};
 
 export default function PasswordScreen({ setHasLoaded }) {
   const [inputValue, setInputValue] = useState('');
-  const [currentPaint, setCurrentPaint] = useState(paints[1]);
-  const [modelAttachments, setModelAttachments] = React.useState(defaultState);
-  function buildSquad() {
-    const squadArr = [];
-    for (let i = 0; i < 1; i++) {
-      squadArr.push(
-        <Primaris
-          neck={0}
-          torsoBone={0}
-          torsoTopBone={0}
-          armRRot={0}
-          arm={0}
-          armR={modelAttachments.armR[`${i}`]}
-          attachment={modelAttachments.attachment[`${i}`]}
-          head={modelAttachments.head[`${i}`]}
-          ironCross={modelAttachments.ironCross[`${i}`]}
-          shield={modelAttachments.shield[`${i}`]}
-          currentPaint={currentPaint}
-          show={true}
-          squadIndex={i}
-          baseColor={{ color: 'gray' }}
-          clone={false}
-        />
-      );
-    }
-    return squadArr;
-  }
+  const [currentPaint, setCurrentPaint] = useState(paints[2]);
+  const [modelAttachments, setModelAttachments] =
+    React.useState(defaultPrimarisState);
 
   useEffect(() => {
     inputValue === 'patreon' && setHasLoaded(true);
@@ -88,6 +101,7 @@ export default function PasswordScreen({ setHasLoaded }) {
           background: 'rgba(0,0,0,0.5)',
         }}
       >
+        <Controls />
         <div
           style={{
             position: 'relative',
@@ -204,9 +218,51 @@ export default function PasswordScreen({ setHasLoaded }) {
             </group>
             <OrbitControls autoRotate={false} autoRotateSpeed={0.4} />
             <Suspense fallback={null}>
-              <group visible={true} scale={0.6} position={[0, 20, 0]}>
-                {buildSquad('primaris')}
-                {/*
+              <group
+                visible={true}
+                scale={0.6}
+                position={[13, 20, 0]}
+                rotation={[0, 0.4, 0]}
+              >
+                <Model
+                  currentModel={'primaris'}
+                  currentPaint={currentPaint}
+                  parts={modelAttachments}
+                  show={true}
+                  squadIndex={1}
+                  baseColor={paints[0]}
+                  clone={false}
+                  squadSize={1}
+                  pose={pose}
+                  isEdge={false}
+                  edging={45}
+                  edgingDefault={paints[4]}
+                  paintRef={null}
+                />
+              </group>
+              <group
+                visible={true}
+                scale={0.6}
+                position={[-13, 18.6, 0]}
+                rotation={[0, -2.4, 0]}
+              >
+                <Model
+                  currentModel={'gaunt'}
+                  currentPaint={currentPaint}
+                  parts={modelAttachments}
+                  show={true}
+                  squadIndex={1}
+                  baseColor={paints[0]}
+                  clone={false}
+                  squadSize={1}
+                  pose={pose}
+                  isEdge={false}
+                  edging={45}
+                  edgingDefault={paints[4]}
+                  paintRef={null}
+                />
+              </group>
+              {/*
                 <group position={[16, -2, 2]}>
                   <Html center={true}>
                     <div
@@ -244,18 +300,23 @@ export default function PasswordScreen({ setHasLoaded }) {
                   </Html>
                 </group>
                       */}
-              </group>
             </Suspense>
           </Canvas>
         </div>
       </div>
+
       <div
         style={{
           zIndex: 10,
-          marginBottom: -180,
           display: 'flex',
-          background: 'rgba(255,255,255,0.4)',
-          borderRadius: 30,
+          background: 'rgba(255,255,255,0.05)',
+          borderRadius: 20,
+          flexWrap: 'wrap',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: 5,
+          position: 'fixed',
+          bottom: 0,
         }}
       >
         {paints.map((paint) => {
@@ -278,7 +339,7 @@ export default function PasswordScreen({ setHasLoaded }) {
       <div
         style={{
           position: 'fixed',
-          bottom: 0,
+          top: 0,
           display: 'flex',
           height: 40,
           alignItems: 'space-between',

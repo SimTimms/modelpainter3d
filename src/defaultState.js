@@ -9,6 +9,8 @@ import ironHalo from './assets/ironhalo.jpg';
 import shield from './assets/shield.jpg';
 import flayer from './assets/reaper.jpg';
 import reaper from './assets/flayer.jpg';
+import techMarineBackback from './assets/techMarineBackpack.png';
+import backpack from './assets/backpack.png';
 
 export const defaultState = {
   armR: { 0: 'boltgun', 1: 'flamer', 2: 'auto', 3: 'boltgun', 4: 'boltgun' },
@@ -29,6 +31,39 @@ export const defaultState = {
   },
   shield: {
     0: 'shield',
+    1: '',
+    2: '',
+    3: '',
+    4: '',
+  },
+};
+
+export const defaultPrimarisState = {
+  armR: { 0: 'boltgun', 1: 'flamer', 2: 'flamer', 3: 'boltgun', 4: 'boltgun' },
+  head: { 0: '', 1: '', 2: '', 3: '', 4: '' },
+  backpack: {
+    0: 'backpack',
+    1: 'backpack',
+    2: 'backpack',
+    3: 'backpack',
+    4: 'techmarine',
+  },
+  attachment: {
+    0: '',
+    1: '',
+    2: '',
+    3: '',
+    4: '',
+  },
+  ironCross: {
+    0: '',
+    1: '',
+    2: '',
+    3: '',
+    4: '',
+  },
+  shield: {
+    0: '',
     1: '',
     2: '',
     3: '',
@@ -138,6 +173,38 @@ export const attachmentOptions = [
 export const attachmentOptionsNecron = [
   { name: 'armR', value: 'flayer', title: 'Flayer', img: flayer },
   { name: 'armR', value: 'reaper', title: 'Reaper', img: reaper },
+];
+
+export const attachmentOptionsEldar = [
+  { name: 'armR', value: 'sword', title: 'Sword', img: flayer },
+  { name: 'armR', value: 'gun', title: 'Gun', img: reaper },
+];
+
+export const attachmentOptionsPrimaris = [
+  {
+    name: 'ironCross',
+    value: ['lense', ''],
+    title: 'Lense',
+    img: ironHalo,
+  },
+  {
+    name: 'ironCross',
+    value: ['helmetSkull', ''],
+    title: 'Helmet Skull',
+    img: ironHalo,
+  },
+  {
+    name: 'backpack',
+    value: 'techmarine',
+    title: 'TM Backpack',
+    img: techMarineBackback,
+  },
+  {
+    name: 'backpack',
+    value: 'backpack',
+    title: 'Backpack',
+    img: backpack,
+  },
 ];
 
 export const attachmentOptionsSister = [];

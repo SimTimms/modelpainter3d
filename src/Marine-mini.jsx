@@ -16,6 +16,9 @@ export function Model(props) {
     squadSize,
     clone,
     pose,
+    isEdge,
+    edging,
+    edgingDefault,
   } = props;
 
   const partsObj = [];
@@ -93,6 +96,18 @@ export function Model(props) {
               'eldar.glb': [-2, -6, 1],
             },
             base: 'base_small.glb',
+            armR:
+              parts.armR[i] === 'gun'
+                ? 'eldar_arm_both_gun.glb'
+                : 'eldar_arm_r.glb',
+            armRPos: {
+              'eldar_arm_r.glb': [9, -5, 5],
+              'eldar_arm_both_gun.glb': [9, -5, 5],
+            },
+            armL: parts.armR[i] === 'gun' ? '' : 'eldar_arm_l_axe.glb',
+            armLPos: {
+              'eldar_arm_l_axe.glb': [-5, -7.6, -12],
+            },
           }
         : currentModel === 'guardsman'
         ? {
@@ -125,6 +140,20 @@ export function Model(props) {
             torso: 'sister.glb',
             base: 'base_small.glb',
           }
+        : currentModel === 'tau'
+        ? {
+            skeleton:
+              'https://model-painter.s3.eu-west-2.amazonaws.com/skeleton.gltf',
+            torso: 'tau.glb',
+            armR: 'tau_arm.glb',
+            base: 'base_small.glb',
+            torsoPos: {
+              'tau.glb': [0, -29, 0],
+            },
+            armRPos: {
+              'tau_arm.glb': [5, -10, 2],
+            },
+          }
         : currentModel === 'dread'
         ? {
             skeleton:
@@ -135,7 +164,36 @@ export function Model(props) {
             skeleton:
               'https://model-painter.s3.eu-west-2.amazonaws.com/skeleton.gltf',
             torso: 'primaris_torso.glb',
+            backpack:
+              parts.backpack[i] === 'backpack'
+                ? 'primaris_backpack.glb'
+                : 'primaris_techmarine_backpack.glb',
+            backpackPos: {
+              'primaris_techmarine_backpack.glb': [-1, -14, -4],
+            },
+            helmet: 'primaris_helmet.glb',
+            armR:
+              parts.armR[i] === 'boltgun'
+                ? 'primaris_boltgun.glb'
+                : 'primaris_flamer.glb',
+            armRPos: {
+              'primaris_boltgun.glb': [11, -8.6, 0],
+              'primaris_flamer.glb': [11.2, -11.6, 0],
+            },
+            helmetPos: {
+              'primaris_helmet.glb': [0, -9.6, -3.3],
+            },
             base: 'base_medium.glb',
+            ironCross:
+              parts.ironCross[i] === 'lense'
+                ? 'primaris_lense.glb'
+                : parts.ironCross[i] === 'helmetSkull'
+                ? 'primaris_helmet_skull.glb'
+                : '',
+            ironCrossPos: {
+              'primaris_lense.glb': [0, -13.6, -3.3],
+              'primaris_helmet_skull.glb': [0, -12.6, -3.3],
+            },
           }
     );
   }
@@ -154,6 +212,9 @@ export function Model(props) {
       squadSize={squadSize}
       clone={clone}
       pose={pose[currentModel]}
+      isEdge={isEdge}
+      edging={edging}
+      edgingDefault={edgingDefault}
     />
   );
 }

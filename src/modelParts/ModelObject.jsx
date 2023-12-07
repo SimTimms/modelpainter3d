@@ -7,8 +7,18 @@ import { useGLTF } from '@react-three/drei';
 import { Mesh } from './Mesh.jsx';
 
 export function ModelObject(props) {
-  const { squadIndex, url, paintRef, show, currentPaint, baseColor, clone } =
-    props;
+  const {
+    squadIndex,
+    url,
+    paintRef,
+    show,
+    currentPaint,
+    baseColor,
+    clone,
+    isEdge,
+    edging,
+    edgingDefault,
+  } = props;
   const { nodes } = useGLTF(url);
   const [newNodeArr, setNewNodeArr] = useState([]);
 
@@ -33,6 +43,9 @@ export function ModelObject(props) {
             show={show}
             baseColor={baseColor}
             clone={clone}
+            isEdge={isEdge}
+            edging={edging}
+            edgingDefault={edgingDefault}
           />
         );
       })}

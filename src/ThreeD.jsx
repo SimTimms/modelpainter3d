@@ -11,6 +11,7 @@ import {
   defaultNecronState,
   defaultSisterState,
   defaultTyranidState,
+  defaultPrimarisState,
 } from './defaultState';
 import { CameraController } from './CameraController';
 import { buildAttachmentButtons } from './buildAttachmentButtons';
@@ -19,6 +20,8 @@ import {
   attachmentOptionsNecron,
   attachmentOptionsSister,
   attachmentOptionsTyranid,
+  attachmentOptionsEldar,
+  attachmentOptionsPrimaris,
 } from './defaultState';
 import termie from './assets/termie.jpg';
 import sister from './assets/sister.jpg';
@@ -31,27 +34,33 @@ import orkImg from './assets/ork.jpg';
 import dreadImg from './assets/dread.jpg';
 import eldar from './assets/eldar.jpg';
 import guardsman from './assets/guardsman.jpg';
+import edgeBrush from './assets/edgeBrush.png';
+import bigBrush from './assets/bigBrush.png';
 
 export default function ThreeD({ isVisible }) {
   const [currentPaint, setCurrentPaint] = React.useState(paints[0]);
-  const [neck, setNeck] = React.useState(0);
-  const [torsoBone, setTorsoBone] = React.useState(0);
-  const [torsoTopBone, setTorsoTopBone] = React.useState(0);
   const [baseColor, setBaseColor] = React.useState(paints[3]);
   const [spray, setSpray] = React.useState(false);
+  const [paintName, setPaintName] = React.useState();
   const [clone, setClone] = React.useState(false);
+  const [isEdge, setIsEdge] = React.useState(false);
   const [modelAttachments, setModelAttachments] =
-    React.useState(defaultTyranidState);
-  const [arm, setArm] = React.useState(0);
+    React.useState(defaultPrimarisState);
+  const [edgeD, setEdgeD] = React.useState(false);
+  const [edging, setEdging] = React.useState(90);
+  const [edgingDefault, setEdgingDefault] = React.useState(paints[0]);
+  const [fogD, setFogD] = React.useState(false);
+  const [fog, setFog] = React.useState(500);
+  const [fogDefault, setFogDefault] = React.useState(paints[0]);
   const [unitIndex, setUnitIndex] = React.useState(0);
-  const [armRRot, setArmRRot] = React.useState(0);
   const [background, setBackground] = React.useState('black');
   const [squadSize, setSquadSize] = React.useState(1);
   const [lighting, setLighting] = React.useState(0.5);
-  const [currentModel, setCurrentModel] = React.useState('guardsman');
+  const [currentModel, setCurrentModel] = React.useState('primaris');
   const [attachmentMenu, setAttachmentMenu] = React.useState(
-    attachmentOptionsTyranid
+    attachmentOptionsPrimaris
   );
+
   const pose = {
     termie: [
       { armRRot: 0, arm: 0.5, neck: 0.1, torsoBone: -0.1, torsoTopBone: 0.2 },
@@ -103,6 +112,38 @@ export default function ThreeD({ isVisible }) {
           boxSizing: 'border-box',
         }}
       >
+        <div
+          style={{
+            color: 'grey',
+            fontSize: 10,
+            marginLeft: 3,
+            marginBottom: 3,
+          }}
+        >
+          {paintName}
+        </div>
+
+        <div
+          style={{
+            color: 'white',
+            fontSize: 10,
+            marginLeft: 3,
+            marginBottom: 3,
+          }}
+        >
+          {currentPaint.name} - {currentPaint.company}
+          {currentPaint.link && (
+            <a
+              style={{ color: 'grey', marginLeft: 5 }}
+              href={currentPaint.link}
+              target="_blank"
+              noreferrer
+            >
+              BUY
+            </a>
+          )}
+        </div>
+
         <div style={{ display: 'flex', flexWrap: 'wrap' }}>
           {paints.map((paint, index) => (
             <div
@@ -111,15 +152,34 @@ export default function ThreeD({ isVisible }) {
                 background: paint.color,
                 width: 20,
                 height: 20,
+                borderRadius: '50%',
+                margin: 1,
+                cursor: 'pointer',
+                boxShadow: paint.metal
+                  ? 'inset -3px -3px 5px rgba(0,0,0,0.2), inset 3px 3px 2px rgba(255,255,255,0.4)'
+                  : '',
+                textAlign: 'center',
+                fontSize: 10,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'rgba(0,0,0,0.3)',
               }}
+              onMouseOver={() => setPaintName(paint.name)}
               onClick={() => {
                 if (spray) {
                   setBaseColor(paint);
+                } else if (edgeD) {
+                  setEdgingDefault(paint);
+                } else if (fogD) {
+                  setFogDefault(paint);
                 } else {
                   setCurrentPaint(paint);
                 }
               }}
-            ></div>
+            >
+              {paint.name.substring(0, 1)}
+            </div>
           ))}
         </div>
       </div>
@@ -145,7 +205,7 @@ export default function ThreeD({ isVisible }) {
         <SelectionButton
           onClickEvent={() => {
             setModelAttachments(defaultTyranidState);
-            setAttachmentMenu(attachmentOptionsTyranid);
+            setAttachmentMenu(attachmentOptionsEldar);
             setCurrentModel('eldar');
           }}
           title="Eldar"
@@ -174,8 +234,8 @@ export default function ThreeD({ isVisible }) {
         />
         <SelectionButton
           onClickEvent={() => {
-            setModelAttachments(defaultTyranidState);
-            setAttachmentMenu(attachmentOptionsTyranid);
+            setModelAttachments(defaultPrimarisState);
+            setAttachmentMenu(attachmentOptionsPrimaris);
             setCurrentModel('primaris');
           }}
           title="Primaris"
@@ -255,6 +315,48 @@ export default function ThreeD({ isVisible }) {
           change={setLighting}
           i={0.1}
         />
+        <div style={{ display: 'flex', alignItems: 'center', width: 82 }}>
+          <SliderGroup
+            title="Edge Angle"
+            min={20}
+            max={100}
+            value={edging}
+            change={setEdging}
+            i={20}
+          />
+          <div
+            onClick={() => setEdgeD(!edgeD)}
+            style={{
+              minWidth: 20,
+              height: 20,
+              marginLeft: 10,
+              background: edgingDefault.color,
+              border: edgeD ? '1px solid white' : '1px solid grey',
+              cursor: 'pointer',
+            }}
+          ></div>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', width: 82 }}>
+          <SliderGroup
+            title="Fog"
+            min={300}
+            max={1500}
+            value={fog}
+            change={setFog}
+            i={-100}
+          />
+          <div
+            onClick={() => setFogD(!fogD)}
+            style={{
+              minWidth: 20,
+              height: 20,
+              marginLeft: 10,
+              background: fogDefault.color,
+              border: fogD ? '1px solid white' : '1px solid grey',
+              cursor: 'pointer',
+            }}
+          ></div>
+        </div>
       </div>
       <div
         style={{
@@ -294,6 +396,14 @@ export default function ThreeD({ isVisible }) {
             isActive={clone}
           />
         )}
+        <SelectionButton
+          onClickEvent={() => {
+            setIsEdge(!isEdge);
+          }}
+          title="Edge"
+          img={!isEdge ? bigBrush : edgeBrush}
+          isActive={true}
+        />
         <button
           style={{
             background:
@@ -367,30 +477,17 @@ export default function ThreeD({ isVisible }) {
               shadow-mapSize-width={2048}
             />
           </group>
-          <group position={[0, -40, 80]}>
-            <spotLight intensity={lighting * 1.001} penumbra={1} />
-          </group>
+
           <group position={[40, 130, 40]}>
-            <spotLight
-              intensity={lighting * 0.5}
-              castShadow
-              penumbra={1}
-              shadow-mapSize-height={2048}
-              shadow-mapSize-width={2048}
-            />
+            <spotLight intensity={lighting * 0.5} />
           </group>
         </group>
-
+        <fog attach="fog" args={[fogDefault.color, 20, fog]} />
         <Suspense fallback={null}>
           <group position={[0, 20, 0]}>
             <Model
               currentModel={currentModel}
-              neck={neck}
-              torsoBone={torsoBone}
-              torsoTopBone={torsoTopBone}
               currentPaint={currentPaint}
-              armRRot={armRRot}
-              arm={arm}
               parts={modelAttachments}
               paintRef={paintRef}
               show={true}
@@ -399,6 +496,9 @@ export default function ThreeD({ isVisible }) {
               clone={clone}
               squadSize={squadSize}
               pose={pose}
+              isEdge={isEdge}
+              edging={edging}
+              edgingDefault={edgingDefault}
             />
           </group>
         </Suspense>

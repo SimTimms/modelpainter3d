@@ -4,7 +4,7 @@ Command: npx gltfjsx@6.1.3 public/shoulder_termie_left.gltf
 */
 
 import React, { useState, useRef, useEffect } from 'react';
-
+import { Edges } from '@react-three/drei';
 export function Mesh(props) {
   const {
     paintRef,
@@ -16,9 +16,12 @@ export function Mesh(props) {
     material,
     unitNumber,
     clone,
+    isEdge,
+    edging,
+    edgingDefault,
   } = props;
-
   const [colours, setColours] = useState(null);
+  const [edges, setEdges] = useState(null);
   const [base, setBase] = useState(null);
   const canPaint = useRef(true);
 
@@ -45,14 +48,16 @@ export function Mesh(props) {
       onPointerUp={(event) => {
         if (canPaint.current) {
           event.stopPropagation();
-          console.log(name, canPaint.current);
-
-          setColours(currentPaint ? currentPaint : '#ff0000');
-          if (paintRef) {
-            paintRef.current[name] = {
-              paint: currentPaint ? currentPaint : '#ff0000',
-              unitNumber: unitNumber,
-            };
+          if (!isEdge) {
+            setColours(currentPaint ? currentPaint : '#ff0000');
+            if (paintRef) {
+              paintRef.current[name] = {
+                paint: currentPaint ? currentPaint : '#ff0000',
+                unitNumber: unitNumber,
+              };
+            }
+          } else {
+            setEdges(currentPaint ? currentPaint : '#ff0000');
           }
         }
       }}
@@ -65,12 +70,20 @@ export function Mesh(props) {
       onPointerMove={() => (canPaint.current = false)}
       material={material}
     >
+      <Edges
+        color={
+          !edges ? (edgingDefault ? edgingDefault.color : '#000') : edges.color
+        }
+        threshold={edging}
+        scale={1.001}
+      />
+
       <meshStandardMaterial
         attach="material"
         color={!colours ? base.color : colours.color}
         metalness={colours && colours.metal ? 0.6 : 0}
         roughness={colours && colours.metal ? 0.7 : 1}
-      />
+      ></meshStandardMaterial>
     </mesh>
   );
 }

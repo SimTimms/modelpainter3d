@@ -47,7 +47,6 @@ export function Astra(props) {
 
 var divs2 = document.getElementsByTagName('span');
 for (var i = 0; i < divs2.length; i++) {
-  console.log(divs2[i].innerHTML);
   if (divs2[i].innerHTML === 'ENDSCOREHERE') {
     const thisElement = divs2[i];
     thisElement.id = 'scoreId2';

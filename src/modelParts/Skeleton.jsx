@@ -12,7 +12,9 @@ export function ModelImport(props) {
     clone,
     parts,
     squadSize,
-    pose,
+    edging,
+    isEdge,
+    edgingDefault,
   } = props;
   const [newNodeArr, setNewNodeArr] = useState(null);
   const [squad, setSquad] = useState(null);
@@ -28,6 +30,9 @@ export function ModelImport(props) {
         url={url}
         baseColor={baseColor}
         clone={clone}
+        isEdge={isEdge}
+        edging={edging}
+        edgingDefault={edgingDefault}
       />
     );
   }
@@ -51,7 +56,7 @@ export function ModelImport(props) {
         const positionX =
           i === 0 ? 0 : i === 1 ? 40 : i === 2 ? -40 : i === 3 ? -80 : 80;
         const positionZ = i === 0 ? 0 : i > 0 && i < 3 ? 80 : -40;
-        console.log(Array.isArray(parts[i].torso, parts[i].torso));
+
         const torsoArr = Array.isArray(parts[i].torso, parts[i].torso)
           ? parts[i].torso[i]
           : parts[i].torso;
@@ -84,7 +89,11 @@ export function ModelImport(props) {
                       {parts[i].shieldL && modelFactory(parts[i].shieldL)}
                     </group>
                     <group
-                      position={[0, -3.2, -2]}
+                      position={
+                        parts[i].armLPos && parts[i].armLPos[parts[i].armL]
+                          ? parts[i].armLPos[parts[i].armL]
+                          : [3, -3.2, -1]
+                      }
                       rotation={[0, -0.5 * Math.PI, 0]}
                     >
                       {parts[i].armL && modelFactory(parts[i].armL)}
@@ -116,7 +125,11 @@ export function ModelImport(props) {
                   <Clone
                     object={newNodeArr.bone008}
                     rotation={[0, props.pose ? props.pose[i].neck : 0, 0]}
-                    position={[0, -3.6, 0]}
+                    position={
+                      parts[i].helmetPos && parts[i].helmetPos[parts[i].helmet]
+                        ? parts[i].helmetPos[parts[i].helmet]
+                        : [0, -3.6, 0]
+                    }
                   >
                     {parts[i].helmet && modelFactory(parts[i].helmet)}
                   </Clone>
@@ -127,7 +140,15 @@ export function ModelImport(props) {
                   >
                     {parts[i].cloak && modelFactory(parts[i].cloak)}
                   </group>
-                  <group rotation={[0, 0, 0]} position={[0, 7, -6.0]}>
+                  <group
+                    rotation={[0, 0, 0]}
+                    position={
+                      parts[i].ironCrossPos &&
+                      parts[i].ironCrossPos[parts[i].ironCross]
+                        ? parts[i].ironCrossPos[parts[i].ironCross]
+                        : [0, 7, -6.0]
+                    }
+                  >
                     {parts[i].ironCross && modelFactory(parts[i].ironCross)}
                   </group>
                   <group
@@ -138,6 +159,16 @@ export function ModelImport(props) {
                     }
                   >
                     {torsoArr && modelFactory(torsoArr)}
+                  </group>
+                  <group
+                    position={
+                      parts[i].backpackPos &&
+                      parts[i].backpackPos[parts[i].backpack]
+                        ? parts[i].backpackPos[parts[i].backpack]
+                        : [-0.8, -11, -3]
+                    }
+                  >
+                    {parts[i].backpack && modelFactory(parts[i].backpack)}
                   </group>
                   <Clone
                     rotation={[0, props.pose ? props.pose[i].torsoBone : 0, 0]}
