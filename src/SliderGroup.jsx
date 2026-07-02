@@ -8,7 +8,6 @@ export function SliderGroup({ title, min, max, value, change, i, squadIndex }) {
         width: '100%',
         position: 'relative',
         display: 'flex',
-        flexDirection: 'row',
         justifyContent: 'center',
         color: '#9bc1a0',
         flexDirection: 'column',
