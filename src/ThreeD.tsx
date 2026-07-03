@@ -123,6 +123,8 @@ function ModelLoadingOverlay() {
 }
 
 export default function ThreeD({ isVisible }) {
+  const initialIsMobile =
+    typeof window !== 'undefined' ? window.innerWidth <= 900 : false;
   const [currentPaint, setCurrentPaint] = React.useState(paints[0]);
   const [baseColor, setBaseColor] = React.useState(paints[3]);
   const [paintName, setPaintName] = React.useState<string | undefined>(undefined);
@@ -157,14 +159,12 @@ export default function ThreeD({ isVisible }) {
   const [attachmentMenu, setAttachmentMenu] = React.useState(
     attachmentOptionsTyranid
   );
-  const [isMobileMode, setIsMobileMode] = React.useState(() =>
-    typeof window !== 'undefined' ? window.innerWidth <= 900 : false
-  );
+  const [isMobileMode, setIsMobileMode] = React.useState(initialIsMobile);
   const [collapsedPanels, setCollapsedPanels] = React.useState({
-    model: false,
+    model: initialIsMobile,
     scene: true,
     paintTool: true,
-    palette: false,
+    palette: initialIsMobile,
   });
   const togglePanel = React.useCallback(
     (panel: 'model' | 'scene' | 'paintTool' | 'palette') => {
@@ -418,6 +418,111 @@ export default function ThreeD({ isVisible }) {
     }
     return placeholders;
   };
+  const paintToolControls = (
+    <div style={{ display: 'flex', gap: 6, flexWrap: isMobileMode ? 'wrap' : 'nowrap' }}>
+      <button
+        type="button"
+        onClick={() => setPaintMode('base')}
+        style={{
+          border: paintMode === 'base' ? '1px solid #fff' : '1px solid #555',
+          background: paintMode === 'base' ? '#333' : '#222',
+          color: '#fff',
+          cursor: 'pointer',
+          borderRadius: 4,
+          padding: '6px 8px',
+          fontSize: 11,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 6,
+        }}
+      >
+        <span
+          style={{
+            width: 10,
+            height: 10,
+            borderRadius: '50%',
+            background: baseColor.color,
+            border: '1px solid rgba(255,255,255,0.4)',
+          }}
+        />
+        Base Coat
+      </button>
+      <button
+        type="button"
+        onClick={() => setPaintMode('brush')}
+        style={{
+          border: paintMode === 'brush' ? '1px solid #fff' : '1px solid #555',
+          background: paintMode === 'brush' ? '#333' : '#222',
+          color: '#fff',
+          cursor: 'pointer',
+          borderRadius: 4,
+          padding: '6px 8px',
+          fontSize: 11,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 6,
+        }}
+      >
+        <span
+          style={{
+            width: 10,
+            height: 10,
+            borderRadius: '50%',
+            background: currentPaint.color,
+            border: '1px solid rgba(255,255,255,0.4)',
+          }}
+        />
+        Brush
+      </button>
+      <button
+        type="button"
+        onClick={() => setPaintMode('background')}
+        style={{
+          border: paintMode === 'background' ? '1px solid #fff' : '1px solid #555',
+          background: paintMode === 'background' ? '#333' : '#222',
+          color: '#fff',
+          cursor: 'pointer',
+          borderRadius: 4,
+          padding: '6px 8px',
+          fontSize: 11,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 6,
+        }}
+      >
+        <span
+          style={{
+            width: 10,
+            height: 10,
+            borderRadius: '50%',
+            background: backgroundColor.color,
+            border: '1px solid rgba(255,255,255,0.4)',
+          }}
+        />
+        Background
+      </button>
+      {squadSizeDraft > 1 && (
+        <button
+          type="button"
+          onClick={handleCloneToggle}
+          style={{
+            border: 'none',
+            background: '#222',
+            color: '#fff',
+            cursor: 'pointer',
+            borderRadius: 4,
+            padding: '6px 8px',
+            fontSize: 11,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6,
+          }}
+        >
+          Clone
+        </button>
+      )}
+    </div>
+  );
 
   return (
     <div
@@ -569,6 +674,12 @@ export default function ThreeD({ isVisible }) {
                   </div>
                 ))}
               </div>
+              {isMobileMode && (
+                <div style={{ borderTop: '1px solid #444', paddingTop: 8, marginTop: 8 }}>
+                  <div style={{ fontSize: 10, color: '#aaa', marginBottom: 6 }}>Paint Tool</div>
+                  {paintToolControls}
+                </div>
+              )}
             </>
           )}
         </div>
@@ -830,13 +941,14 @@ export default function ThreeD({ isVisible }) {
           )}
         </div>
       </div>
+      {!isMobileMode && (
       <div
         style={{
-          width: isMobileMode ? 'calc(100vw - 20px)' : `calc(100vw - 200px)`,
+          width: `calc(100vw - 200px)`,
           position: 'fixed',
-          padding: isMobileMode ? 0 : 10,
-          left: isMobileMode ? 10 : 100,
-          bottom: isMobileMode ? 78 : 'auto',
+          padding: 10,
+          left: 100,
+          bottom: 'auto',
           zIndex: 100,
           display: 'flex',
           flexWrap: 'wrap',
@@ -856,132 +968,11 @@ export default function ThreeD({ isVisible }) {
             margin: isMobileMode ? 0 : 3,
           }}
         >
-          {isMobileMode ? (
-            <button
-              type="button"
-              onClick={() => togglePanel('paintTool')}
-              style={{
-                background: 'none',
-                border: 'none',
-                color: '#aaa',
-                fontSize: 11,
-                padding: 0,
-                cursor: 'pointer',
-                textAlign: 'left',
-              }}
-            >
-              {collapsedPanels.paintTool ? '▶' : '▼'} Paint Tool
-            </button>
-          ) : (
-            <div style={{ fontSize: 10, color: '#aaa' }}>Paint Tool</div>
-          )}
-          {(!isMobileMode || !collapsedPanels.paintTool) && (
-            <div style={{ display: 'flex', gap: 6, flexWrap: isMobileMode ? 'wrap' : 'nowrap' }}>
-            <button
-              type="button"
-              onClick={() => setPaintMode('base')}
-              style={{
-                border: paintMode === 'base' ? '1px solid #fff' : '1px solid #555',
-                background: paintMode === 'base' ? '#333' : '#222',
-                color: '#fff',
-                cursor: 'pointer',
-                borderRadius: 4,
-                padding: '6px 8px',
-                fontSize: 11,
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-              }}
-            >
-              <span
-                style={{
-                  width: 10,
-                  height: 10,
-                  borderRadius: '50%',
-                  background: baseColor.color,
-                  border: '1px solid rgba(255,255,255,0.4)',
-                }}
-              />
-              Base Coat
-            </button>
-            <button
-              type="button"
-              onClick={() => setPaintMode('brush')}
-              style={{
-                border: paintMode === 'brush' ? '1px solid #fff' : '1px solid #555',
-                background: paintMode === 'brush' ? '#333' : '#222',
-                color: '#fff',
-                cursor: 'pointer',
-                borderRadius: 4,
-                padding: '6px 8px',
-                fontSize: 11,
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-              }}
-            >
-              <span
-                style={{
-                  width: 10,
-                  height: 10,
-                  borderRadius: '50%',
-                  background: currentPaint.color,
-                  border: '1px solid rgba(255,255,255,0.4)',
-                }}
-              />
-              Brush
-            </button>
-            <button
-              type="button"
-              onClick={() => setPaintMode('background')}
-              style={{
-                border: paintMode === 'background' ? '1px solid #fff' : '1px solid #555',
-                background: paintMode === 'background' ? '#333' : '#222',
-                color: '#fff',
-                cursor: 'pointer',
-                borderRadius: 4,
-                padding: '6px 8px',
-                fontSize: 11,
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-              }}
-            >
-              <span
-                style={{
-                  width: 10,
-                  height: 10,
-                  borderRadius: '50%',
-                  background: backgroundColor.color,
-                  border: '1px solid rgba(255,255,255,0.4)',
-                }}
-              />
-              Background
-            </button>
-            {squadSizeDraft > 1 && (
-              <button
-                type="button"
-                onClick={handleCloneToggle}
-                style={{
-                  border: 'none',
-                  background: '#222',
-                  color: '#fff',
-                  cursor: 'pointer',
-                  borderRadius: 4,
-                  padding: '6px 8px',
-                  fontSize: 11,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 6,
-                }}
-              >
-                Clone
-              </button>
-            )}
-            </div>
-          )}
+          <div style={{ fontSize: 10, color: '#aaa' }}>Paint Tool</div>
+          {paintToolControls}
         </div>
       </div>
+      )}
       <div
         style={{
           position: 'fixed',

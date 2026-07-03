@@ -31,7 +31,11 @@ export function Mesh(props: MeshProps) {
     isPaintingEnabled,
   } = props;
   const [colours, setColours] = useState<PaintType | string | null>(null);
-  const canPaint = useRef(true);
+  const pointerGestureRef = useRef({
+    startX: 0,
+    startY: 0,
+    moved: false,
+  });
   const activePaint = colours || baseColor;
   const activePaintColor =
     typeof activePaint === 'string' ? activePaint : activePaint?.color;
@@ -56,7 +60,7 @@ export function Mesh(props: MeshProps) {
       key="mesh"
       geometry={nodeGeometry}
       onPointerUp={(event) => {
-        if (isPaintingEnabled && canPaint.current) {
+        if (isPaintingEnabled && !pointerGestureRef.current.moved) {
           event.stopPropagation();
             const paint = currentPaintRef?.current || '#ff0000';
             setColours(paint);
@@ -71,10 +75,20 @@ export function Mesh(props: MeshProps) {
       position={show && [0, 10, 0]}
       castShadow={true}
       receiveShadow={true}
-      onPointerDown={() => {
-        canPaint.current = true;
+      onPointerDown={(event) => {
+        pointerGestureRef.current = {
+          startX: event.clientX,
+          startY: event.clientY,
+          moved: false,
+        };
       }}
-      onPointerMove={() => (canPaint.current = false)}
+      onPointerMove={(event) => {
+        const dx = Math.abs(event.clientX - pointerGestureRef.current.startX);
+        const dy = Math.abs(event.clientY - pointerGestureRef.current.startY);
+        if (dx > 8 || dy > 8) {
+          pointerGestureRef.current.moved = true;
+        }
+      }}
       material={material}
     >
      {showEdges && <Edges color={'#000'} scale={1.001} />}
