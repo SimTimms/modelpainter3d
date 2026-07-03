@@ -2,9 +2,14 @@ import { useEffect, useRef } from 'react';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { useThree } from '@react-three/fiber';
 
-export const CameraController = ({ light, isLightFixed = false }) => {
+export const CameraController = ({
+  light,
+  isLightFixed = false,
+  resetCameraSignal = 0,
+}) => {
   const { camera, gl } = useThree();
   const isLightFixedRef = useRef(isLightFixed);
+  const controlsRef = useRef(null);
 
   useEffect(() => {
     isLightFixedRef.current = isLightFixed;
@@ -12,6 +17,7 @@ export const CameraController = ({ light, isLightFixed = false }) => {
 
   useEffect(() => {
     const controls = new OrbitControls(camera, gl.domElement);
+    controlsRef.current = controls;
     controls.minDistance = 40;
     controls.maxDistance = 300;
     controls.zoomSpeed = 1;
@@ -29,8 +35,16 @@ export const CameraController = ({ light, isLightFixed = false }) => {
     syncLightToCamera();
 
     return () => {
+      controlsRef.current = null;
       controls.dispose();
     };
   }, [camera, gl, light]);
+
+  useEffect(() => {
+    if (!controlsRef.current) return;
+    controlsRef.current.reset();
+    controlsRef.current.update();
+  }, [resetCameraSignal]);
+
   return null;
 };

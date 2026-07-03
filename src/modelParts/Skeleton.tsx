@@ -14,6 +14,16 @@ interface ModelImportProps {
   squadSize: number;
   visibleSquadSize: number;
   showEdges: boolean;
+  showPaintLabels: boolean;
+  hoveredPaintLabelKey: string | null;
+  setHoveredPaintLabelKey: React.Dispatch<React.SetStateAction<string | null>>;
+  paintSyncTick: number;
+  onPaintApplied: (payload: {
+    paintKey: string;
+    unitNumber: number;
+    previousPaint: PaintType | string | null;
+    nextPaint: PaintType | string;
+  }) => void;
   isPaintingEnabled: boolean;
   showSelectionRing: boolean;
 }
@@ -29,6 +39,11 @@ function ModelImportComponent(props: ModelImportProps ) {
     squadSize,
     visibleSquadSize,
     showEdges,
+    showPaintLabels,
+    hoveredPaintLabelKey,
+    setHoveredPaintLabelKey,
+    paintSyncTick,
+    onPaintApplied,
     isPaintingEnabled,
     showSelectionRing,
   } = props;
@@ -38,18 +53,23 @@ function ModelImportComponent(props: ModelImportProps ) {
   const activeVisibleSquadSize =
     typeof visibleSquadSize === 'number' ? visibleSquadSize : squadSize;
 
-  function modelFactory(url) {
+  function modelFactory(url, modelUnitIndex: number) {
     return (
       <Suspense fallback={null}>
         <ModelObject
           currentPaintRef={currentPaintRef}
           paintRef={paintRef}
           show={show}
-          squadIndex={squadIndex}
+          squadIndex={modelUnitIndex}
           url={url}
           baseColor={baseColor}
           clone={clone}
           showEdges={showEdges}
+          showPaintLabels={showPaintLabels}
+          hoveredPaintLabelKey={hoveredPaintLabelKey}
+          setHoveredPaintLabelKey={setHoveredPaintLabelKey}
+          paintSyncTick={paintSyncTick}
+          onPaintApplied={onPaintApplied}
           isPaintingEnabled={isPaintingEnabled}
         />
       </Suspense>
@@ -87,7 +107,7 @@ function ModelImportComponent(props: ModelImportProps ) {
           >
             <group >
               <group position={[1, -37, 0]} rotation={[0, 1.4 * Math.PI, 0]}>
-                {parts[i].base && modelFactory(parts[i].base)}
+                {parts[i].base && modelFactory(parts[i].base, i)}
               </group>
 
               <Clone
@@ -108,8 +128,8 @@ function ModelImportComponent(props: ModelImportProps ) {
                       rotation={[0 * Math.PI, 0 * Math.PI, -0.48]}
                       position={[1, 0, -2.3]}
                     >
-                      {parts[i].shoulderL && modelFactory(parts[i].shoulderL)}
-                      {parts[i].shieldL && modelFactory(parts[i].shieldL)}
+                      {parts[i].shoulderL && modelFactory(parts[i].shoulderL, i)}
+                      {parts[i].shieldL && modelFactory(parts[i].shieldL, i)}
                     </group>
                     <group
                       position={
@@ -119,7 +139,7 @@ function ModelImportComponent(props: ModelImportProps ) {
                       }
                       rotation={[0, -0.5 * Math.PI, 0]}
                     >
-                      {parts[i].armL && modelFactory(parts[i].armL)}
+                      {parts[i].armL && modelFactory(parts[i].armL, i)}
                     </group>
                   </Clone>
                   <Clone
@@ -131,8 +151,8 @@ function ModelImportComponent(props: ModelImportProps ) {
                       rotation={[0 * Math.PI, -0.5 * Math.PI, 0]}
                       position={[0, 0, 0]}
                     >
-                      {parts[i].shoulderR && modelFactory(parts[i].shoulderR)}
-                      {parts[i].shieldR && modelFactory(parts[i].shieldR)}
+                      {parts[i].shoulderR && modelFactory(parts[i].shoulderR, i)}
+                      {parts[i].shieldR && modelFactory(parts[i].shieldR, i)}
                     </group>
                     <group
                       position={
@@ -142,7 +162,7 @@ function ModelImportComponent(props: ModelImportProps ) {
                       }
                       rotation={[0 * Math.PI, 0 * Math.PI, 0 * Math.PI]}
                     >
-                      {parts[i].armR && modelFactory(parts[i].armR)}
+                      {parts[i].armR && modelFactory(parts[i].armR, i)}
                     </group>
                   </Clone>
                   <Clone
@@ -154,14 +174,14 @@ function ModelImportComponent(props: ModelImportProps ) {
                         : [0, -3.6, 0]
                     }
                   >
-                    {parts[i].helmet && modelFactory(parts[i].helmet)}
+                    {parts[i].helmet && modelFactory(parts[i].helmet, i)}
                   </Clone>
 
                   <group
                     rotation={[0, 1 * Math.PI, 0]}
                     position={[0, -9, -9.0]}
                   >
-                    {parts[i].cloak && modelFactory(parts[i].cloak)}
+                    {parts[i].cloak && modelFactory(parts[i].cloak, i)}
                   </group>
                   <group
                     rotation={[0, 0, 0]}
@@ -172,7 +192,7 @@ function ModelImportComponent(props: ModelImportProps ) {
                         : [0, 7, -6.0]
                     }
                   >
-                    {parts[i].ironCross && modelFactory(parts[i].ironCross)}
+                    {parts[i].ironCross && modelFactory(parts[i].ironCross, i)}
                   </group>
                   <group
                     position={
@@ -181,7 +201,7 @@ function ModelImportComponent(props: ModelImportProps ) {
                         : [0, -9.8, -4.0]
                     }
                   >
-                    {torsoArr && modelFactory(torsoArr)}
+                    {torsoArr && modelFactory(torsoArr, i)}
                   </group>
                   <group
                     position={
@@ -191,14 +211,14 @@ function ModelImportComponent(props: ModelImportProps ) {
                         : [-0.8, -11, -3]
                     }
                   >
-                    {parts[i].backpack && modelFactory(parts[i].backpack)}
+                    {parts[i].backpack && modelFactory(parts[i].backpack, i)}
                   </group>
                   <Clone  
                     rotation={[0, 0, 0]}
                     object={newNodeArr.spine}
                   >
                     <group scale={1.1} position={[-0.2, -6.5, 0.4]}>
-                      {parts[i].legs && modelFactory(parts[i].legs)}
+                      {parts[i].legs && modelFactory(parts[i].legs, i)}
                     </group>
                   </Clone>
                 </Clone>
@@ -216,6 +236,9 @@ function ModelImportComponent(props: ModelImportProps ) {
     baseColor,
     clone,
     showEdges,
+    showPaintLabels,
+    hoveredPaintLabelKey,
+    paintSyncTick,
     parts,
   ]);
 
@@ -236,9 +259,9 @@ function ModelImportComponent(props: ModelImportProps ) {
 
     return (
       <group position={[positionX, 0, positionZ]} key={`selection_ring_${squadIndex}`}>
-        <mesh position={[0, -46, 0]} rotation={[-0.5 * Math.PI, 0, 0]}>
+        <mesh position={[0, -36, 0]} rotation={[-0.5 * Math.PI, 0, 0]}>
           <ringGeometry args={[20, 30, 30]} />
-          <meshBasicMaterial color="#ffffff" transparent opacity={0.2} toneMapped={false} />
+          <meshBasicMaterial color="#ffffff" transparent opacity={0.04} toneMapped={false} />
         </mesh>
       </group>
     );

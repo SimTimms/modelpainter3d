@@ -17,8 +17,20 @@ interface ModelObjectProps {
   baseColor: PaintType;
   clone: boolean;
   showEdges: boolean;
+  showPaintLabels: boolean;
+  hoveredPaintLabelKey: string | null;
+  setHoveredPaintLabelKey: React.Dispatch<React.SetStateAction<string | null>>;
+  paintSyncTick: number;
+  onPaintApplied: (payload: {
+    paintKey: string;
+    unitNumber: number;
+    previousPaint: PaintType | string | null;
+    nextPaint: PaintType | string;
+  }) => void;
   isPaintingEnabled: boolean;
 }
+
+const buildPaintTargetId = (url: string, node: string) => `${url}::${node}`;
 
 function ModelObjectComponent(props: ModelObjectProps) {
   const {
@@ -30,6 +42,11 @@ function ModelObjectComponent(props: ModelObjectProps) {
     baseColor,
     clone,
     showEdges,
+    showPaintLabels,
+    hoveredPaintLabelKey,
+    setHoveredPaintLabelKey,
+    paintSyncTick,
+    onPaintApplied,
     isPaintingEnabled,
   } = props;
   const { nodes } = useGLTF(url);
@@ -41,6 +58,7 @@ function ModelObjectComponent(props: ModelObjectProps) {
         return (
           <MemoMesh
             key={`${index}-${squadIndex}-${url}`}
+            paintTargetId={buildPaintTargetId(url, node)}
             nodeGeometry={(nodes[node] as any).geometry}
             material={(nodes[node] as any).material}
             currentPaintRef={currentPaintRef}
@@ -51,6 +69,11 @@ function ModelObjectComponent(props: ModelObjectProps) {
             baseColor={baseColor}
             clone={clone}
             showEdges={showEdges}
+            showPaintLabels={showPaintLabels}
+            hoveredPaintLabelKey={hoveredPaintLabelKey}
+            setHoveredPaintLabelKey={setHoveredPaintLabelKey}
+            paintSyncTick={paintSyncTick}
+            onPaintApplied={onPaintApplied}
             isPaintingEnabled={isPaintingEnabled}
           />
         );

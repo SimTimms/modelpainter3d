@@ -4,7 +4,7 @@ import { Canvas } from '@react-three/fiber';
 import { useGLTF, useProgress } from '@react-three/drei';
 import { Model } from './Marine-mini';
 import 'rc-slider/assets/index.css';
-import { paints } from './paints';
+import { paints, PaintType } from './paints';
 import { SliderGroup } from './SliderGroup';
 import {
   defaultState,
@@ -25,6 +25,18 @@ import {
   attachmentOptionsPrimaris,
 } from './defaultState';
 import { Vector3 } from 'three';
+
+interface RecipePaintEntry {
+  name: string;
+  color: string;
+  link: string;
+}
+interface PaintHistoryEntry {
+  paintKey: string;
+  unitNumber: number;
+  previousPaint: PaintType | string | null;
+  nextPaint: PaintType | string;
+}
 
 function ModelLoadingOverlay() {
   const { active, progress, item, loaded, total } = useProgress();
@@ -136,6 +148,11 @@ export default function ThreeD({ isVisible }) {
   const [lighting, setLighting] = React.useState(0.5);
   const [isLightFixed, setIsLightFixed] = React.useState(false);
   const [showEdges, setShowEdges] = React.useState(true);
+  const [showPaintLabels, setShowPaintLabels] = React.useState(false);
+  const [resetCameraSignal, setResetCameraSignal] = React.useState(0);
+  const [hoveredPaintLabelKey, setHoveredPaintLabelKey] = React.useState<string | null>(
+    null
+  );
   const [isScreenshotMode, setIsScreenshotMode] = React.useState(false);
   const [squadSize, setSquadSize] = React.useState(1);
   const [loadedSquadSize, setLoadedSquadSize] = React.useState(1);
@@ -146,6 +163,11 @@ export default function ThreeD({ isVisible }) {
   const [isCloneModalOpen, setIsCloneModalOpen] = React.useState(false);
   const [isModelDropdownOpen, setIsModelDropdownOpen] = React.useState(false);
   const [isLoadoutExpanded, setIsLoadoutExpanded] = React.useState(true);
+  const [paintRecipe, setPaintRecipe] = React.useState<RecipePaintEntry[]>([]);
+  const [recipeModelLabel, setRecipeModelLabel] = React.useState('');
+  const [isRecipeModalOpen, setIsRecipeModalOpen] = React.useState(false);
+  const [paintHistory, setPaintHistory] = React.useState<PaintHistoryEntry[]>([]);
+  const [paintSyncTick, setPaintSyncTick] = React.useState(0);
   const [paintMode, setPaintMode] = React.useState<'base' | 'brush' | 'background'>(
     'base'
   );
@@ -179,6 +201,7 @@ export default function ThreeD({ isVisible }) {
   const partSwapPerfRef = useRef<{ start: number; unitIndex: number } | null>(null);
   const currentPaintRef = useRef(currentPaint);
   const preloadedUrlsRef = useRef<Set<string>>(new Set());
+  const paintRef = useRef({});
   const modelLabels = React.useMemo(
     () => ({
       guardsman: 'Guard',
@@ -286,6 +309,23 @@ export default function ThreeD({ isVisible }) {
     },
     [unitIndex, startAttachmentTransition]
   );
+  const handlePaintApplied = React.useCallback((entry: PaintHistoryEntry) => {
+    setPaintHistory((prev) => [...prev, entry]);
+  }, []);
+  const handleUndoPaint = React.useCallback(() => {
+    if (paintHistory.length === 0) return;
+    const lastPaint = paintHistory[paintHistory.length - 1];
+    if (lastPaint.previousPaint === null) {
+      delete paintRef.current[lastPaint.paintKey];
+    } else {
+      paintRef.current[lastPaint.paintKey] = {
+        paint: lastPaint.previousPaint,
+        unitNumber: lastPaint.unitNumber,
+      };
+    }
+    setPaintHistory((prev) => prev.slice(0, -1));
+    setPaintSyncTick((prev) => prev + 1);
+  }, [paintHistory, paintRef]);
   const handleCloneToggle = React.useCallback(() => {
     setIsCloneModalOpen(true);
   }, []);
@@ -335,6 +375,11 @@ export default function ThreeD({ isVisible }) {
   }, [unitIndex, squadSizeDraft]);
 
   React.useEffect(() => {
+    if (!showPaintLabels && hoveredPaintLabelKey !== null) {
+      setHoveredPaintLabelKey(null);
+    }
+  }, [showPaintLabels, hoveredPaintLabelKey]);
+  React.useEffect(() => {
     const currentModelUrls = modelAssetMap[currentModel] || [];
     currentModelUrls.forEach((url) => {
       if (!preloadedUrlsRef.current.has(url)) {
@@ -363,6 +408,39 @@ export default function ThreeD({ isVisible }) {
       ),
     [attachmentMenu, modelAttachments, setModelAttachmentsWithPerf, unitIndex]
   );
+  const getGamesWorkshopLink = React.useCallback((paint: { name: string; link?: string }) => {
+    if (paint.link && (paint.link.includes('games-workshop.com') || paint.link.includes('warhammer.com'))) {
+      return paint.link;
+    }
+    return `https://www.warhammer.com/en-GB/plp?search=${encodeURIComponent(paint.name)}`;
+  }, []);
+  const generateRecipe = React.useCallback(() => {
+    const recipeByName = new Map<string, RecipePaintEntry>();
+    const addPaint = (paint: any) => {
+      if (!paint || typeof paint === 'string' || !paint.name || !paint.color) return;
+      if (!recipeByName.has(paint.name)) {
+        recipeByName.set(paint.name, {
+          name: paint.name,
+          color: paint.color,
+          link: getGamesWorkshopLink(paint),
+        });
+      }
+    };
+
+    addPaint(baseColor);
+    Object.values(paintRef.current || {}).forEach((entry: any) => {
+      if (entry?.paint) {
+        addPaint(entry.paint);
+      }
+    });
+
+    const nextRecipe = Array.from(recipeByName.values()).sort((a, b) =>
+      a.name.localeCompare(b.name)
+    );
+    setPaintRecipe(nextRecipe);
+    setRecipeModelLabel(modelLabels[currentModel] || currentModel);
+    setIsRecipeModalOpen(true);
+  }, [baseColor, currentModel, getGamesWorkshopLink, modelLabels]);
 
   const pose = {
     termie: [
@@ -394,7 +472,6 @@ export default function ThreeD({ isVisible }) {
     ],
   };
   const light = useRef();
-  const paintRef = useRef({});
   const buildSquadPlaceholders = (startIndex: number, endIndex: number) => {
     const placeholders = [];
     for (let i = startIndex; i < endIndex; i++) {
@@ -403,9 +480,9 @@ export default function ThreeD({ isVisible }) {
       const positionZ = i === 0 ? 0 : i > 0 && i < 3 ? 80 : -40;
 
       placeholders.push(
-        <group position={[positionX, 20, positionZ]} key={`placeholder_${i}`}>
+        <group position={[positionX, 0, positionZ]} key={`placeholder_${i}` } rotation={[-0.5 * Math.PI, 0, 0]}>
           <mesh castShadow receiveShadow>
-            <sphereGeometry args={[9, 16, 16]} />
+            <ringGeometry args={[14, 16, 16]} />
             <meshStandardMaterial
               color={baseColor.color}
               metalness={0.05}
@@ -522,6 +599,25 @@ export default function ThreeD({ isVisible }) {
           Clone
         </button>
       )}
+      <button
+        type="button"
+        onClick={handleUndoPaint}
+        disabled={paintHistory.length === 0}
+        style={{
+          border: paintHistory.length > 0 ? '1px solid #555' : '1px solid #444',
+          background: paintHistory.length > 0 ? '#222' : '#1a1a1a',
+          color: paintHistory.length > 0 ? '#fff' : '#777',
+          cursor: paintHistory.length > 0 ? 'pointer' : 'default',
+          borderRadius: 4,
+          padding: '6px 8px',
+          fontSize: 11,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 6,
+        }}
+      >
+        Undo Paint
+      </button>
     </div>
   );
 
@@ -618,25 +714,58 @@ export default function ThreeD({ isVisible }) {
                   color: 'white',
                   fontSize: 10,
                   marginBottom: 6,
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  gap: 8,
                 }}
               >
-                {paintMode === 'base'
-                  ? 'Base Coat'
-                  : paintMode === 'background'
-                  ? 'Background'
-                  : 'Brush'}
-                : {activePaint.name} -{' '}
-                {activePaint.company}
-                {activePaint.link && (
-                  <a
-                    style={{ color: 'grey', marginLeft: 5 }}
-                    href={activePaint.link}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    BUY
-                  </a>
-                )}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
+                  <span
+                    style={{
+                      width: 10,
+                      height: 10,
+                      borderRadius: '50%',
+                      background: activePaint.color,
+                      border: '1px solid rgba(255,255,255,0.4)',
+                      flexShrink: 0,
+                    }}
+                  />
+                  <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {paintMode === 'base'
+                      ? 'Base Coat'
+                      : paintMode === 'background'
+                      ? 'Background'
+                      : 'Brush'}
+                    : {activePaint.name} - {activePaint.company}
+                    {activePaint.link && (
+                      <a
+                        style={{ color: 'grey', marginLeft: 5 }}
+                        href={activePaint.link}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        BUY
+                      </a>
+                    )}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={generateRecipe}
+                  style={{
+                    border: '1px solid #555',
+                    background: '#222',
+                    color: '#fff',
+                    borderRadius: 4,
+                    padding: '4px 8px',
+                    fontSize: 10,
+                    cursor: 'pointer',
+                    flexShrink: 0,
+                  }}
+                >
+                  Generate
+                </button>
               </div>
 
               <div style={{ display: 'flex', flexWrap: 'wrap' }}>
@@ -918,6 +1047,24 @@ export default function ThreeD({ isVisible }) {
                 titleFontSize={10}
                 titleColor="#aaa"
               />
+              <div style={{ borderTop: '1px solid #444', paddingTop: 8 }}>
+                <button
+                  type="button"
+                  onClick={() => setResetCameraSignal((prev) => prev + 1)}
+                  style={{
+                    border: '1px solid #555',
+                    background: '#222',
+                    color: '#fff',
+                    borderRadius: 4,
+                    padding: '6px 8px',
+                    fontSize: 10,
+                    cursor: 'pointer',
+                    width: '100%',
+                  }}
+                >
+                  Re-center Camera
+                </button>
+              </div>
               <div
                 style={{
                   marginTop: 6,
@@ -937,6 +1084,27 @@ export default function ThreeD({ isVisible }) {
                 />
                 <label htmlFor="fix-light-toggle" style={{ cursor: 'pointer' }}>
                   Fix Light
+                </label>
+              </div>
+              <div
+                style={{
+                  marginTop: 6,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  color: '#aaa',
+                  fontSize: 10,
+                }}
+              >
+                <input
+                  id="paint-labels-toggle"
+                  type="checkbox"
+                  checked={showPaintLabels}
+                  onChange={(event) => setShowPaintLabels(event.target.checked)}
+                  style={{ margin: 0 }}
+                />
+                <label htmlFor="paint-labels-toggle" style={{ cursor: 'pointer' }}>
+                  Show Paint Labels
                 </label>
               </div>
               <div style={{ borderTop: '1px solid #444', paddingTop: 8 }}>
@@ -1012,6 +1180,107 @@ export default function ThreeD({ isVisible }) {
         onCancel={() => setIsCloneModalOpen(false)}
         onConfirm={handleConfirmClone}
       />
+      {isRecipeModalOpen && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            width: '100vw',
+            height: '100vh',
+            zIndex: 2800,
+            background: 'rgba(0, 0, 0, 0.45)',
+            backdropFilter: 'blur(8px)',
+            WebkitBackdropFilter: 'blur(8px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 16,
+            boxSizing: 'border-box',
+          }}
+          onClick={() => setIsRecipeModalOpen(false)}
+        >
+          <div
+            style={{
+              width: 'min(560px, 100%)',
+              maxHeight: 'min(80vh, 700px)',
+              overflowY: 'auto',
+              border: '1px solid #555',
+              borderRadius: 8,
+              background: 'rgba(18, 18, 22, 0.95)',
+              color: '#fff',
+              padding: 16,
+              boxSizing: 'border-box',
+            }}
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                gap: 10,
+                marginBottom: 10,
+              }}
+            >
+              <div style={{ fontSize: 14, fontWeight: 600 }}>
+                {recipeModelLabel || modelLabels[currentModel]} Recipe
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsRecipeModalOpen(false)}
+                style={{
+                  border: '1px solid #666',
+                  background: '#222',
+                  color: '#fff',
+                  borderRadius: 4,
+                  padding: '4px 8px',
+                  fontSize: 11,
+                  cursor: 'pointer',
+                }}
+              >
+                Close
+              </button>
+            </div>
+            {paintRecipe.length > 0 ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                {paintRecipe.map((paint) => (
+                  <a
+                    key={paint.name}
+                    href={paint.link}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 8,
+                      color: '#c9d7ff',
+                      fontSize: 12,
+                      textDecoration: 'none',
+                      padding: '4px 0',
+                    }}
+                  >
+                    <span
+                      style={{
+                        width: 12,
+                        height: 12,
+                        borderRadius: '50%',
+                        background: paint.color,
+                        border: '1px solid rgba(255,255,255,0.45)',
+                        flexShrink: 0,
+                      }}
+                    />
+                    <span>{paint.name}</span>
+                  </a>
+                ))}
+              </div>
+            ) : (
+              <div style={{ color: '#aaa', fontSize: 12 }}>
+                No recipe generated yet. Click Generate in the paints panel first.
+              </div>
+            )}
+          </div>
+        </div>
+      )}
       {(squadSizeDraft > loadedSquadSize ||
         (isSquadSizePending && squadSizeDraft !== squadSize)) && (
         <div
@@ -1062,14 +1331,18 @@ export default function ThreeD({ isVisible }) {
         onPointerDown={returnToBrushOnSceneClick}
         style={{
           width: '100vw',
-          height: 'calc(100vh - 80px)',
+          height: '100vh',
           backgroundColor: backgroundColor.color,
           backgroundImage:
             'linear-gradient(to bottom, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.2) 45%, rgba(255, 255, 255, 0.12) 100%)',
         }}
         camera={{ fov: 50, position: [0, 150, 140] as unknown as Vector3, near: 0.1, zoom: 1 }}
       >
-        <CameraController light={light} isLightFixed={isLightFixed} />
+        <CameraController
+          light={light}
+          isLightFixed={isLightFixed}
+          resetCameraSignal={resetCameraSignal}
+        />
         <group position={[0, 100, 0]}>
           <ambientLight intensity={0.006} />
         </group>
@@ -1094,7 +1367,7 @@ export default function ThreeD({ isVisible }) {
             Math.max(loadedSquadSize, squadSizeDraft)
           )}
         >
-          <group position={[0, 0, 0]}>
+          <group position={[0, 30, 0]}>
             <Model
               currentModel={currentModel}
               currentPaintRef={currentPaintRef}
@@ -1106,6 +1379,11 @@ export default function ThreeD({ isVisible }) {
               squadSize={loadedSquadSize}
               visibleSquadSize={squadSizeDraft}
               showEdges={showEdges}
+              showPaintLabels={showPaintLabels}
+              hoveredPaintLabelKey={hoveredPaintLabelKey}
+              setHoveredPaintLabelKey={setHoveredPaintLabelKey}
+              paintSyncTick={paintSyncTick}
+              onPaintApplied={handlePaintApplied}
               isPaintingEnabled={!isScreenshotMode}
               showSelectionRing={!isScreenshotMode}
             />

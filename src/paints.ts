@@ -6,7 +6,7 @@ export interface PaintType {
   link?: string;
 }
 
-export const paints: PaintType[] = [
+const basePaints: PaintType[] = [
   {
     name: 'Abaddon Black',
     color: '#111111',
@@ -256,3 +256,10 @@ export const paints: PaintType[] = [
 
   { name: 'Ionrach Skin', color: '#97a384', company: 'Games Workshop' },
 ];
+
+export const paints: PaintType[] = basePaints.map((paint) => ({
+  ...paint,
+  link:
+    paint.link ||
+    `https://www.warhammer.com/en-GB/plp?search=${encodeURIComponent(paint.name)}`,
+}));

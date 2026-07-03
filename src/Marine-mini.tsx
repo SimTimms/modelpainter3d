@@ -13,6 +13,16 @@ interface ModelProps {
   clone: boolean;
   squadIndex: number;
   showEdges: boolean;
+  showPaintLabels: boolean;
+  hoveredPaintLabelKey: string | null;
+  setHoveredPaintLabelKey: React.Dispatch<React.SetStateAction<string | null>>;
+  paintSyncTick: number;
+  onPaintApplied: (payload: {
+    paintKey: string;
+    unitNumber: number;
+    previousPaint: PaintType | string | null;
+    nextPaint: PaintType | string;
+  }) => void;
   isPaintingEnabled: boolean;
   showSelectionRing: boolean;
 }
@@ -28,6 +38,11 @@ function ModelComponent(props: ModelProps) {
     clone,
     squadIndex,
     showEdges,
+    showPaintLabels,
+    hoveredPaintLabelKey,
+    setHoveredPaintLabelKey,
+    paintSyncTick,
+    onPaintApplied,
     isPaintingEnabled,
     showSelectionRing,
   } = props;
@@ -197,6 +212,11 @@ function ModelComponent(props: ModelProps) {
       show={true}
       squadIndex={squadIndex}
       showEdges={showEdges}
+      showPaintLabels={showPaintLabels}
+      hoveredPaintLabelKey={hoveredPaintLabelKey}
+      setHoveredPaintLabelKey={setHoveredPaintLabelKey}
+      paintSyncTick={paintSyncTick}
+      onPaintApplied={onPaintApplied}
       isPaintingEnabled={isPaintingEnabled}
       showSelectionRing={showSelectionRing}
     />
