@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { useGLTF } from '@react-three/drei';
+import { useGLTF, useProgress } from '@react-three/drei';
 import { Model } from './Marine-mini';
 import 'rc-slider/assets/index.css';
 import { paints } from './paints';
@@ -26,13 +26,109 @@ import {
 } from './defaultState';
 import { Vector3 } from 'three';
 
+function ModelLoadingOverlay() {
+  const { active, progress, item, loaded, total } = useProgress();
+  const [bootLoadStarted, setBootLoadStarted] = React.useState(false);
+  const [bootLoadFinished, setBootLoadFinished] = React.useState(false);
+  const clampedProgress = Math.max(0, Math.min(100, Math.round(progress)));
+
+  React.useEffect(() => {
+    if (active) {
+      setBootLoadStarted(true);
+      return;
+    }
+    if (bootLoadStarted && !active) {
+      setBootLoadFinished(true);
+    }
+  }, [active, bootLoadStarted]);
+
+  if (bootLoadFinished) return null;
+  const showProgress = active && total > 0;
+
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 3000,
+        background: 'rgba(5, 5, 8, 0.9)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        pointerEvents: 'none',
+      }}
+    >
+      <div
+        style={{
+          width: 'min(420px, calc(100vw - 40px))',
+          border: '1px solid #555',
+          borderRadius: 8,
+          padding: '16px 14px',
+          background: 'rgba(20,20,24,0.85)',
+          color: '#fff',
+          fontSize: 12,
+          boxSizing: 'border-box',
+        }}
+      >
+        <div style={{ marginBottom: 8, letterSpacing: 0.3 }}>
+          {showProgress ? 'Loading models...' : 'Please wait...'}
+        </div>
+        {showProgress ? (
+          <>
+            <div
+              style={{
+                height: 8,
+                width: '100%',
+                background: '#2a2a2a',
+                borderRadius: 999,
+                overflow: 'hidden',
+                marginBottom: 8,
+              }}
+            >
+              <div
+                style={{
+                  height: '100%',
+                  width: `${clampedProgress}%`,
+                  background: '#87a7ff',
+                  transition: 'width 120ms linear',
+                }}
+              />
+            </div>
+            <div style={{ color: '#b8b8b8', marginBottom: 4 }}>
+              {loaded}/{total} assets
+            </div>
+            <div
+              style={{
+                color: '#8f8f8f',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {item || 'Preparing assets...'} ({clampedProgress}%)
+            </div>
+          </>
+        ) : (
+          <div
+            style={{
+              color: '#8f8f8f',
+            }}
+          >
+            Preparing the workspace...
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function ThreeD({ isVisible }) {
   const [currentPaint, setCurrentPaint] = React.useState(paints[0]);
   const [baseColor, setBaseColor] = React.useState(paints[3]);
   const [paintName, setPaintName] = React.useState<string | undefined>(undefined);
   const [clone, setClone] = React.useState(false);
   const [modelAttachments, setModelAttachments] =
-    React.useState(defaultPrimarisState);
+    React.useState(defaultTyranidState);
   const [unitIndex, setUnitIndex] = React.useState(0);
   const [backgroundColor, setBackgroundColor] = React.useState(paints[0]);
   const [lighting, setLighting] = React.useState(0.5);
@@ -43,6 +139,7 @@ export default function ThreeD({ isVisible }) {
   const [squadSizeDraft, setSquadSizeDraft] = React.useState(1);
   const [isSquadSizePending, startSquadSizeTransition] = React.useTransition();
   const [isModelPending, startModelTransition] = React.useTransition();
+  const [isAttachmentPending, startAttachmentTransition] = React.useTransition();
   const [isCloneModalOpen, setIsCloneModalOpen] = React.useState(false);
   const [isModelDropdownOpen, setIsModelDropdownOpen] = React.useState(false);
   const [isLoadoutExpanded, setIsLoadoutExpanded] = React.useState(true);
@@ -56,9 +153,9 @@ export default function ThreeD({ isVisible }) {
       ? backgroundColor
       : currentPaint;
 
-  const [currentModel, setCurrentModel] = React.useState('primaris');
+  const [currentModel, setCurrentModel] = React.useState('guardsmanLow');
   const [attachmentMenu, setAttachmentMenu] = React.useState(
-    attachmentOptionsPrimaris
+    attachmentOptionsTyranid
   );
   const [isMobileMode, setIsMobileMode] = React.useState(() =>
     typeof window !== 'undefined' ? window.innerWidth <= 900 : false
@@ -78,9 +175,13 @@ export default function ThreeD({ isVisible }) {
   const modelSwitchPerfRef = useRef<{ modelKey: string; start: number } | null>(
     null
   );
+  const partSwapPerfRef = useRef<{ start: number; unitIndex: number } | null>(null);
+  const currentPaintRef = useRef(currentPaint);
+  const preloadedUrlsRef = useRef<Set<string>>(new Set());
   const modelLabels = React.useMemo(
     () => ({
       guardsman: 'Guard',
+      guardsmanLow: 'Guardsman Low',
       eldar: 'Aeldari',
       dread: 'Dreadnought',
       ork: 'Ork',
@@ -92,35 +193,40 @@ export default function ThreeD({ isVisible }) {
     []
   );
   const modelKeys = React.useMemo(() => Object.keys(modelLabels), [modelLabels]);
-  const modelPreloadUrls = React.useMemo(
-    () => [
-      'skeleton.gltf',
-      'base_small.glb',
-      'base_medium.glb',
-      'necron_torso.glb',
-      'necron_reaper.glb',
-      'necron_flayer.glb',
-      'gaunt.glb',
-      'eldar.glb',
-      'eldar_arm_both_gun.glb',
-      'eldar_arm_r.glb',
-      'eldar_arm_l_axe.glb',
-      'guardsman.glb',
-      'ork.glb',
-      'ork_arm.glb',
-      'sister.glb',
-      'tau.glb',
-      'tau_arm.glb',
-      'dread.glb',
-      'primaris_torso.glb',
-      'primaris_backpack.glb',
-      'primaris_techmarine_backpack.glb',
-      'primaris_helmet.glb',
-      'primaris_boltgun.glb',
-      'primaris_flamer.glb',
-      'primaris_lense.glb',
-      'primaris_helmet_skull.glb',
-    ],
+  const modelAssetMap = React.useMemo(
+    () => ({
+      termie: [
+        'skeleton.gltf',
+        'base_medium.glb',
+      ],
+      necron: [
+        'skeleton.gltf',
+        'base_medium.glb',
+        'necron_torso.glb',
+        'necron_flayer.glb',
+      ],
+      gaunt: ['skeleton.gltf', 'base_small.glb', 'gaunt.glb'],
+      eldar: [
+        'skeleton.gltf',
+        'base_small.glb',
+        'eldar.glb',
+        'eldar_arm_both_gun.glb',
+      ],
+      guardsman: ['skeleton.gltf', 'base_small.glb', 'guardsman.glb'],
+      guardsmanLow: ['skeleton.gltf', 'base_small.glb', 'guardsman-low.glb'],
+      ork: ['skeleton.gltf', 'base_small.glb', 'ork.glb', 'ork_arm.glb'],
+      sister: ['skeleton.gltf', 'base_small.glb', 'sister.glb'],
+      tau: ['skeleton.gltf', 'base_small.glb', 'tau.glb', 'tau_arm.glb'],
+      dread: ['skeleton.gltf', 'dread.glb'],
+      primaris: [
+        'skeleton.gltf',
+        'base_medium.glb',
+        'primaris_torso.glb',
+        'primaris_backpack.glb',
+        'primaris_helmet.glb',
+        'primaris_boltgun.glb',
+      ],
+    }),
     []
   );
   const handleModelSelect = React.useCallback((modelKey: string) => {
@@ -165,6 +271,20 @@ export default function ThreeD({ isVisible }) {
       modelSwitchPerfRef.current = null;
     }
   }, [isModelPending, currentModel]);
+  React.useEffect(() => {
+    currentPaintRef.current = currentPaint;
+  }, [currentPaint]);
+
+  const setModelAttachmentsWithPerf = React.useCallback(
+    (nextAttachments: any) => {
+      partSwapPerfRef.current = { start: performance.now(), unitIndex };
+      console.info(`[perf] part swap start -> unit ${unitIndex + 1}`);
+      startAttachmentTransition(() => {
+        setModelAttachments(nextAttachments);
+      });
+    },
+    [unitIndex, startAttachmentTransition]
+  );
   const handleCloneToggle = React.useCallback(() => {
     setIsCloneModalOpen(true);
   }, []);
@@ -214,8 +334,34 @@ export default function ThreeD({ isVisible }) {
   }, [unitIndex, squadSizeDraft]);
 
   React.useEffect(() => {
-    modelPreloadUrls.forEach((url) => useGLTF.preload(url));
-  }, [modelPreloadUrls]);
+    const currentModelUrls = modelAssetMap[currentModel] || [];
+    currentModelUrls.forEach((url) => {
+      if (!preloadedUrlsRef.current.has(url)) {
+        useGLTF.preload(url);
+        preloadedUrlsRef.current.add(url);
+      }
+    });
+  }, [currentModel, modelAssetMap]);
+  React.useEffect(() => {
+    if (!isAttachmentPending && partSwapPerfRef.current) {
+      const { start, unitIndex: swapUnitIndex } = partSwapPerfRef.current;
+      const elapsed = performance.now() - start;
+      console.info(
+        `[perf] part swap complete -> unit ${swapUnitIndex + 1} (${elapsed.toFixed(1)}ms)`
+      );
+      partSwapPerfRef.current = null;
+    }
+  }, [isAttachmentPending, modelAttachments]);
+  const attachmentButtons = React.useMemo(
+    () =>
+      buildAttachmentButtons(
+        modelAttachments,
+        setModelAttachmentsWithPerf,
+        unitIndex,
+        attachmentMenu
+      ),
+    [attachmentMenu, modelAttachments, setModelAttachmentsWithPerf, unitIndex]
+  );
 
   const pose = {
     termie: [
@@ -283,6 +429,7 @@ export default function ThreeD({ isVisible }) {
         flexDirection: 'column',
       }}
     >
+      <ModelLoadingOverlay />
       <div
         style={{
           position: 'fixed',
@@ -573,12 +720,7 @@ export default function ThreeD({ isVisible }) {
               ))}
             </div>
           </div>
-          {buildAttachmentButtons(
-            modelAttachments,
-            setModelAttachments,
-            unitIndex,
-            attachmentMenu
-          ).length > 0 && (
+          {attachmentButtons.length > 0 && (
             <div
               style={{
                 display: 'flex',
@@ -607,12 +749,7 @@ export default function ThreeD({ isVisible }) {
               </button>
               {isLoadoutExpanded && (
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                  {buildAttachmentButtons(
-                    modelAttachments,
-                    setModelAttachments,
-                    unitIndex,
-                    attachmentMenu
-                  )}
+                  {attachmentButtons}
                 </div>
               )}
             </div>
@@ -943,7 +1080,7 @@ export default function ThreeD({ isVisible }) {
           <group position={[0, 0, 0]}>
             <Model
               currentModel={currentModel}
-              currentPaint={currentPaint}
+              currentPaintRef={currentPaintRef}
               parts={modelAttachments}
               paintRef={paintRef}
               squadIndex={unitIndex}

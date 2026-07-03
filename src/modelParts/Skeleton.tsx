@@ -1,10 +1,10 @@
-import { useEffect, useMemo, useState } from 'react';
+import { memo, Suspense, useEffect, useMemo, useState } from 'react';
 import { useGLTF, Clone } from '@react-three/drei';
 import { ModelObject } from './ModelObject.jsx';
 import {PaintType} from '../paints';
 
 interface ModelImportProps {
-  currentPaint: PaintType;
+  currentPaintRef: React.MutableRefObject<PaintType>;
   paintRef: any;
   show: boolean;
   squadIndex: number;
@@ -17,9 +17,9 @@ interface ModelImportProps {
   isPaintingEnabled: boolean;
   showSelectionRing: boolean;
 }
-export function ModelImport(props: ModelImportProps ) {
+function ModelImportComponent(props: ModelImportProps ) {
   const {
-    currentPaint,
+    currentPaintRef,
     paintRef,
     show,
     squadIndex,
@@ -40,17 +40,19 @@ export function ModelImport(props: ModelImportProps ) {
 
   function modelFactory(url) {
     return (
-      <ModelObject
-        currentPaint={currentPaint}
-        paintRef={paintRef}
-        show={show}
-        squadIndex={squadIndex}
-        url={url}
-        baseColor={baseColor}
-        clone={clone}
-        showEdges={showEdges}
-        isPaintingEnabled={isPaintingEnabled}
-      />
+      <Suspense fallback={null}>
+        <ModelObject
+          currentPaintRef={currentPaintRef}
+          paintRef={paintRef}
+          show={show}
+          squadIndex={squadIndex}
+          url={url}
+          baseColor={baseColor}
+          clone={clone}
+          showEdges={showEdges}
+          isPaintingEnabled={isPaintingEnabled}
+        />
+      </Suspense>
     );
   }
 
@@ -211,12 +213,10 @@ export function ModelImport(props: ModelImportProps ) {
     squadSize,
     activeVisibleSquadSize,
     newNodeArr,
-    currentPaint,
     baseColor,
     clone,
     showEdges,
     parts,
-    paintRef,
   ]);
 
   const selectionRing = useMemo(() => {
@@ -252,3 +252,5 @@ export function ModelImport(props: ModelImportProps ) {
     </>
   );
 }
+
+export const ModelImport = memo(ModelImportComponent);

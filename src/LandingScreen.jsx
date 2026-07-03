@@ -1,6 +1,17 @@
+import { useEffect } from 'react';
 import ThreeD from './ThreeD';
 
 export default function LandingScreen() {
+  useEffect(() => {
+    const bootFallback = document.getElementById('boot-fallback');
+    if (bootFallback) {
+      bootFallback.style.transition = 'opacity 150ms ease';
+      bootFallback.style.opacity = '0';
+      window.setTimeout(() => {
+        bootFallback.remove();
+      }, 170);
+    }
+  }, []);
 
   return (
     <div

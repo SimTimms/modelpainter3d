@@ -1,10 +1,10 @@
-import { useState, useRef, useEffect } from 'react';
+import { memo, useState, useRef, useEffect } from 'react';
 import { Edges } from '@react-three/drei';
 import { PaintType } from '../paints';
 
 interface MeshProps {
   paintRef: any;
-  currentPaint: PaintType | string;
+  currentPaintRef: React.MutableRefObject<PaintType | string>;
   name: string;
   show: boolean;
   baseColor: PaintType | string;
@@ -19,7 +19,7 @@ interface MeshProps {
 export function Mesh(props: MeshProps) {
   const {
     paintRef,
-    currentPaint,
+    currentPaintRef,
     name,
     show,
     baseColor,
@@ -31,9 +31,8 @@ export function Mesh(props: MeshProps) {
     isPaintingEnabled,
   } = props;
   const [colours, setColours] = useState<PaintType | string | null>(null);
-  const [base, setBase] = useState<PaintType | string | null>(null);
   const canPaint = useRef(true);
-  const activePaint = colours || base;
+  const activePaint = colours || baseColor;
   const activePaintColor =
     typeof activePaint === 'string' ? activePaint : activePaint?.color;
   const activePaintIsMetal =
@@ -51,10 +50,7 @@ export function Mesh(props: MeshProps) {
     }
   }, [clone]);
 
-  useEffect(() => {
-    setBase(baseColor);
-  }, [baseColor]);
-  if (!base || !activePaintColor) return null;
+  if (!activePaintColor) return null;
   return (
     <mesh
       key="mesh"
@@ -62,10 +58,11 @@ export function Mesh(props: MeshProps) {
       onPointerUp={(event) => {
         if (isPaintingEnabled && canPaint.current) {
           event.stopPropagation();
-            setColours(currentPaint ? currentPaint : '#ff0000');
+            const paint = currentPaintRef?.current || '#ff0000';
+            setColours(paint);
             if (paintRef) {
               paintRef.current[name] = {
-                paint: currentPaint ? currentPaint : '#ff0000',
+                paint,
                 unitNumber: unitNumber,
               };
             }
@@ -91,3 +88,5 @@ export function Mesh(props: MeshProps) {
     </mesh>
   );
 }
+
+export const MemoMesh = memo(Mesh);

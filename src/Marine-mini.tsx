@@ -1,9 +1,9 @@
-import { useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import { ModelImport } from './modelParts/Skeleton.js';
 import type { PaintType } from './paints';
 
 interface ModelProps {
-  currentPaint: PaintType;
+  currentPaintRef: React.MutableRefObject<PaintType>;
   paintRef: any;
   baseColor: PaintType;
   currentModel: string;
@@ -16,9 +16,9 @@ interface ModelProps {
   isPaintingEnabled: boolean;
   showSelectionRing: boolean;
 }
-export function Model(props: ModelProps) {
+function ModelComponent(props: ModelProps) {
   const {
-    currentPaint,
+    currentPaintRef,
     paintRef,
     baseColor,
     currentModel,
@@ -88,6 +88,15 @@ export function Model(props: ModelProps) {
             torso: 'guardsman.glb',
             torsoPos: {
               'guardsman.glb': [-2, -8, 1],
+            },
+            base: 'base_small.glb',
+          }
+        : currentModel === 'guardsmanLow'
+        ? {
+            skeleton: 'skeleton.gltf',
+            torso: 'guardsman-low.glb',
+            torsoPos: {
+              'guardsman-low.glb': [-2, -8, 1],
             },
             base: 'base_small.glb',
           }
@@ -178,7 +187,7 @@ export function Model(props: ModelProps) {
 
   return (
     <ModelImport
-      currentPaint={currentPaint}
+      currentPaintRef={currentPaintRef}
       paintRef={paintRef}
       baseColor={baseColor}
       squadSize={squadSize}
@@ -193,3 +202,5 @@ export function Model(props: ModelProps) {
     />
   );
 }
+
+export const Model = memo(ModelComponent);
