@@ -1039,7 +1039,9 @@ export default function ThreeD({ isVisible }) {
         style={{
           width: '100vw',
           height: 'calc(100vh - 80px)',
-          background: backgroundColor.color,
+          backgroundColor: backgroundColor.color,
+          backgroundImage:
+            'linear-gradient(to bottom, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.2) 45%, rgba(255, 255, 255, 0.12) 100%)',
         }}
         camera={{ fov: 50, position: [0, 150, 140] as unknown as Vector3, near: 0.1, zoom: 1 }}
       >
