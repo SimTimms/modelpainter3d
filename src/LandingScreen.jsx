@@ -1,9 +1,6 @@
-import React, { useState, useEffect } from 'react';
 import ThreeD from './ThreeD';
-import IntroScreen from './IntroScreen';
 
 export default function LandingScreen() {
-  const [hasLoaded, setHasLoaded] = useState(false);
 
   return (
     <div
@@ -18,8 +15,7 @@ export default function LandingScreen() {
         flexDirection: 'column',
       }}
     >
-      {!hasLoaded && <IntroScreen setHasLoaded={setHasLoaded} />}
-      <ThreeD isVisible={hasLoaded} />
+      <ThreeD isVisible={true} />
     </div>
   );
 }

@@ -8,7 +8,7 @@ import { useGLTF } from '@react-three/drei';
 
 export function TyranidSkeleton(props) {
   const { nodes } = useGLTF(
-    'https://model-painter.s3.eu-west-2.amazonaws.com/skeleton.gltf'
+    'skeleton.gltf'
   );
   return (
     <group>
@@ -48,5 +48,5 @@ export function TyranidSkeleton(props) {
 }
 
 useGLTF.preload(
-  'https://model-painter.s3.eu-west-2.amazonaws.com/skeleton.gltf'
+  'skeleton.gltf'
 );

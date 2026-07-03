@@ -1,4 +1,12 @@
-export const paints = [
+export interface PaintType {
+  name: string;
+  color: string;
+  metal?: boolean;
+  company: string;
+  link?: string;
+}
+
+export const paints: PaintType[] = [
   {
     name: 'Abaddon Black',
     color: '#111111',

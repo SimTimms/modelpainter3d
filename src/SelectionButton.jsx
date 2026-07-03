@@ -8,13 +8,13 @@ export default function SelectionButton(props) {
         opacity: isActive ? 1 : 0.5,
         border: 'none',
         userSelect: 'none',
-        width: 60,
-        height: 60,
+        width: 160,
         cursor: 'pointer',
+        textAlign: 'left',
       }}
       onClick={() => onClickEvent()}
     >
-      {img && <img src={img} style={{ width: '100%' }} />}
+   {title && title}
     </button>
   );
 }

@@ -10,8 +10,8 @@ import { Mesh } from './Mesh.jsx';
 export function TyranidTail(props) {
   const { nodes, materials } = useGLTF(
     props.show
-      ? 'https://model-painter.s3.eu-west-2.amazonaws.com/tyranid_tail.gltf'
-      : 'https://model-painter.s3.eu-west-2.amazonaws.com/hidden.gltf'
+      ? 'tyranid_tail.gltf'
+      : 'hidden.gltf'
   );
 
   const [newNodeArr, setNewNodeArr] = useState([]);

@@ -8,16 +8,14 @@ import { useGLTF } from '@react-three/drei';
 
 export function ModelImport(props) {
   const [newNodeArr, setNewNodeArr] = useState(null);
-  const { nodes } = useGLTF(
-    'https://model-painter.s3.eu-west-2.amazonaws.com/skeleton.gltf'
-  );
+  const { nodes } = useGLTF('skeleton.gltf');
 
   useEffect(() => {
     setNewNodeArr({
       armature: nodes.Armature.clone(),
       core: nodes.Core.clone(),
       bone008: nodes.Bone008.clone(),
-      spine: nodes.Spine.clone(),
+      spine: nodes.Bone001.clone(),
     });
   }, [nodes]);
 

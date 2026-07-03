@@ -5,8 +5,20 @@ Command: npx gltfjsx@6.1.3 public/terminator_cloak.gltf
 import React, { useEffect, useState } from 'react';
 import { useGLTF } from '@react-three/drei';
 import { Mesh } from './Mesh.jsx';
+import { PaintType } from '../paints';
 
-export function ModelObject(props) {
+
+interface ModelObjectProps {
+  squadIndex: number;
+  url: string;
+  paintRef: React.RefObject<HTMLDivElement>;
+  show: boolean;
+  currentPaint: PaintType;
+  baseColor: PaintType;
+  clone: boolean;
+}
+
+export function ModelObject(props: ModelObjectProps) {
   const {
     squadIndex,
     url,
@@ -15,27 +27,22 @@ export function ModelObject(props) {
     currentPaint,
     baseColor,
     clone,
-    isEdge,
-    edging,
-    edgingDefault,
   } = props;
   const { nodes } = useGLTF(url);
   const [newNodeArr, setNewNodeArr] = useState([]);
-
   useEffect(() => {
     const nodeArr = Object.keys(nodes);
     setNewNodeArr(nodeArr);
   }, [nodes]);
   return (
-    <group {...props}>
+    <group>
       {newNodeArr.map((node, index) => {
-        if (!nodes[node] || !nodes[node].geometry) return null;
+        if (!nodes[node] || !(nodes[node] as any).geometry) return null;
         return (
           <Mesh
             key={`${index}-${squadIndex}-${url}`}
-            nodeGeometry={nodes[node].geometry}
-            position={nodes[node].position}
-            material={nodes[node].material}
+            nodeGeometry={(nodes[node] as any).geometry}
+            material={(nodes[node] as any).material}
             currentPaint={currentPaint}
             paintRef={paintRef}
             name={`${node}`}
@@ -43,9 +50,6 @@ export function ModelObject(props) {
             show={show}
             baseColor={baseColor}
             clone={clone}
-            isEdge={isEdge}
-            edging={edging}
-            edgingDefault={edgingDefault}
           />
         );
       })}

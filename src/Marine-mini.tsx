@@ -1,71 +1,38 @@
-import React from 'react';
-import { ModelImport } from './modelParts/Skeleton.jsx';
+import { ModelImport } from './modelParts/Skeleton.js';
+import type { PaintType } from './paints';
 
-export function Model(props) {
+interface ModelProps {
+  currentPaint: PaintType;
+  paintRef: any;
+  baseColor: PaintType;
+  currentModel: string;
+  parts: any;
+  squadSize: number;
+  visibleSquadSize: number;
+  clone: boolean;
+  squadIndex: number;
+}
+export function Model(props: ModelProps) {
   const {
     currentPaint,
-    arm,
-    armRRot,
     paintRef,
-    torsoBone,
-    neck,
     baseColor,
-    torsoTopBone,
     currentModel,
     parts,
     squadSize,
+    visibleSquadSize,
     clone,
-    pose,
-    isEdge,
-    edging,
-    edgingDefault,
+    squadIndex,
   } = props;
 
   const partsObj = [];
 
   for (let i = 0; i < squadSize; i++) {
     partsObj.push(
-      currentModel === 'termie'
+    currentModel === 'necron'
         ? {
             skeleton:
-              'https://model-painter.s3.eu-west-2.amazonaws.com/skeleton.gltf',
-            cloak:
-              parts.attachment[i] === 'cloak'
-                ? 'https://model-painter.s3.eu-west-2.amazonaws.com/terminator_cloak.gltf'
-                : null,
-            ironCross:
-              parts.ironCross[i] === 'ironCross'
-                ? 'https://model-painter.s3.eu-west-2.amazonaws.com/iron-cross.gltf'
-                : null,
-            helmet:
-              parts.head[i] === 'face'
-                ? 'https://model-painter.s3.eu-west-2.amazonaws.com/face_termie.gltf'
-                : 'termie_helmet.glb',
-            torso: 'termie_torso.glb',
-            shoulderR:
-              'https://model-painter.s3.eu-west-2.amazonaws.com/shoulder_termie_right.gltf',
-            shoulderL:
-              'https://model-painter.s3.eu-west-2.amazonaws.com/shoulder_termie_left.gltf',
-            shieldL:
-              parts.shield[i] === 'shield' ? 'termie_shield_left.glb' : null,
-            shieldR:
-              parts.shield[i] === 'shield' ? 'termie_shield_right.glb' : null,
-            armR:
-              parts.armR[i] === 'sword'
-                ? 'https://model-painter.s3.eu-west-2.amazonaws.com/arm_termie_right_two.gltf'
-                : parts.armR[i] === 'auto'
-                ? 'https://model-painter.s3.eu-west-2.amazonaws.com/arm_termie_right_auto.gltf'
-                : parts.armR[i] === 'flamer'
-                ? 'https://model-painter.s3.eu-west-2.amazonaws.com/arm_termie_right_flamer.gltf'
-                : 'https://model-painter.s3.eu-west-2.amazonaws.com/arm_termie_right.gltf',
-            armL: 'https://model-painter.s3.eu-west-2.amazonaws.com/arm_termie_left.gltf',
-            legs: 'termie_leg.glb',
-            base: 'base_medium.glb',
-          }
-        : currentModel === 'necron'
-        ? {
-            skeleton:
-              'https://model-painter.s3.eu-west-2.amazonaws.com/skeleton.gltf',
+              'skeleton.gltf',
             torso: 'necron_torso.glb',
             armR:
               parts.armR[i] === 'reaper'
@@ -80,7 +47,7 @@ export function Model(props) {
         : currentModel === 'gaunt'
         ? {
             skeleton:
-              'https://model-painter.s3.eu-west-2.amazonaws.com/skeleton.gltf',
+              'skeleton.gltf',
             torso: 'gaunt.glb',
             torsoPos: {
               'gaunt.glb': [0, -37, 0],
@@ -90,7 +57,7 @@ export function Model(props) {
         : currentModel === 'eldar'
         ? {
             skeleton:
-              'https://model-painter.s3.eu-west-2.amazonaws.com/skeleton.gltf',
+              'skeleton.gltf',
             torso: 'eldar.glb',
             torsoPos: {
               'eldar.glb': [-2, -6, 1],
@@ -112,7 +79,7 @@ export function Model(props) {
         : currentModel === 'guardsman'
         ? {
             skeleton:
-              'https://model-painter.s3.eu-west-2.amazonaws.com/skeleton.gltf',
+              'skeleton.gltf',
             torso: 'guardsman.glb',
             torsoPos: {
               'guardsman.glb': [-2, -8, 1],
@@ -122,7 +89,7 @@ export function Model(props) {
         : currentModel === 'ork'
         ? {
             skeleton:
-              'https://model-painter.s3.eu-west-2.amazonaws.com/skeleton.gltf',
+              'skeleton.gltf',
             torso: 'ork.glb',
             armR: 'ork_arm.glb',
             torsoPos: {
@@ -136,14 +103,14 @@ export function Model(props) {
         : currentModel === 'sister'
         ? {
             skeleton:
-              'https://model-painter.s3.eu-west-2.amazonaws.com/skeleton.gltf',
+              'skeleton.gltf',
             torso: 'sister.glb',
             base: 'base_small.glb',
           }
         : currentModel === 'tau'
         ? {
             skeleton:
-              'https://model-painter.s3.eu-west-2.amazonaws.com/skeleton.gltf',
+              'skeleton.gltf',
             torso: 'tau.glb',
             armR: 'tau_arm.glb',
             base: 'base_small.glb',
@@ -157,12 +124,12 @@ export function Model(props) {
         : currentModel === 'dread'
         ? {
             skeleton:
-              'https://model-painter.s3.eu-west-2.amazonaws.com/skeleton.gltf',
+              'skeleton.gltf',
             torso: 'dread.glb',
           }
         : {
             skeleton:
-              'https://model-painter.s3.eu-west-2.amazonaws.com/skeleton.gltf',
+              'skeleton.gltf',
             torso: 'primaris_torso.glb',
             backpack:
               parts.backpack[i] === 'backpack'
@@ -200,21 +167,15 @@ export function Model(props) {
 
   return (
     <ModelImport
-      torsoBone={torsoBone}
-      neck={neck}
-      parts={partsObj}
-      arm={arm}
-      armRRot={armRRot}
       currentPaint={currentPaint}
-      torsoTopBone={torsoTopBone}
       paintRef={paintRef}
       baseColor={baseColor}
       squadSize={squadSize}
+      visibleSquadSize={visibleSquadSize}
       clone={clone}
-      pose={pose[currentModel]}
-      isEdge={isEdge}
-      edging={edging}
-      edgingDefault={edgingDefault}
+      parts={partsObj}
+      show={true}
+      squadIndex={squadIndex}
     />
   );
 }

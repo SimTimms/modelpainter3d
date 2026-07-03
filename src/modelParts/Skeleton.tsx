@@ -1,8 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useGLTF, Clone } from '@react-three/drei';
 import { ModelObject } from './ModelObject.jsx';
+import {PaintType} from '../paints';
 
-export function ModelImport(props) {
+interface ModelImportProps {
+  currentPaint: PaintType;
+  paintRef: any;
+  show: boolean;
+  squadIndex: number;
+  baseColor: PaintType;
+  clone: boolean;
+  parts: any;
+  squadSize: number;
+  visibleSquadSize: number;
+}
+export function ModelImport(props: ModelImportProps ) {
   const {
     currentPaint,
     paintRef,
@@ -12,27 +24,25 @@ export function ModelImport(props) {
     clone,
     parts,
     squadSize,
-    edging,
-    isEdge,
-    edgingDefault,
+    visibleSquadSize,
   } = props;
+
   const [newNodeArr, setNewNodeArr] = useState(null);
   const [squad, setSquad] = useState(null);
-  const { nodes } = useGLTF(parts[0].skeleton);
+  const { nodes } = useGLTF(parts[0].skeleton) as any;
+  const activeVisibleSquadSize =
+    typeof visibleSquadSize === 'number' ? visibleSquadSize : squadSize;
 
   function modelFactory(url) {
     return (
       <ModelObject
         currentPaint={currentPaint}
         paintRef={paintRef}
-        show={show ? 1 : 0}
+        show={show}
         squadIndex={squadIndex}
         url={url}
         baseColor={baseColor}
         clone={clone}
-        isEdge={isEdge}
-        edging={edging}
-        edgingDefault={edgingDefault}
       />
     );
   }
@@ -44,7 +54,7 @@ export function ModelImport(props) {
       upperArmL: nodes.UpperArmL.clone(),
       upperArmR: nodes.UpperArmR.clone(),
       bone008: nodes.Bone008.clone(),
-      spine: nodes.Spine.clone(),
+      spine: nodes.Bone001.clone(),
     });
   }, [nodes]);
 
@@ -57,24 +67,39 @@ export function ModelImport(props) {
           i === 0 ? 0 : i === 1 ? 40 : i === 2 ? -40 : i === 3 ? -80 : 80;
         const positionZ = i === 0 ? 0 : i > 0 && i < 3 ? 80 : -40;
 
-        const torsoArr = Array.isArray(parts[i].torso, parts[i].torso)
+        const torsoArr = Array.isArray(parts[i].torso)
           ? parts[i].torso[i]
           : parts[i].torso;
         squadArr.push(
-          <group position={[positionX, 0, positionZ]} key={`model_${i}_`}>
-            <group {...props} position={props.position}>
+          <group
+            position={[positionX, 0, positionZ]}
+            key={`model_${i}_`}
+            visible={i < activeVisibleSquadSize}
+          >
+            {i === squadIndex && (
+              <mesh position={[0, -50, 0]} rotation={[-0.5 * Math.PI, 0, 0]}>
+                <ringGeometry args={[12, 30, 48]} />
+                <meshBasicMaterial
+                  color="#7bdfff"
+                  transparent
+                  opacity={1}
+                  toneMapped={false}
+                />
+              </mesh>
+            )}
+            <group >
               <group position={[1, -37, 0]} rotation={[0, 1.4 * Math.PI, 0]}>
                 {parts[i].base && modelFactory(parts[i].base)}
               </group>
 
               <Clone
                 object={newNodeArr.armature}
-                rotation={[0, props.pose ? props.pose[i].torsoTopBone : 0, 0]}
+                rotation={[0, 0, 0]}
               >
                 <Clone object={newNodeArr.core}>
                   <Clone
                     rotation={[
-                      props.pose ? props.pose[i].arm : 0,
+                      0,
                       0.5 * Math.PI,
                       0,
                     ]}
@@ -100,7 +125,7 @@ export function ModelImport(props) {
                     </group>
                   </Clone>
                   <Clone
-                    rotation={[props.pose ? props.pose[i].armRRot : 0, 0, 0]}
+                    rotation={[0, 0, 0]}
                     position={[-11.4, -1, -4]}
                     object={newNodeArr.upperArmR}
                   >
@@ -124,7 +149,7 @@ export function ModelImport(props) {
                   </Clone>
                   <Clone
                     object={newNodeArr.bone008}
-                    rotation={[0, props.pose ? props.pose[i].neck : 0, 0]}
+                    rotation={[0, 0, 0]}
                     position={
                       parts[i].helmetPos && parts[i].helmetPos[parts[i].helmet]
                         ? parts[i].helmetPos[parts[i].helmet]
@@ -170,8 +195,8 @@ export function ModelImport(props) {
                   >
                     {parts[i].backpack && modelFactory(parts[i].backpack)}
                   </group>
-                  <Clone
-                    rotation={[0, props.pose ? props.pose[i].torsoBone : 0, 0]}
+                  <Clone  
+                    rotation={[0, 0, 0]}
                     object={newNodeArr.spine}
                   >
                     <group scale={1.1} position={[-0.2, -6.5, 0.4]}>
@@ -186,7 +211,16 @@ export function ModelImport(props) {
         setSquad(squadArr);
       }
     }
-  }, [squadSize, newNodeArr, currentPaint, clone, parts, paintRef, squadIndex]);
+  }, [
+    squadSize,
+    activeVisibleSquadSize,
+    newNodeArr,
+    currentPaint,
+    clone,
+    parts,
+    paintRef,
+    squadIndex,
+  ]);
 
   if (!nodes) return null;
   return squad;

@@ -9,7 +9,7 @@ import { useGLTF } from '@react-three/drei';
 export function ModelImport(props) {
   const [newNodeArr, setNewNodeArr] = useState(null);
   const { nodes } = useGLTF(
-    'https://model-painter.s3.eu-west-2.amazonaws.com/skeleton.gltf'
+    'skeleton.gltf'
   );
 
   useEffect(() => {
@@ -19,7 +19,7 @@ export function ModelImport(props) {
       upperArmL: nodes.UpperArmL.clone(),
       upperArmR: nodes.UpperArmR.clone(),
       bone008: nodes.Bone008.clone(),
-      spine: nodes.Spine.clone(),
+      spine: nodes.Bone001.clone(),
     });
   }, [nodes]);
 

@@ -1,6 +1,16 @@
 import Slider from 'rc-slider';
 
-export function SliderGroup({ title, min, max, value, change, i, squadIndex }) {
+interface SliderGroupProps {
+  title: string;
+  min: number;
+  max: number;
+  value: number;
+  change: (value: number) => void;
+  i: number;
+  squadIndex: number;
+}
+  
+export function SliderGroup({ title, min, max, value, change, i, squadIndex }: SliderGroupProps ) {
   return (
     <div
       style={{
@@ -22,7 +32,9 @@ export function SliderGroup({ title, min, max, value, change, i, squadIndex }) {
         max={max}
         value={value}
         step={i ? i : 0.01}
-        onChange={(value) => change(value)}
+        onChange={(value) =>
+          change(Array.isArray(value) ? value[0] : value)
+        }
         style={{
           width: '100%',
           boxSizing: 'border-box',
