@@ -134,6 +134,7 @@ export default function ThreeD({ isVisible }) {
   const [unitIndex, setUnitIndex] = React.useState(0);
   const [backgroundColor, setBackgroundColor] = React.useState(paints[0]);
   const [lighting, setLighting] = React.useState(0.5);
+  const [isLightFixed, setIsLightFixed] = React.useState(false);
   const [showEdges, setShowEdges] = React.useState(true);
   const [isScreenshotMode, setIsScreenshotMode] = React.useState(false);
   const [squadSize, setSquadSize] = React.useState(1);
@@ -181,14 +182,14 @@ export default function ThreeD({ isVisible }) {
   const modelLabels = React.useMemo(
     () => ({
       guardsman: 'Guard',
-      guardsmanLow: 'Guardsman Low',
-      eldar: 'Aeldari',
-      dread: 'Dreadnought',
-      ork: 'Ork',
-      primaris: 'Space Marine',
-      gaunt: 'Gaunt',
-      sister: 'Battle Sister',
-      necron: 'Necron',
+      guardsmanLow: 'Guard Low Res',
+      eldar: 'Elf',
+      dread: 'Machine',
+      ork: 'Grunt',
+      primaris: 'Soldier',
+      gaunt: 'Insect',
+      sister: 'Sister',
+      necron: 'Skeleton',
     }),
     []
   );
@@ -791,46 +792,48 @@ export default function ThreeD({ isVisible }) {
               titleColor="#aaa"
             />
           </div>
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 4,
-              paddingTop: 8,
-              borderTop: '1px solid #444',
-              maxWidth: '100%',
-            }}
-          >
-            <div style={{ fontSize: 10, color: '#aaa' }}>Selected Unit</div>
-            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-              {Array.from({ length: 5 }, (_, i) => (
-                <button
-                  key={`loadout_unit_picker_${i}`}
-                  type="button"
-                  onClick={() => {
-                    if (i < squadSizeDraft) {
-                      setUnitIndex(i);
-                    }
-                  }}
-                  style={{
-                    width: 24,
-                    height: 24,
-                    borderRadius: '50%',
-                    border: unitIndex === i ? '1px solid #fff' : '1px solid #555',
-                    background: unitIndex === i ? '#3f3f3f' : '#222',
-                    color: '#fff',
-                    fontSize: 10,
-                    cursor: i < squadSizeDraft ? 'pointer' : 'default',
-                    padding: 0,
-                    opacity: i < squadSizeDraft ? 1 : 0.4,
-                    userSelect: 'none',
-                  }}
-                >
-                  {i + 1}
-                </button>
-              ))}
+          {attachmentButtons.length > 0 && (
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 4,
+                paddingTop: 8,
+                borderTop: '1px solid #444',
+                maxWidth: '100%',
+              }}
+            >
+              <div style={{ fontSize: 10, color: '#aaa' }}>Selected Unit</div>
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                {Array.from({ length: 5 }, (_, i) => (
+                  <button
+                    key={`loadout_unit_picker_${i}`}
+                    type="button"
+                    onClick={() => {
+                      if (i < squadSizeDraft) {
+                        setUnitIndex(i);
+                      }
+                    }}
+                    style={{
+                      width: 24,
+                      height: 24,
+                      borderRadius: '50%',
+                      border: unitIndex === i ? '1px solid #fff' : '1px solid #555',
+                      background: unitIndex === i ? '#3f3f3f' : '#222',
+                      color: '#fff',
+                      fontSize: 10,
+                      cursor: i < squadSizeDraft ? 'pointer' : 'default',
+                      padding: 0,
+                      opacity: i < squadSizeDraft ? 1 : 0.4,
+                      userSelect: 'none',
+                    }}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
           {attachmentButtons.length > 0 && (
             <div
               style={{
@@ -915,6 +918,27 @@ export default function ThreeD({ isVisible }) {
                 titleFontSize={10}
                 titleColor="#aaa"
               />
+              <div
+                style={{
+                  marginTop: 6,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  color: '#aaa',
+                  fontSize: 10,
+                }}
+              >
+                <input
+                  id="fix-light-toggle"
+                  type="checkbox"
+                  checked={isLightFixed}
+                  onChange={(event) => setIsLightFixed(event.target.checked)}
+                  style={{ margin: 0 }}
+                />
+                <label htmlFor="fix-light-toggle" style={{ cursor: 'pointer' }}>
+                  Fix Light
+                </label>
+              </div>
               <div style={{ borderTop: '1px solid #444', paddingTop: 8 }}>
                 <button
                   type="button"
@@ -1045,7 +1069,7 @@ export default function ThreeD({ isVisible }) {
         }}
         camera={{ fov: 50, position: [0, 150, 140] as unknown as Vector3, near: 0.1, zoom: 1 }}
       >
-        <CameraController light={light} rotate={true} />
+        <CameraController light={light} isLightFixed={isLightFixed} />
         <group position={[0, 100, 0]}>
           <ambientLight intensity={0.006} />
         </group>

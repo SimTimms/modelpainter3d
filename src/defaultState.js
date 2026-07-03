@@ -151,7 +151,7 @@ export const defaultTyranidState = {
 
 export const attachmentOptions = [
   { name: 'armR', value: 'sword', title: 'Sword', img: sword },
-  { name: 'armR', value: 'boltgun', title: 'Boltgun', img: stormBolter },
+  { name: 'armR', value: 'boltgun', title: 'Gun', img: stormBolter },
   { name: 'armR', value: 'auto', title: 'Assualt Cannon', img: assault },
   { name: 'armR', value: 'flamer', title: 'Flamer', img: flamer },
   {
@@ -179,7 +179,7 @@ export const attachmentOptionsEldar = [
 ];
 
 export const attachmentOptionsPrimaris = [
-  { name: 'armR', value: 'boltgun', title: 'Boltgun', img: stormBolter },
+  { name: 'armR', value: 'boltgun', title: 'Gun', img: stormBolter },
   { name: 'armR', value: 'flamer', title: 'Flamer', img: flamer },
   {
     name: 'ironCross',
@@ -196,7 +196,7 @@ export const attachmentOptionsPrimaris = [
   {
     name: 'backpack',
     value: 'techmarine',
-    title: 'TM Backpack',
+    title: 'Engineer Pack',
     img: techMarineBackback,
   },
   {
