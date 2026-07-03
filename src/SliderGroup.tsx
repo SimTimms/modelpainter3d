@@ -8,23 +8,46 @@ interface SliderGroupProps {
   change: (value: number) => void;
   i: number;
   squadIndex: number;
+  width?: number | string;
+  roundHandle?: boolean;
+  titleFontSize?: number | string;
+  titleColor?: string;
 }
   
-export function SliderGroup({ title, min, max, value, change, i, squadIndex }: SliderGroupProps ) {
+export function SliderGroup({
+  title,
+  min,
+  max,
+  value,
+  change,
+  i,
+  squadIndex,
+  width,
+  roundHandle = false,
+  titleFontSize,
+  titleColor,
+}: SliderGroupProps ) {
   return (
     <div
       style={{
         maxWidth: 300,
-        width: '100%',
+        width: width ?? '100%',
         position: 'relative',
         display: 'flex',
         justifyContent: 'center',
         color: '#9bc1a0',
         flexDirection: 'column',
         marginTop: 4,
+        userSelect: 'none',
       }}
     >
-      <span style={{ fontSize: '0.6rem', color: '#777', whiteSpace: 'nowrap' }}>
+      <span
+        style={{
+          fontSize: titleFontSize ?? '0.6rem',
+          color: titleColor ?? '#777',
+          whiteSpace: 'nowrap',
+        }}
+      >
         {title}
       </span>
       <Slider
@@ -55,10 +78,10 @@ export function SliderGroup({ title, min, max, value, change, i, squadIndex }: S
           background: '#fff',
           border: `none`,
           boxShadow: `0 0 5px rgba(0,0,0,0.3)`,
-          borderRadius: 0,
-          width: 20,
-          height: 11,
-          marginTop: -3,
+          borderRadius: roundHandle ? '50%' : 0,
+          width: roundHandle ? 14 : 20,
+          height: roundHandle ? 14 : 11,
+          marginTop: roundHandle ? -4.5 : -3,
           opacity: 1,
         }}
       />

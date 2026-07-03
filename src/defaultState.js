@@ -176,11 +176,11 @@ export const attachmentOptionsNecron = [
 ];
 
 export const attachmentOptionsEldar = [
-  { name: 'armR', value: 'sword', title: 'Sword', img: flayer },
-  { name: 'armR', value: 'gun', title: 'Gun', img: reaper },
 ];
 
 export const attachmentOptionsPrimaris = [
+  { name: 'armR', value: 'boltgun', title: 'Boltgun', img: stormBolter },
+  { name: 'armR', value: 'flamer', title: 'Flamer', img: flamer },
   {
     name: 'ironCross',
     value: ['lense', ''],

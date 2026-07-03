@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { ModelImport } from './modelParts/Skeleton.js';
 import type { PaintType } from './paints';
 
@@ -11,6 +12,9 @@ interface ModelProps {
   visibleSquadSize: number;
   clone: boolean;
   squadIndex: number;
+  showEdges: boolean;
+  isPaintingEnabled: boolean;
+  showSelectionRing: boolean;
 }
 export function Model(props: ModelProps) {
   const {
@@ -23,13 +27,17 @@ export function Model(props: ModelProps) {
     visibleSquadSize,
     clone,
     squadIndex,
+    showEdges,
+    isPaintingEnabled,
+    showSelectionRing,
   } = props;
 
-  const partsObj = [];
+  const partsObj = useMemo(() => {
+    const builtParts = [];
 
-  for (let i = 0; i < squadSize; i++) {
-    partsObj.push(
-    currentModel === 'necron'
+    for (let i = 0; i < squadSize; i++) {
+      builtParts.push(
+      currentModel === 'necron'
         ? {
             skeleton:
               'skeleton.gltf',
@@ -63,15 +71,12 @@ export function Model(props: ModelProps) {
               'eldar.glb': [-2, -6, 1],
             },
             base: 'base_small.glb',
-            armR:
-              parts.armR[i] === 'gun'
-                ? 'eldar_arm_both_gun.glb'
-                : 'eldar_arm_r.glb',
+            armR: 'eldar_arm_both_gun.glb',
             armRPos: {
               'eldar_arm_r.glb': [9, -5, 5],
               'eldar_arm_both_gun.glb': [9, -5, 5],
             },
-            armL: parts.armR[i] === 'gun' ? '' : 'eldar_arm_l_axe.glb',
+            armL:'',
             armLPos: {
               'eldar_arm_l_axe.glb': [-5, -7.6, -12],
             },
@@ -126,6 +131,9 @@ export function Model(props: ModelProps) {
             skeleton:
               'skeleton.gltf',
             torso: 'dread.glb',
+            torsoPos: {
+              'dread.glb': [0, 1, 0],
+            },
           }
         : {
             skeleton:
@@ -162,8 +170,11 @@ export function Model(props: ModelProps) {
               'primaris_helmet_skull.glb': [0, -12.6, -3.3],
             },
           }
-    );
-  }
+      );
+    }
+
+    return builtParts;
+  }, [currentModel, parts, squadSize]);
 
   return (
     <ModelImport
@@ -176,6 +187,9 @@ export function Model(props: ModelProps) {
       parts={partsObj}
       show={true}
       squadIndex={squadIndex}
+      showEdges={showEdges}
+      isPaintingEnabled={isPaintingEnabled}
+      showSelectionRing={showSelectionRing}
     />
   );
 }

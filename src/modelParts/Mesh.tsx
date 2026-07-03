@@ -12,6 +12,8 @@ interface MeshProps {
   material: any;
   unitNumber: number;
   clone: boolean;
+  showEdges: boolean;
+  isPaintingEnabled: boolean;
 }
     
 export function Mesh(props: MeshProps) {
@@ -25,6 +27,8 @@ export function Mesh(props: MeshProps) {
     material,
     unitNumber,
     clone,
+    showEdges,
+    isPaintingEnabled,
   } = props;
   const [colours, setColours] = useState<PaintType | string | null>(null);
   const [base, setBase] = useState<PaintType | string | null>(null);
@@ -43,7 +47,7 @@ export function Mesh(props: MeshProps) {
 
   useEffect(() => {
     if (paintRef && paintRef.current[name]) {
-      if (clone) setColours(paintRef.current[name].paint);
+      setColours(paintRef.current[name].paint);
     }
   }, [clone]);
 
@@ -56,7 +60,7 @@ export function Mesh(props: MeshProps) {
       key="mesh"
       geometry={nodeGeometry}
       onPointerUp={(event) => {
-        if (canPaint.current) {
+        if (isPaintingEnabled && canPaint.current) {
           event.stopPropagation();
             setColours(currentPaint ? currentPaint : '#ff0000');
             if (paintRef) {
@@ -76,12 +80,7 @@ export function Mesh(props: MeshProps) {
       onPointerMove={() => (canPaint.current = false)}
       material={material}
     >
-      <Edges
-        color={
-        '#000'
-        }
-        scale={1.001}
-      />
+     {showEdges && <Edges color={'#000'} scale={1.001} />}
 
       <meshStandardMaterial
         attach="material"

@@ -1,11 +1,11 @@
 import React, { useRef } from 'react';
 import { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
+import { useGLTF } from '@react-three/drei';
 import { Model } from './Marine-mini';
 import 'rc-slider/assets/index.css';
-import { paints, PaintType } from './paints';
+import { paints } from './paints';
 import { SliderGroup } from './SliderGroup';
-import SelectionButton from './SelectionButton';
 import {
   defaultState,
   defaultNecronState,
@@ -24,15 +24,6 @@ import {
   attachmentOptionsEldar,
   attachmentOptionsPrimaris,
 } from './defaultState';
-import termie from './assets/termie.jpg';
-import sister from './assets/sister.jpg';
-import primaris from './assets/primaris.jpg';
-import necron from './assets/necron.jpg';
-import gauntImg from './assets/gaunt.jpg';
-import orkImg from './assets/ork.jpg';
-import dreadImg from './assets/dread.jpg';
-import eldar from './assets/eldar.jpg';
-import guardsman from './assets/guardsman.jpg';
 import { Vector3 } from 'three';
 
 export default function ThreeD({ isVisible }) {
@@ -44,11 +35,16 @@ export default function ThreeD({ isVisible }) {
     React.useState(defaultPrimarisState);
   const [unitIndex, setUnitIndex] = React.useState(0);
   const [backgroundColor, setBackgroundColor] = React.useState(paints[0]);
+  const [lighting, setLighting] = React.useState(0.5);
+  const [showEdges, setShowEdges] = React.useState(true);
+  const [isScreenshotMode, setIsScreenshotMode] = React.useState(false);
   const [squadSize, setSquadSize] = React.useState(1);
   const [loadedSquadSize, setLoadedSquadSize] = React.useState(1);
   const [squadSizeDraft, setSquadSizeDraft] = React.useState(1);
   const [isSquadSizePending, startSquadSizeTransition] = React.useTransition();
+  const [isModelPending, startModelTransition] = React.useTransition();
   const [isCloneModalOpen, setIsCloneModalOpen] = React.useState(false);
+  const [isModelDropdownOpen, setIsModelDropdownOpen] = React.useState(false);
   const [isLoadoutExpanded, setIsLoadoutExpanded] = React.useState(true);
   const [paintMode, setPaintMode] = React.useState<'base' | 'brush' | 'background'>(
     'base'
@@ -64,22 +60,126 @@ export default function ThreeD({ isVisible }) {
   const [attachmentMenu, setAttachmentMenu] = React.useState(
     attachmentOptionsPrimaris
   );
-  const handleCloneToggle = React.useCallback(() => {
-    if (clone) {
-      setClone(false);
-      return;
+  const [isMobileMode, setIsMobileMode] = React.useState(() =>
+    typeof window !== 'undefined' ? window.innerWidth <= 900 : false
+  );
+  const [collapsedPanels, setCollapsedPanels] = React.useState({
+    model: false,
+    scene: true,
+    paintTool: true,
+    palette: false,
+  });
+  const togglePanel = React.useCallback(
+    (panel: 'model' | 'scene' | 'paintTool' | 'palette') => {
+      setCollapsedPanels((prev) => ({ ...prev, [panel]: !prev[panel] }));
+    },
+    []
+  );
+  const modelSwitchPerfRef = useRef<{ modelKey: string; start: number } | null>(
+    null
+  );
+  const modelLabels = React.useMemo(
+    () => ({
+      guardsman: 'Guard',
+      eldar: 'Aeldari',
+      dread: 'Dreadnought',
+      ork: 'Ork',
+      primaris: 'Space Marine',
+      gaunt: 'Gaunt',
+      sister: 'Battle Sister',
+      necron: 'Necron',
+    }),
+    []
+  );
+  const modelKeys = React.useMemo(() => Object.keys(modelLabels), [modelLabels]);
+  const modelPreloadUrls = React.useMemo(
+    () => [
+      'skeleton.gltf',
+      'base_small.glb',
+      'base_medium.glb',
+      'necron_torso.glb',
+      'necron_reaper.glb',
+      'necron_flayer.glb',
+      'gaunt.glb',
+      'eldar.glb',
+      'eldar_arm_both_gun.glb',
+      'eldar_arm_r.glb',
+      'eldar_arm_l_axe.glb',
+      'guardsman.glb',
+      'ork.glb',
+      'ork_arm.glb',
+      'sister.glb',
+      'tau.glb',
+      'tau_arm.glb',
+      'dread.glb',
+      'primaris_torso.glb',
+      'primaris_backpack.glb',
+      'primaris_techmarine_backpack.glb',
+      'primaris_helmet.glb',
+      'primaris_boltgun.glb',
+      'primaris_flamer.glb',
+      'primaris_lense.glb',
+      'primaris_helmet_skull.glb',
+    ],
+    []
+  );
+  const handleModelSelect = React.useCallback((modelKey: string) => {
+    modelSwitchPerfRef.current = { modelKey, start: performance.now() };
+    console.info(`[perf] model switch start -> ${modelKey}`);
+    startModelTransition(() => {
+      if (modelKey === 'primaris') {
+        setModelAttachments(defaultPrimarisState);
+        setAttachmentMenu(attachmentOptionsPrimaris);
+        setCurrentModel('primaris');
+      } else if (modelKey === 'termie') {
+        setModelAttachments(defaultState as any);
+        setAttachmentMenu(attachmentOptions as any);
+        setCurrentModel('termie');
+      } else if (modelKey === 'sister') {
+        setModelAttachments(defaultSisterState as any);
+        setAttachmentMenu(attachmentOptionsSister);
+        setCurrentModel('sister');
+      } else if (modelKey === 'necron') {
+        setModelAttachments(defaultNecronState as any);
+        setAttachmentMenu(attachmentOptionsNecron);
+        setCurrentModel('necron');
+      } else if (modelKey === 'eldar') {
+        setModelAttachments(defaultTyranidState as any);
+        setAttachmentMenu(attachmentOptionsEldar);
+        setCurrentModel('eldar');
+      } else {
+        setModelAttachments(defaultTyranidState as any);
+        setAttachmentMenu(attachmentOptionsTyranid);
+        setCurrentModel(modelKey);
+      }
+    });
+    setIsModelDropdownOpen(false);
+  }, [startModelTransition]);
+  React.useEffect(() => {
+    if (!isModelPending && modelSwitchPerfRef.current) {
+      const { modelKey, start } = modelSwitchPerfRef.current;
+      const elapsed = performance.now() - start;
+      console.info(
+        `[perf] model switch complete -> ${modelKey} (${elapsed.toFixed(1)}ms)`
+      );
+      modelSwitchPerfRef.current = null;
     }
+  }, [isModelPending, currentModel]);
+  const handleCloneToggle = React.useCallback(() => {
     setIsCloneModalOpen(true);
-  }, [clone]);
+  }, []);
   const handleConfirmClone = React.useCallback(() => {
-    setClone(true);
+    setClone((prev) => !prev);
     setIsCloneModalOpen(false);
   }, []);
   const returnToBrushOnSceneClick = React.useCallback(() => {
+    if (isScreenshotMode) {
+      return;
+    }
     if (paintMode !== 'brush') {
       setPaintMode('brush');
     }
-  }, [paintMode]);
+  }, [paintMode, isScreenshotMode]);
 
   React.useEffect(() => {
     const debounceTimer = window.setTimeout(() => {
@@ -90,6 +190,14 @@ export default function ThreeD({ isVisible }) {
 
     return () => window.clearTimeout(debounceTimer);
   }, [squadSizeDraft, startSquadSizeTransition]);
+  React.useEffect(() => {
+    const handleResize = () => {
+      setIsMobileMode(window.innerWidth <= 900);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   React.useEffect(() => {
     if (squadSize > loadedSquadSize) {
@@ -104,6 +212,10 @@ export default function ThreeD({ isVisible }) {
       setUnitIndex(Math.max(0, squadSizeDraft - 1));
     }
   }, [unitIndex, squadSizeDraft]);
+
+  React.useEffect(() => {
+    modelPreloadUrls.forEach((url) => useGLTF.preload(url));
+  }, [modelPreloadUrls]);
 
   const pose = {
     termie: [
@@ -173,6 +285,32 @@ export default function ThreeD({ isVisible }) {
     >
       <div
         style={{
+          position: 'fixed',
+          top: 10,
+          right: 10,
+          zIndex: 2100,
+        }}
+      >
+        <button
+          type="button"
+          onClick={() => setIsScreenshotMode((prev) => !prev)}
+          style={{
+            border: '1px solid #555',
+            background: 'rgba(0,0,0,0.65)',
+            color: '#fff',
+            borderRadius: 4,
+            padding: '6px 10px',
+            fontSize: 11,
+            cursor: 'pointer',
+          }}
+        >
+          {isScreenshotMode ? 'Screen Mode' : 'Paint Mode'}
+        </button>
+      </div>
+      {!isScreenshotMode && (
+        <>
+      <div
+        style={{
           width: '100%',
           position: 'fixed',
           zIndex: 2,
@@ -182,212 +320,219 @@ export default function ThreeD({ isVisible }) {
       >
         <div
           style={{
-            color: 'grey',
-            fontSize: 10,
-            marginLeft: 3,
-            marginBottom: 3,
+            margin: '0 10px 10px',
+            padding: 8,
+            border: '1px solid #333',
+            borderRadius: 6,
+            background: 'rgba(0,0,0,0.35)',
+            boxSizing: 'border-box',
+            userSelect: 'none',
           }}
         >
-          {paintName}
-        </div>
-
-        <div
-          style={{
-            color: 'white',
-            fontSize: 10,
-            marginLeft: 3,
-            marginBottom: 3,
-          }}
-        >
-          {paintMode === 'base'
-            ? 'Base Coat'
-            : paintMode === 'background'
-            ? 'Background'
-            : 'Brush'}
-          : {activePaint.name} -{' '}
-          {activePaint.company}
-          {activePaint.link && (
-            <a
-              style={{ color: 'grey', marginLeft: 5 }}
-              href={activePaint.link}
-              target="_blank"
-              rel="noreferrer"
+          {isMobileMode && (
+            <button
+              type="button"
+              onClick={() => togglePanel('palette')}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: '#aaa',
+                fontSize: 11,
+                padding: 0,
+                cursor: 'pointer',
+                textAlign: 'left',
+                width: '100%',
+                marginBottom: collapsedPanels.palette ? 0 : 6,
+              }}
             >
-              BUY
-            </a>
+              {collapsedPanels.palette ? '▶' : '▼'} Paints
+            </button>
+          )}
+          {(!isMobileMode || !collapsedPanels.palette) && (
+            <>
+              <div
+                style={{
+                  color: 'grey',
+                  fontSize: 10,
+                  marginBottom: 3,
+                }}
+              >
+                {paintName}
+              </div>
+
+              <div
+                style={{
+                  color: 'white',
+                  fontSize: 10,
+                  marginBottom: 6,
+                }}
+              >
+                {paintMode === 'base'
+                  ? 'Base Coat'
+                  : paintMode === 'background'
+                  ? 'Background'
+                  : 'Brush'}
+                : {activePaint.name} -{' '}
+                {activePaint.company}
+                {activePaint.link && (
+                  <a
+                    style={{ color: 'grey', marginLeft: 5 }}
+                    href={activePaint.link}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    BUY
+                  </a>
+                )}
+              </div>
+
+              <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+                {paints.map((paint, index) => (
+                  <div
+                    key={`${index}-${paint.color}`}
+                    style={{
+                      background: paint.color,
+                      width: 20,
+                      height: 20,
+                      borderRadius: '50%',
+                      margin: 1,
+                      cursor: 'pointer',
+                      boxShadow: paint.metal
+                        ? 'inset -3px -3px 5px rgba(0,0,0,0.2), inset 3px 3px 2px rgba(255,255,255,0.4)'
+                        : '',
+                      textAlign: 'center',
+                      fontSize: 10,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: 'rgba(0,0,0,0.3)',
+                    }}
+                    onMouseOver={() => setPaintName(paint.name)}
+                    onClick={() => {
+                      if (paintMode === 'base') {
+                        setBaseColor(paint);
+                      } else if (paintMode === 'background') {
+                        setBackgroundColor(paint);
+                      } else if (paintMode === 'brush') {
+                        setCurrentPaint(paint);
+                      }
+                    }}
+                  >
+                    {paint.name.substring(0, 1)}
+                  </div>
+                ))}
+              </div>
+            </>
           )}
         </div>
-
-        <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-          {paints.map((paint, index) => (
-            <div
-              key={`${index}-${paint.color}`}
-              style={{
-                background: paint.color,
-                width: 20,
-                height: 20,
-                borderRadius: '50%',
-                margin: 1,
-                cursor: 'pointer',
-                boxShadow: paint.metal
-                  ? 'inset -3px -3px 5px rgba(0,0,0,0.2), inset 3px 3px 2px rgba(255,255,255,0.4)'
-                  : '',
-                textAlign: 'center',
-                fontSize: 10,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'rgba(0,0,0,0.3)',
-              }}
-              onMouseOver={() => setPaintName(paint.name)}
-              onClick={() => {
-                if (paintMode === 'base') {
-                  setBaseColor(paint);
-                } else if (paintMode === 'background') {
-                  setBackgroundColor(paint);
-                } else if (paintMode === 'brush') {
-                  setCurrentPaint(paint);
-                }
-              }}
-            >
-              {paint.name.substring(0, 1)}
-            </div>
-          ))}
-        </div>
-      </div>
-      <div
-        style={{
-          width: 50,
-          position: 'fixed',
-          padding: 10,
-          zIndex: 100,
-          right: 0,
-        }}
-      >
-        <SelectionButton
-          onClickEvent={() => {
-            setModelAttachments(defaultTyranidState as any);
-            setAttachmentMenu(attachmentOptionsTyranid);
-            setCurrentModel('guardsman');
-          }}
-          title="Guardsman"
-          img={guardsman}
-          isActive={currentModel === 'guardsman'}
-        />
-        <SelectionButton
-          onClickEvent={() => {
-            setModelAttachments(defaultTyranidState as any);
-            setAttachmentMenu(attachmentOptionsEldar);
-            setCurrentModel('eldar');
-          }}
-          title="Eldar"
-          img={eldar}
-          isActive={currentModel === 'eldar'}
-        />
-        <SelectionButton
-          onClickEvent={() => {
-            setModelAttachments(defaultTyranidState as any);
-            setAttachmentMenu(attachmentOptionsTyranid);
-            setCurrentModel('dread');
-          }}
-          title="Dread"
-          img={dreadImg}
-          isActive={currentModel === 'dread'}
-        />
-        <SelectionButton
-          onClickEvent={() => {
-            setModelAttachments(defaultTyranidState as any);
-            setAttachmentMenu(attachmentOptionsTyranid);
-            setCurrentModel('ork');
-          }}
-          title="Ork"
-          img={orkImg}
-          isActive={currentModel === 'ork'}
-        />
-        <SelectionButton
-          onClickEvent={() => {
-            setModelAttachments(defaultPrimarisState);
-            setAttachmentMenu(attachmentOptionsPrimaris);
-            setCurrentModel('primaris');
-          }}
-          title="Primaris"
-          img={primaris}
-          isActive={currentModel === 'primaris'}
-        />
-        <SelectionButton
-          onClickEvent={() => {
-            setModelAttachments(defaultTyranidState as any);
-            setAttachmentMenu(attachmentOptionsTyranid);
-            setCurrentModel('gaunt');
-          }}
-          title="Gaunt"
-          img={gauntImg}
-          isActive={currentModel === 'gaunt'}
-        />
-        <SelectionButton
-          onClickEvent={() => {
-            setModelAttachments(defaultState as any);
-            setAttachmentMenu(attachmentOptions as any);
-            setCurrentModel('termie');
-          }}
-          title="Terminator"
-          img={termie}
-          isActive={currentModel === 'termie'}
-        />
-        <SelectionButton
-          onClickEvent={() => {
-            setModelAttachments(defaultSisterState as any);
-            setAttachmentMenu(attachmentOptionsSister);
-            setCurrentModel('sister');
-          }}
-          title="Sister"
-          img={sister}
-          isActive={currentModel === 'sister'}
-        />
-        <SelectionButton
-          onClickEvent={() => {
-            setModelAttachments(defaultNecronState as any);
-            setAttachmentMenu(attachmentOptionsNecron);
-            setCurrentModel('necron');
-          }}
-          title="Necron"
-          img={necron}
-          isActive={currentModel === 'necron'}
-        />
       </div>
       <div
         style={{
           position: 'fixed',
           top: 10,
           left: 10,
+          right: isMobileMode ? 10 : 'auto',
           zIndex: 110,
-          padding: 8,
-          border: '1px solid #333',
-          borderRadius: 6,
-          background: 'rgba(0,0,0,0.35)',
           display: 'flex',
           flexDirection: 'column',
-          gap: 6,
-          width: 300,
-          boxSizing: 'border-box',
+          gap: 8,
+          alignItems: 'stretch',
+          maxHeight: isMobileMode ? 'calc(100vh - 220px)' : 'none',
+          overflowY: isMobileMode ? 'auto' : 'visible',
         }}
       >
-        <div style={{ fontSize: 10, color: '#aaa' }}>Squad</div>
-        <SliderGroup
-          title="Squad Size"
-          min={1}
-          max={5}
-          value={squadSizeDraft}
-          change={setSquadSizeDraft as any}
-          i={1}
-          squadIndex={0}
-        />
-        {buildAttachmentButtons(
-          modelAttachments,
-          setModelAttachments,
-          unitIndex,
-          attachmentMenu
-        ).length > 0 && (
+        <div
+          style={{
+            padding: 8,
+            border: '1px solid #333',
+            borderRadius: 6,
+            background: 'rgba(0,0,0,0.35)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 6,
+            boxSizing: 'border-box',
+            userSelect: 'none',
+          }}
+        >
+          {isMobileMode ? (
+            <button
+              type="button"
+              onClick={() => togglePanel('model')}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: '#aaa',
+                fontSize: 11,
+                padding: 0,
+                cursor: 'pointer',
+                textAlign: 'left',
+              }}
+            >
+              {collapsedPanels.model ? '▶' : '▼'} Model
+            </button>
+          ) : (
+            <div style={{ fontSize: 10, color: '#aaa' }}>Model</div>
+          )}
+          {(!isMobileMode || !collapsedPanels.model) && (
+            <>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <button
+              type="button"
+              onClick={() => setIsModelDropdownOpen((prev) => !prev)}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: '#aaa',
+                fontSize: 10,
+                padding: 0,
+                cursor: 'pointer',
+                textAlign: 'left',
+                userSelect: 'none',
+              }}
+            >
+              {isModelDropdownOpen ? '▼' : '▶'} {modelLabels[currentModel]}
+            </button>
+            {isModelDropdownOpen && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                {modelKeys.map((modelKey) => (
+                  <button
+                    key={modelKey}
+                    type="button"
+                    onClick={() => handleModelSelect(modelKey)}
+                    style={{
+                      border:
+                        currentModel === modelKey ? '1px solid #fff' : '1px solid #555',
+                      background: currentModel === modelKey ? '#333' : '#222',
+                      color: '#fff',
+                      borderRadius: 4,
+                      padding: '6px 8px',
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                      fontSize: 10,
+                      userSelect: 'none',
+                    }}
+                  >
+                    {modelLabels[modelKey]}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+          <div style={{ borderTop: '1px solid #444', paddingTop: 8 }}>
+            <SliderGroup
+              title="Squad Size"
+              min={1}
+              max={5}
+              value={squadSizeDraft}
+              change={setSquadSizeDraft as any}
+              i={1}
+              squadIndex={0}
+              width={150}
+              roundHandle={true}
+              titleFontSize={10}
+              titleColor="#aaa"
+            />
+          </div>
           <div
             style={{
               display: 'flex',
@@ -398,45 +543,69 @@ export default function ThreeD({ isVisible }) {
               maxWidth: '100%',
             }}
           >
-            <button
-              type="button"
-              onClick={() => setIsLoadoutExpanded((prev) => !prev)}
+            <div style={{ fontSize: 10, color: '#aaa' }}>Selected Unit</div>
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+              {Array.from({ length: 5 }, (_, i) => (
+                <button
+                  key={`loadout_unit_picker_${i}`}
+                  type="button"
+                  onClick={() => {
+                    if (i < squadSizeDraft) {
+                      setUnitIndex(i);
+                    }
+                  }}
+                  style={{
+                    width: 24,
+                    height: 24,
+                    borderRadius: '50%',
+                    border: unitIndex === i ? '1px solid #fff' : '1px solid #555',
+                    background: unitIndex === i ? '#3f3f3f' : '#222',
+                    color: '#fff',
+                    fontSize: 10,
+                    cursor: i < squadSizeDraft ? 'pointer' : 'default',
+                    padding: 0,
+                    opacity: i < squadSizeDraft ? 1 : 0.4,
+                    userSelect: 'none',
+                  }}
+                >
+                  {i + 1}
+                </button>
+              ))}
+            </div>
+          </div>
+          {buildAttachmentButtons(
+            modelAttachments,
+            setModelAttachments,
+            unitIndex,
+            attachmentMenu
+          ).length > 0 && (
+            <div
               style={{
-                background: 'none',
-                border: 'none',
-                color: '#aaa',
-                fontSize: 10,
-                padding: 0,
-                cursor: 'pointer',
-                textAlign: 'left',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 4,
+                paddingTop: 8,
+                borderTop: '1px solid #444',
+                maxWidth: '100%',
               }}
             >
-              {isLoadoutExpanded ? '▼' : '▶'} Loadout - Unit {unitIndex + 1}
-            </button>
-            {isLoadoutExpanded && (
-              <>
-                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                  {Array.from({ length: squadSizeDraft }, (_, i) => (
-                    <button
-                      key={`loadout_unit_picker_${i}`}
-                      type="button"
-                      onClick={() => setUnitIndex(i)}
-                      style={{
-                        width: 24,
-                        height: 24,
-                        borderRadius: '50%',
-                        border: unitIndex === i ? '1px solid #fff' : '1px solid #555',
-                        background: unitIndex === i ? '#3f3f3f' : '#222',
-                        color: '#fff',
-                        fontSize: 10,
-                        cursor: 'pointer',
-                        padding: 0,
-                      }}
-                    >
-                      {i + 1}
-                    </button>
-                  ))}
-                </div>
+              <button
+                type="button"
+                onClick={() => setIsLoadoutExpanded((prev) => !prev)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#aaa',
+                  fontSize: 10,
+                  padding: 0,
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  userSelect: 'none',
+                }}
+              >
+                {isLoadoutExpanded ? '▼' : '▶'} Loadout - Unit {unitIndex + 1}
+              </button>
+              {isLoadoutExpanded && (
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
                   {buildAttachmentButtons(
                     modelAttachments,
@@ -445,17 +614,92 @@ export default function ThreeD({ isVisible }) {
                     attachmentMenu
                   )}
                 </div>
-              </>
-            )}
-          </div>
-        )}
+              )}
+            </div>
+          )}
+            </>
+          )}
+        </div>
+        <div
+          style={{
+            padding: 8,
+            border: '1px solid #333',
+            borderRadius: 6,
+            background: 'rgba(0,0,0,0.35)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 8,
+            boxSizing: 'border-box',
+            userSelect: 'none',
+          }}
+        >
+          {isMobileMode ? (
+            <button
+              type="button"
+              onClick={() => togglePanel('scene')}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: '#aaa',
+                fontSize: 11,
+                padding: 0,
+                cursor: 'pointer',
+                textAlign: 'left',
+              }}
+            >
+              {collapsedPanels.scene ? '▶' : '▼'} Scene
+            </button>
+          ) : (
+            <div style={{ fontSize: 10, color: '#aaa' }}>Scene</div>
+          )}
+          {(!isMobileMode || !collapsedPanels.scene) && (
+            <>
+              <SliderGroup
+                title="Lighting"
+                min={0.1}
+                max={1}
+                value={lighting}
+                change={setLighting as any}
+                i={0.1}
+                squadIndex={0}
+                width={150}
+                roundHandle={true}
+                titleFontSize={10}
+                titleColor="#aaa"
+              />
+              <div style={{ borderTop: '1px solid #444', paddingTop: 8 }}>
+                <button
+                  type="button"
+                  onClick={() => setShowEdges((prev) => !prev)}
+                  style={{
+                    border: '1px solid #555',
+                    background: '#222',
+                    color: '#fff',
+                    borderRadius: 4,
+                    padding: '6px 8px',
+                    fontSize: 10,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    width: '100%',
+                  }}
+                >
+                  <span>Edging</span>
+                  <span>{showEdges ? 'On' : 'Off'}</span>
+                </button>
+              </div>
+            </>
+          )}
+        </div>
       </div>
       <div
         style={{
-          width: `calc(100vw - 200px)`,
+          width: isMobileMode ? 'calc(100vw - 20px)' : `calc(100vw - 200px)`,
           position: 'fixed',
-          padding: 10,
-          left: 100,
+          padding: isMobileMode ? 0 : 10,
+          left: isMobileMode ? 10 : 100,
+          bottom: isMobileMode ? 78 : 'auto',
           zIndex: 100,
           display: 'flex',
           flexWrap: 'wrap',
@@ -472,11 +716,30 @@ export default function ThreeD({ isVisible }) {
             border: '1px solid #333',
             borderRadius: 6,
             background: 'rgba(0,0,0,0.35)',
-            margin: 3,
+            margin: isMobileMode ? 0 : 3,
           }}
         >
-          <div style={{ fontSize: 10, color: '#aaa' }}>Paint Tool</div>
-          <div style={{ display: 'flex', gap: 6 }}>
+          {isMobileMode ? (
+            <button
+              type="button"
+              onClick={() => togglePanel('paintTool')}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: '#aaa',
+                fontSize: 11,
+                padding: 0,
+                cursor: 'pointer',
+                textAlign: 'left',
+              }}
+            >
+              {collapsedPanels.paintTool ? '▶' : '▼'} Paint Tool
+            </button>
+          ) : (
+            <div style={{ fontSize: 10, color: '#aaa' }}>Paint Tool</div>
+          )}
+          {(!isMobileMode || !collapsedPanels.paintTool) && (
+            <div style={{ display: 'flex', gap: 6, flexWrap: isMobileMode ? 'wrap' : 'nowrap' }}>
             <button
               type="button"
               onClick={() => setPaintMode('base')}
@@ -563,8 +826,8 @@ export default function ThreeD({ isVisible }) {
                 type="button"
                 onClick={handleCloneToggle}
                 style={{
-                  border: clone ? '1px solid #fff' : '1px solid #555',
-                  background: clone ? '#333' : '#222',
+                  border: 'none',
+                  background: '#222',
                   color: '#fff',
                   cursor: 'pointer',
                   borderRadius: 4,
@@ -578,7 +841,8 @@ export default function ThreeD({ isVisible }) {
                 Clone
               </button>
             )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
       <div
@@ -618,6 +882,29 @@ export default function ThreeD({ isVisible }) {
           Loading squad...
         </div>
       )}
+      {isModelPending && (
+        <div
+          style={{
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            zIndex: 2000,
+            background: 'rgba(0,0,0,0.75)',
+            color: '#fff',
+            border: '1px solid #666',
+            borderRadius: 6,
+            padding: '6px 10px',
+            fontSize: 12,
+            letterSpacing: 0.2,
+            pointerEvents: 'none',
+          }}
+        >
+          Switching model...
+        </div>
+      )}
+        </>
+      )}
       <Canvas
         shadows={true}
         onPointerDown={returnToBrushOnSceneClick}
@@ -635,7 +922,7 @@ export default function ThreeD({ isVisible }) {
         <group ref={light}>
           <group position={[0, 40, -40]}>
             <spotLight
-              intensity={0.5}
+              intensity={lighting}
               castShadow
               penumbra={1}
               shadow-mapSize-height={2048}
@@ -644,7 +931,7 @@ export default function ThreeD({ isVisible }) {
           </group>
 
           <group position={[40, 130, 40]}>
-            <spotLight intensity={0.25} />
+            <spotLight intensity={lighting * 0.5} />
           </group>
         </group>
         <Suspense
@@ -653,7 +940,7 @@ export default function ThreeD({ isVisible }) {
             Math.max(loadedSquadSize, squadSizeDraft)
           )}
         >
-          <group position={[0, 20, 0]}>
+          <group position={[0, 0, 0]}>
             <Model
               currentModel={currentModel}
               currentPaint={currentPaint}
@@ -664,6 +951,9 @@ export default function ThreeD({ isVisible }) {
               clone={clone}
               squadSize={loadedSquadSize}
               visibleSquadSize={squadSizeDraft}
+              showEdges={showEdges}
+              isPaintingEnabled={!isScreenshotMode}
+              showSelectionRing={!isScreenshotMode}
             />
             {squadSizeDraft > loadedSquadSize &&
               buildSquadPlaceholders(loadedSquadSize, squadSizeDraft)}

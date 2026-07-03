@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useGLTF, Clone } from '@react-three/drei';
 import { ModelObject } from './ModelObject.jsx';
 import {PaintType} from '../paints';
@@ -13,6 +13,9 @@ interface ModelImportProps {
   parts: any;
   squadSize: number;
   visibleSquadSize: number;
+  showEdges: boolean;
+  isPaintingEnabled: boolean;
+  showSelectionRing: boolean;
 }
 export function ModelImport(props: ModelImportProps ) {
   const {
@@ -25,10 +28,12 @@ export function ModelImport(props: ModelImportProps ) {
     parts,
     squadSize,
     visibleSquadSize,
+    showEdges,
+    isPaintingEnabled,
+    showSelectionRing,
   } = props;
 
   const [newNodeArr, setNewNodeArr] = useState(null);
-  const [squad, setSquad] = useState(null);
   const { nodes } = useGLTF(parts[0].skeleton) as any;
   const activeVisibleSquadSize =
     typeof visibleSquadSize === 'number' ? visibleSquadSize : squadSize;
@@ -43,6 +48,8 @@ export function ModelImport(props: ModelImportProps ) {
         url={url}
         baseColor={baseColor}
         clone={clone}
+        showEdges={showEdges}
+        isPaintingEnabled={isPaintingEnabled}
       />
     );
   }
@@ -58,35 +65,24 @@ export function ModelImport(props: ModelImportProps ) {
     });
   }, [nodes]);
 
-  useEffect(() => {
-    let squadArr = [];
+  const modelGroups = useMemo(() => {
+    if (!newNodeArr) return null;
 
-    if (newNodeArr) {
-      for (let i = 0; i < squadSize; i++) {
-        const positionX =
-          i === 0 ? 0 : i === 1 ? 40 : i === 2 ? -40 : i === 3 ? -80 : 80;
-        const positionZ = i === 0 ? 0 : i > 0 && i < 3 ? 80 : -40;
+    const groups = [];
+    for (let i = 0; i < squadSize; i++) {
+      const positionX =
+        i === 0 ? 0 : i === 1 ? 40 : i === 2 ? -40 : i === 3 ? -80 : 80;
+      const positionZ = i === 0 ? 0 : i > 0 && i < 3 ? 80 : -40;
 
-        const torsoArr = Array.isArray(parts[i].torso)
-          ? parts[i].torso[i]
-          : parts[i].torso;
-        squadArr.push(
+      const torsoArr = Array.isArray(parts[i].torso)
+        ? parts[i].torso[i]
+        : parts[i].torso;
+      groups.push(
           <group
             position={[positionX, 0, positionZ]}
             key={`model_${i}_`}
             visible={i < activeVisibleSquadSize}
           >
-            {i === squadIndex && (
-              <mesh position={[0, -50, 0]} rotation={[-0.5 * Math.PI, 0, 0]}>
-                <ringGeometry args={[12, 30, 48]} />
-                <meshBasicMaterial
-                  color="#7bdfff"
-                  transparent
-                  opacity={1}
-                  toneMapped={false}
-                />
-              </mesh>
-            )}
             <group >
               <group position={[1, -37, 0]} rotation={[0, 1.4 * Math.PI, 0]}>
                 {parts[i].base && modelFactory(parts[i].base)}
@@ -207,21 +203,52 @@ export function ModelImport(props: ModelImportProps ) {
               </Clone>
             </group>
           </group>
-        );
-        setSquad(squadArr);
-      }
+      );
     }
+
+    return groups;
   }, [
     squadSize,
     activeVisibleSquadSize,
     newNodeArr,
     currentPaint,
+    baseColor,
     clone,
+    showEdges,
     parts,
     paintRef,
-    squadIndex,
   ]);
 
+  const selectionRing = useMemo(() => {
+    if (!showSelectionRing || squadIndex >= activeVisibleSquadSize) return null;
+
+    const positionX =
+      squadIndex === 0
+        ? 0
+        : squadIndex === 1
+        ? 40
+        : squadIndex === 2
+        ? -40
+        : squadIndex === 3
+        ? -80
+        : 80;
+    const positionZ = squadIndex === 0 ? 0 : squadIndex > 0 && squadIndex < 3 ? 80 : -40;
+
+    return (
+      <group position={[positionX, 0, positionZ]} key={`selection_ring_${squadIndex}`}>
+        <mesh position={[0, -46, 0]} rotation={[-0.5 * Math.PI, 0, 0]}>
+          <ringGeometry args={[20, 30, 30]} />
+          <meshBasicMaterial color="#ffffff" transparent opacity={0.2} toneMapped={false} />
+        </mesh>
+      </group>
+    );
+  }, [squadIndex, activeVisibleSquadSize, showSelectionRing]);
+
   if (!nodes) return null;
-  return squad;
+  return (
+    <>
+      {modelGroups}
+      {selectionRing}
+    </>
+  );
 }
