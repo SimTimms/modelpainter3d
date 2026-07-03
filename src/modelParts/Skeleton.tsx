@@ -18,6 +18,9 @@ interface ModelImportProps {
   hoveredPaintLabelKey: string | null;
   setHoveredPaintLabelKey: React.Dispatch<React.SetStateAction<string | null>>;
   paintSyncTick: number;
+  isSurfacePaintEnabled: boolean;
+  surfaceAngleThreshold: number;
+  surfaceBrushRadius: number;
   onPaintApplied: (payload: {
     paintKey: string;
     unitNumber: number;
@@ -43,6 +46,9 @@ function ModelImportComponent(props: ModelImportProps ) {
     hoveredPaintLabelKey,
     setHoveredPaintLabelKey,
     paintSyncTick,
+    isSurfacePaintEnabled,
+    surfaceAngleThreshold,
+    surfaceBrushRadius,
     onPaintApplied,
     isPaintingEnabled,
     showSelectionRing,
@@ -69,6 +75,9 @@ function ModelImportComponent(props: ModelImportProps ) {
           hoveredPaintLabelKey={hoveredPaintLabelKey}
           setHoveredPaintLabelKey={setHoveredPaintLabelKey}
           paintSyncTick={paintSyncTick}
+          isSurfacePaintEnabled={isSurfacePaintEnabled}
+          surfaceAngleThreshold={surfaceAngleThreshold}
+          surfaceBrushRadius={surfaceBrushRadius}
           onPaintApplied={onPaintApplied}
           isPaintingEnabled={isPaintingEnabled}
         />
@@ -239,6 +248,9 @@ function ModelImportComponent(props: ModelImportProps ) {
     showPaintLabels,
     hoveredPaintLabelKey,
     paintSyncTick,
+    isSurfacePaintEnabled,
+    surfaceAngleThreshold,
+    surfaceBrushRadius,
     parts,
   ]);
 

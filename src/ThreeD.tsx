@@ -171,6 +171,9 @@ export default function ThreeD({ isVisible }) {
   const [paintMode, setPaintMode] = React.useState<'base' | 'brush' | 'background'>(
     'base'
   );
+  const [isSurfacePaintEnabled, setIsSurfacePaintEnabled] = React.useState(true);
+  const [surfaceAngleThreshold, setSurfaceAngleThreshold] = React.useState(90);
+  const [surfaceBrushRadius, setSurfaceBrushRadius] = React.useState(2);
   const activePaint =
     paintMode === 'base'
       ? baseColor
@@ -498,6 +501,21 @@ export default function ThreeD({ isVisible }) {
   };
   const paintToolControls = (
     <div style={{ display: 'flex', gap: 6, flexWrap: isMobileMode ? 'wrap' : 'nowrap' }}>
+      <button
+        type="button"
+        onClick={() => setIsSurfacePaintEnabled((prev) => !prev)}
+        style={{
+          border: '1px solid #555',
+          background: isSurfacePaintEnabled ? '#333' : '#222',
+          color: '#fff',
+          cursor: 'pointer',
+          borderRadius: 4,
+          padding: '6px 8px',
+          fontSize: 11,
+        }}
+      >
+        {isSurfacePaintEnabled ? 'Polygon Mode (Experimental)' : 'Object Mode'}
+      </button>
       <button
         type="button"
         onClick={() => setPaintMode('base')}
@@ -1107,6 +1125,41 @@ export default function ThreeD({ isVisible }) {
                   Show Paint Labels
                 </label>
               </div>
+              {isSurfacePaintEnabled && (
+                <div
+                  style={{
+                    marginTop: 6,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 4,
+                    color: '#aaa',
+                    fontSize: 10,
+                  }}
+                >
+                  <div>Surface Angle Break: {surfaceAngleThreshold} deg</div>
+                  <input
+                    type="range"
+                    min={0}
+                    max={120}
+                    step={1}
+                    value={surfaceAngleThreshold}
+                    onChange={(event) =>
+                      setSurfaceAngleThreshold(Number(event.target.value))
+                    }
+                  />
+                  <div>Surface Brush Radius: {surfaceBrushRadius.toFixed(1)}</div>
+                  <input
+                    type="range"
+                    min={0}
+                    max={12}
+                    step={0.25}
+                    value={surfaceBrushRadius}
+                    onChange={(event) =>
+                      setSurfaceBrushRadius(Number(event.target.value))
+                    }
+                  />
+                </div>
+              )}
               <div style={{ borderTop: '1px solid #444', paddingTop: 8 }}>
                 <button
                   type="button"
@@ -1383,6 +1436,9 @@ export default function ThreeD({ isVisible }) {
               hoveredPaintLabelKey={hoveredPaintLabelKey}
               setHoveredPaintLabelKey={setHoveredPaintLabelKey}
               paintSyncTick={paintSyncTick}
+              isSurfacePaintEnabled={isSurfacePaintEnabled}
+              surfaceAngleThreshold={surfaceAngleThreshold}
+              surfaceBrushRadius={surfaceBrushRadius}
               onPaintApplied={handlePaintApplied}
               isPaintingEnabled={!isScreenshotMode}
               showSelectionRing={!isScreenshotMode}

@@ -17,6 +17,9 @@ interface ModelProps {
   hoveredPaintLabelKey: string | null;
   setHoveredPaintLabelKey: React.Dispatch<React.SetStateAction<string | null>>;
   paintSyncTick: number;
+  isSurfacePaintEnabled: boolean;
+  surfaceAngleThreshold: number;
+  surfaceBrushRadius: number;
   onPaintApplied: (payload: {
     paintKey: string;
     unitNumber: number;
@@ -42,6 +45,9 @@ function ModelComponent(props: ModelProps) {
     hoveredPaintLabelKey,
     setHoveredPaintLabelKey,
     paintSyncTick,
+    isSurfacePaintEnabled,
+    surfaceAngleThreshold,
+    surfaceBrushRadius,
     onPaintApplied,
     isPaintingEnabled,
     showSelectionRing,
@@ -216,6 +222,9 @@ function ModelComponent(props: ModelProps) {
       hoveredPaintLabelKey={hoveredPaintLabelKey}
       setHoveredPaintLabelKey={setHoveredPaintLabelKey}
       paintSyncTick={paintSyncTick}
+      isSurfacePaintEnabled={isSurfacePaintEnabled}
+      surfaceAngleThreshold={surfaceAngleThreshold}
+      surfaceBrushRadius={surfaceBrushRadius}
       onPaintApplied={onPaintApplied}
       isPaintingEnabled={isPaintingEnabled}
       showSelectionRing={showSelectionRing}
